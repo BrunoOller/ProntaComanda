@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProntaComanda - Home</title>
+    <link rel="stylesheet" href="./wwwroot/css/color.css">
+    <link rel="stylesheet" href="./wwwroot/css/reset.css">
+    <style>
+        .banner {
+            width: 100vw;
+            min-height: 350px;
+            height: auto;
+            background-color: burlywood;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            & .image-banner {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+        }
+
+        .main {
+            width: 100vw;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 10px;
+
+            & .filtering {
+                width: 75%;
+                height: auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 5px;
+                background-color: yellowgreen;
+
+                & .filters {
+                    width: 65%;
+                    height: auto;
+                    gap: 5px;
+                    background-color: aqua;
+
+                    & .filter {
+                        width: 150px;
+                        height: 30px;
+                        font-size: 11.5pt;
+                        font-weight: 500;
+                        border-radius: 5px;
+                    }
+
+                    & .selecionado {
+                        background-color: var(--indigo-bloom);
+                        color: var(--white);
+                        font-weight: 600;
+                        box-shadow: 0 5px 10px #0000002e;
+                    }
+                }
+
+                & .search {
+                    background-color: blue;
+                    width: 35%;
+                    height: auto;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="banner">
+        <img src="" alt="Banner principal do projeto" class="image-banner">
+    </section>
+    <section class="main">
+        <div class="filtering">
+            <div class="filters">
+                <button class="filter selecionado">Tudo</button>
+                <button class="filter">Principais</button>
+                <button class="filter">Entradas</button>
+                <button class="filter">Sobremesas</button>
+                <button class="filter">Bebidas</button>
+            </div>
+            <div class="search">
+                <div class="search-block">
+                    <input type="search" name="search" id="search" placeholder="Pesquise por.">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="block">
+                <img src="" alt="imagem de comida" class="food-image">
+                <div class="text-content">
+                    <div class="name-description">
+                        <h2>Nome</h2>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet dolores veniam ipsam labore commodi nisi quisquam nam aspernatur tempore perferendis? Veritatis vero dolor sint repudiandae nemo in perspiciatis porro. Error!</p>
+                    </div>
+                    <div class="price">
+                        <h3>R$50,00</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
