@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -7,6 +9,11 @@
 
 html {
     font-size: 16px;
+    font-family: "Rubik", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, button, a {
+    font-family: "Archivo", sans-serif;
 }
 
 body {
