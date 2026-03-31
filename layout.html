@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProntaComanda - Layout 1</title>
+    <link rel="stylesheet" href="./wwwroot/css/color.css">
+    <link rel="stylesheet" href="./wwwroot/css/reset.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* Estilos do layout administrativo */
+        .admin-page {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--platinum);
+        }
+
+        .admin-sidebar {
+            width: 80px;
+            background: linear-gradient(180deg, var(--space-indigo), #1f2233);
+            color: white;
+            padding: 1rem 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            min-height: 100vh;
+            transition: width 0.5s ease;
+            overflow: hidden;
+        }
+
+        .admin-sidebar:hover {
+            width: 260px;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            padding: 0 0.6rem;
+        }
+
+        .sidebar-logo .logo-text {
+            display: none;
+            white-space: nowrap;
+        }
+
+        .admin-sidebar:hover .sidebar-logo {
+            justify-content: flex-start;
+        }
+
+        .admin-sidebar:hover .sidebar-logo .logo-text {
+            display: inline-block;
+        }
+
+        .sidebar-logo i {
+            font-size: 1.6rem;
+            color: #dfe4ee;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            align-items: center;
+            padding: 0 0.4rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 55px;
+            color: #dfe4ee;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .admin-sidebar:hover .sidebar-nav a {
+            justify-content: flex-start;
+            width: 100%;
+            padding-left: 0.8rem;
+        }
+
+        .sidebar-nav a .menu-text {
+            display: none;
+            margin-left: 0.65rem;
+            white-space: nowrap;
+            font-size: 0.95rem;
+        }
+
+        .admin-sidebar:hover .sidebar-nav a .menu-text {
+            display: inline-block;
+        }
+
+        .sidebar-nav a i {
+            font-size: 1.4rem;
+            transition: color 0.2s ease;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            color: var(--flag-red);
+            border-left: 4px solid var(--flag-red);
+            background: rgba(217, 9, 41, 0.14);
+        }
+
+        .sidebar-nav a:hover i,
+        .sidebar-nav a.active i {
+            color: var(--flag-red);
+        }
+
+        .admin-content {
+            flex: 1;
+            padding: 1.3rem 1.5rem;
+            min-width: 0;
+        }
+
+        .content-header h1 {
+            color: var(--space-indigo);
+            margin-bottom: 0.3rem;
+        }
+
+        .content-header p {
+            color: var(--grey);
+            margin-bottom: 1rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            padding: 1rem;
+        }
+
+        .card h2 {
+            margin-bottom: 0.5rem;
+            color: var(--space-indigo);
+        }
+
+        .card p {
+            color: var(--grey);
+            line-height: 1.45;
+        }
+
+        @media (max-width: 900px) {
+            .admin-page {
+                flex-direction: column;
+            }
+
+            .admin-sidebar {
+                width: 100%;
+                min-height: auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.8rem;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            .admin-sidebar:hover {
+                width: 100%;
+            }
+
+            /* forçar não expandir em telas pequenas */
+            .admin-sidebar {
+                transition: none;
+            }
+
+            .admin-sidebar:hover .sidebar-logo .logo-text,
+            .admin-sidebar:hover .sidebar-nav a .menu-text {
+                display: none;
+            }
+
+            .admin-sidebar:hover .sidebar-nav a {
+                width: auto;
+                justify-content: center;
+                padding-left: 0.5rem;
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                gap: 0.4rem;
+                padding: 0;
+            }
+
+            .sidebar-nav a {
+                width: auto;
+                height: auto;
+                padding: 0.5rem;
+                border-radius: 8px;
+            }
+
+            .sidebar-nav a .menu-text {
+                display: none;
+            }
+
+            .sidebar-logo {
+                justify-content: flex-start;
+            }
+
+            .sidebar-logo .logo-text {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-page">
+        <aside class="admin-sidebar" aria-label="Navegação principal">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-cubes-stacked" aria-hidden="true"></i>
+                <span class="logo-text">ProntaComanda</span>
+            </div>
+            <nav class="sidebar-nav" aria-label="Menu administrativo">
+                <a href="#" class="active" title="Dashboard">
+                    <i class="fa-solid fa-house" aria-hidden="true"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+                <a href="#" title="Pedidos">
+                    <i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>
+                    <span class="menu-text">Pedidos</span>
+                </a>
+                <a href="#" title="Produtos">
+                    <i class="fa-solid fa-box-open" aria-hidden="true"></i>
+                    <span class="menu-text">Produtos</span>
+                </a>
+                <a href="#" title="Clientes">
+                    <i class="fa-solid fa-users" aria-hidden="true"></i>
+                    <span class="menu-text">Clientes</span>
+                </a>
+                <a href="#" title="Configurações">
+                    <i class="fa-solid fa-gears" aria-hidden="true"></i>
+                    <span class="menu-text">Configurações</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+            <header class="content-header">
+                <h1>Painel Administrativo</h1>
+                <p>Visão geral dos dados e controle do sistema.</p>
+            </header>
+
+            <section class="content-grid">
+                <article class="card">
+                    <h2>Relatórios</h2>
+                    <p>Resumo de vendas e desempenho.</p>
+                </article>
+
+                <article class="card">
+                    <h2>Atividades Recentes</h2>
+                    <p>Últimos eventos do sistema.</p>
+                </article>
+
+                <article class="card">
+                    <h2>Usuários</h2>
+                    <p>Gerencie permissões e acessos.</p>
+                </article>
+
+                <article class="card">
+                    <h2>Estoque</h2>
+                    <p>Controle de produtos e insumos.</p>
+                </article>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
