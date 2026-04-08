@@ -103,3 +103,117 @@
 .sidebar-nav a.active i {
     color: var(--flag-red);
 }
+
+.admin-content {
+    flex: 1;
+    padding: 1.3rem 1.5rem;
+    min-width: 0;
+}
+
+.content-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.content-header h1 {
+    color: var(--space-indigo);
+    margin-bottom: 0.3rem;
+}
+
+.content-header p {
+    color: var(--grey);
+    margin-bottom: 1rem;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.card {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    padding: 1rem;
+}
+
+.card h2 {
+    margin-bottom: 0.5rem;
+    color: var(--space-indigo);
+}
+
+.card p {
+    color: var(--grey);
+    line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+    .admin-page {
+        flex-direction: column;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        min-height: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-sidebar:hover {
+        width: 100%;
+    }
+
+    /* forçar não expandir em telas pequenas */
+    .admin-sidebar {
+        transition: none;
+    }
+
+    .admin-sidebar:hover .sidebar-logo .logo-text,
+    .admin-sidebar:hover .sidebar-nav a .menu-text {
+        display: none;
+    }
+
+    .admin-sidebar:hover .sidebar-nav a {
+        width: auto;
+        justify-content: center;
+        padding-left: 0.5rem;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0;
+    }
+
+    .sidebar-nav a {
+        width: auto;
+        height: auto;
+        padding: 0.5rem;
+        border-radius: 8px;
+    }
+
+    .sidebar-nav a .menu-text {
+        display: none;
+    }
+
+    .sidebar-logo {
+        justify-content: flex-start;
+    }
+
+    .sidebar-logo .logo-text {
+        display: none;
+    }
+}
