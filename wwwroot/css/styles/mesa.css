@@ -285,7 +285,7 @@
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    border-bottom: 4px solid #27ae60;
+    border-bottom: 5px solid #27ae60;
     position: relative;
 
     &:hover {
@@ -302,10 +302,11 @@
     }
 
     & .mesa-number {
-        font-size: 1.8rem;
-        font-weight: 700;
+        font-size: 2.4rem;
+        font-weight: 900;
         color: var(--space-indigo);
         margin-bottom: 0.3rem;
+        font-family: "Rubik", sans-serif;
     }
 
     & .mesa-label {
