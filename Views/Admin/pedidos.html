@@ -14,82 +14,144 @@
     <style>
         .pedidos {
             display: flex;
-            gap: 24px;
-            overflow-x: auto;
-            padding: 32px 16px;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 24px 12px;
+        }
+
+        @media (min-width: 480px) {
+            .pedidos {
+                gap: 20px;
+                padding: 28px 16px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .pedidos {
+                gap: 24px;
+                padding: 32px 16px;
+            }
         }
 
         .card-pedido {
             min-width: 300px;
-            width: 375px;
-            max-width: 375px;
+            width: 300px;
+            max-width: 300px;
             height: 500px;
-            background: var(--grey);
-            border-radius: 16px;
-            border: 1px solid #777777;
-            box-shadow: 0 2px 8px #0000002e;
-            padding: 24px;
+            background-color: var(--grey);
+            border-radius: 20px;
+            border: 2px solid #a7a7a7;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            padding: 20px;
             display: flex;
             flex-direction: column;
             justify-content: start;
+            transition: transform 0.2s ease-out;
+            
+            &:hover {
+                transform: translateY(-5px);
+                transition: transform 0.2s ease-in;
+            }
+        }
 
-            & .status {
-                width: 100%;
-                height: 10%;
-                padding: 5px 0 0 0;
+        @media (min-width: 480px) {
+            .card-pedido {
+                min-width: 350px;
+                width: 350px;
+                max-width: 350px;
+                height: 550px;
+                padding: 24px;
+            }
+        }
 
-                & h2 {
-                    font-size: 1.4rem;
+        @media (min-width: 768px) {
+            .card-pedido {
+                min-width: 400px;
+                width: 400px;
+                max-width: 400px;
+                height: 600px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .card-pedido {
+                min-width: 450px;
+                width: 450px;
+                max-width: 450px;
+                height: 700px;
+            }
+        }
+
+        .card-pedido .status {
+            width: 100%;
+            height: 10%;
+            padding: 5px 0 0 0;
+
+            & h2 {
+                font-size: 1.3rem;
+                font-weight: 600;
+                color: var(--platinum);
+                text-align: center;
+            }
+        }
+
+        .card-pedido .pedido-content {
+            width: 100%;
+            height: auto;
+            background-color: var(--platinum);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #cccccc;
+
+            & .p-content-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.5rem;
+
+                & h3 {
+                    font-size: 1.2rem;
                     font-weight: 600;
-                    color: var(--platinum);
+                    color: var(--space-indigo);
+                }
+
+                & span {
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    color: var(--flag-red);
                 }
             }
 
-            & .pedido-content {
-                width: 100%;
-                height: auto;
-                background-color: var(--platinum);
-                border-radius: .6rem;
-                padding: .7rem;
+            & .p-content-info {
+                & .pedido-itens {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
 
-                & .p-content-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-
-                    & span {
-                        font-size: 0.9rem;
-                        font-weight: 600;
+                    & li {
+                        font-size: 1rem;
+                        font-weight: 500;
                         color: var(--space-indigo);
-                    }
-                }
+                        padding: 0.5rem 0;
+                        border-bottom: 1px solid #e0e0e0;
 
-                & .p-content-info {
-                    padding: 1rem .7rem .7rem 1rem;
+                        &:last-child {
+                            border-bottom: none;
+                        }
 
-                    & h3 {
-                        list-style: circle;
-                        font-size: 1.1rem;
-                        font-weight: 600;
-                        padding-left: 5px;
-                        color: var(--space-indigo);
-
-                        &::before {
-                            content: '•';
-                            color: var(--space-indigo);
-                            font-size: 1rem;
-                            display: inline-block;
-                            width: 1.5rem;
+                        & .observacao {
+                            display: block;
+                            font-size: 0.85rem;
+                            font-weight: 400;
+                            color: var(--flag-red);
+                            margin-top: 0.25rem;
                         }
                     }
-
-                    & .observacao {
-                        font-size: 0.9rem;
-                        font-weight: 400;
-                        color: var(--flag-red);
-                    }
                 }
             }
+        }
     </style>
 </head>
 
@@ -144,8 +206,58 @@
                                 <span>12:30</span>
                             </div>
                             <div class="p-content-info">
-                                <h3>1x X-Burguer</h3>
-                                <p class="observacao">Observação: não deve ter cebola</p>
+                                <ul class="pedido-itens">
+                                    <li>1x X-Burguer <span class="observacao">Observação: não deve ter cebola</span></li>
+                                    <li>2x Batata Frita</li>
+                                    <li>1x Refrigerante</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="pedido-content">
+                            <div class="p-content-header">
+                                <h3>Mesa 02</h3>
+                                <span>12:45</span>
+                            </div>
+                            <div class="p-content-info">
+                                <ul class="pedido-itens">
+                                    <li>1x Pizza Margherita</li>
+                                    <li>1x Salada</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-pedido">
+                        <div class="status">
+                            <h2>Pronto</h2>
+                        </div>
+                        <div class="pedido-content">
+                            <div class="p-content-header">
+                                <h3>Mesa 03</h3>
+                                <span>13:00</span>
+                            </div>
+                            <div class="p-content-info">
+                                <ul class="pedido-itens">
+                                    <li>1x Lasanha</li>
+                                    <li>1x Vinho Tinto</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-pedido">
+                        <div class="status">
+                            <h2>Entregue</h2>
+                        </div>
+                        <div class="pedido-content">
+                            <div class="p-content-header">
+                                <h3>Mesa 04</h3>
+                                <span>13:15</span>
+                            </div>
+                            <div class="p-content-info">
+                                <ul class="pedido-itens">
+                                    <li>1x Sushi Combo</li>
+                                    <li>1x Chá Verde</li>
+                                    <li>1x Sobremesa</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
