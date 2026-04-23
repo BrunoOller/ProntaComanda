@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProntaComanda - Layout 1</title>
+    <link rel="stylesheet" href="/wwwroot/css/global/color.css">
+    <link rel="stylesheet" href="/wwwroot/css/global/reset.css">
+    <link rel="stylesheet" href="/wwwroot/css/styles/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-page">
+        <aside class="admin-sidebar" aria-label="Navegação principal">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-cubes-stacked" aria-hidden="true"></i>
+                <span class="logo-text">ProntaComanda</span>
+            </div>
+            <nav class="sidebar-nav" aria-label="Menu administrativo">
+                <a href="/Views/Admin/cardapio.html" title="Cardápio">
+                    <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+                    <span class="menu-text">Cardápio</span>
+                </a>
+                <a href="/Views/Admin/mesa.html" title="Mesas">
+                    <i class="fa-solid fa-bell-concierge" aria-hidden="true"></i>
+                    <span class="menu-text">Mesas</span>
+                </a>
+                <a href="/Views/Admin/pedidos.html" title="Pedidos">
+                    <i class="fa-solid fa-fire" aria-hidden="true"></i>
+                    <span class="menu-text">Pedidos</span>
+                </a>
+                <a href="#" class="active" title="Dashboard">
+                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+                <a href="/Views/Admin/funcionarios.html" title="Funcionários">
+                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                    <span class="menu-text">Funcionários</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+            <header class="content-header">
+                <div class="header-left">
+                    <h1>Dashboard</h1>
+                    <p>Visualize os seus faturamentos totais e diários.</p>
+                </div>
+            </header>
+
+            <section class="content-grid">
+                <article class="card">
+                    <h2>Relatórios</h2>
+                    <p>Resumo de vendas e desempenho.</p>
+                </article>
+
+                <article class="card">
+                    <h2>Atividades Recentes</h2>
+                    <p>Últimos eventos do sistema.</p>
+                </article>
+
+                <article class="card">
+                    <h2>Usuários</h2>
+                    <p>Gerencie permissões e acessos.</p>
+                </article>
+
+                <article class="card">
+                    <h2>Estoque</h2>
+                    <p>Controle de produtos e insumos.</p>
+                </article>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
