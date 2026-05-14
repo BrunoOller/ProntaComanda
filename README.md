@@ -202,7 +202,8 @@ O sistema é operacionalmente viável, priorizando uma interface limpa e intuiti
 | Cinza (claro)     | #D9D9D9     | ![](https://img.shields.io/badge/-%23D9D9D9?style=for-the-badge&color=D9D9D9) |
 
 ### Tipografia: 
-- [Montserrat - Google Fonts](https://fonts.google.com/specimen/Montserrat)
+- [Archivo(Títulos) - Google Fonts](https://fonts.google.com/specimen/Archivo)
+- [Rubik - Google Fonts](https://fonts.google.com/specimen/Rubik)
 
 ### Modelo de navegação:
 ```mermaid
