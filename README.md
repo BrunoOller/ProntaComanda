@@ -138,27 +138,45 @@ O sistema deve ser compatível com outras soluções administrativas utilizadas 
 # 3. Regras de negócio
 ### Figura 1 - Canvas, modelo de negócios:
 <div align="center">
-  <img alt="Figura 1 - Canvas, modelo de negócios" src=".github/ModeloNegocio.jpeg" width="550">
+  <img alt="Figura 1 - Canvas, modelo de negócios" src=".github/Canvas.png" width="550">
 </div>
 
 ## 3.1. O que será elaborado?
 ### Proposta de valor:
-  - Facilitar o agendamento de consultas em Radiologias Odontológicas por meio de um website.
-  - Eliminar a necessidade de filas e deslocamentos até as unidades.
+  - Facilitar o gerenciamento de estabalecimentos gastronômicos
+  - Eliminar erros de pedidos manuais
 
 ## 3.2. Como será elaborado?
-### Parcerias principais:
-### Atividades principais:
+### Parcerias Principais:
+  - Provedores de Hospedagem
+  - Estabelecimentos gastronômicos
+
+### Atividades Principais:
+  - Desenvolvimento e manutenção do Software
+  - Atualização de funcionalidades do cardápio
+
 ### Recursos principais:
-  - Equipe de desenvolvimento.
-  - Internet.
+  - Equipe de desenvolvimento
+  - Internet
   - Plataforma de hospedagem
   - Conteúdo e informações
 
 ## 3.3. Para quem será elaborado?
 ### Segmento de mercado:
+  - Pequenos e médios restaurantes
+  - Bares e Pubs
+  - Lanchonetes e Cafeterias
+  - Food Trucks com atendimento local
+
 ### Relacionamento com o cliente: 
+  - Autoatendimento (interface intuitiva)
+  - Feedback contínuo para melhorias
+    
 ### Canais: 
+  - Website
+  - Redes Sociais
+  - Parceria local
+    
 ## 3.4. Quanto custará?
 ### Estrutura de custos: 
   - Domínio da aplicação;
@@ -190,16 +208,11 @@ O sistema é operacionalmente viável, priorizando uma interface limpa e intuiti
 
 | Nome             | Hexadecimal | Cor |
 |------------------|:-----------:|:---:|
-| Preto carvão      | #1F1F1F     | ![](https://img.shields.io/badge/-%231F1F1F?style=for-the-badge&color=1F1F1F) |
-| Branco            | #FFFFFF     | ![](https://img.shields.io/badge/-%23FFFFFF?style=for-the-badge&color=FFFFFF) |
-| Rosa claro        | #EC91A3     | ![](https://img.shields.io/badge/-%23EC91A3?style=for-the-badge&color=EC91A3) |
-| Preto             | #000000     | ![](https://img.shields.io/badge/-%23000000?style=for-the-badge&color=000000) |
-| Cinza (escuro)    | #323232     | ![](https://img.shields.io/badge/-%23323232?style=for-the-badge&color=323232) |
-| Cinza (gelo)      | #F3F2F2     | ![](https://img.shields.io/badge/-%23F3F2F2?style=for-the-badge&color=F3F2F2) |
-| Cinza (médio)     | #414141     | ![](https://img.shields.io/badge/-%23414141?style=for-the-badge&color=414141) |
-| Cinza             | #797979     | ![](https://img.shields.io/badge/-%23797979?style=for-the-badge&color=797979) |
-| Rosa queimado     | #B76374     | ![](https://img.shields.io/badge/-%23B78374?style=for-the-badge&color=B76374) |
-| Cinza (claro)     | #D9D9D9     | ![](https://img.shields.io/badge/-%23D9D9D9?style=for-the-badge&color=D9D9D9) |
+| Space Indigo      | #292B3B     | ![](https://img.shields.io/badge/-%231F1F1F?style=for-the-badge&color=292B3B) |
+| Platinum          | #EDF2F4     | ![](https://img.shields.io/badge/-%23FFFFFF?style=for-the-badge&color=EDF2F4) |
+| Strawberry Red    | #EF233C     | ![](https://img.shields.io/badge/-%23EC91A3?style=for-the-badge&color=EF233C) |
+| Flag Red          | #D90429     | ![](https://img.shields.io/badge/-%23000000?style=for-the-badge&color=D90429) |
+| Grey              | #A6A9AE     | ![](https://img.shields.io/badge/-%23797979?style=for-the-badge&color=A6A9AE) |
 
 ### Tipografia: 
 - [Archivo(Títulos) - Google Fonts](https://fonts.google.com/specimen/Archivo)
@@ -318,7 +331,7 @@ Representa as tabelas e os relacionamentos que compõem a base de dados do siste
 # 8. Considerações finais
 A aplicação ProntaComanda foi desenvolvida com o objetivo de modernizar e agilizar a gestão de atendimento em estabelecimentos gastronômicos, oferecendo uma solução robusta para o controle de mesas e cardápios. Ao utilizar tecnologias de alta performance como C# e o banco de dados NoSQL MongoDB, o projeto superou limitações comuns de sistemas estáticos, permitindo o armazenamento dinâmico de dados e uma estrutura flexível para a expansão de funcionalidades.
 
-Durante o desenvolvimento, o foco principal foi a implementação da lógica de negócios e a persistência de dados orientada a documentos, o que trouxe desafios técnicos enriquecedores, especialmente na modelagem de objetos e na integração entre o back-end e o banco de dados. Embora o escopo inicial tenha se concentrado nas funcionalidades vitais de operação (mesas e cardápio), o sistema foi projetado sob o padrão MVC, garantindo que futuras atualizações — como módulos de relatórios avançados ou integração com sistemas de pagamento — possam ser implementadas com facilidade.
+Durante o desenvolvimento, o foco principal foi a implementação da lógica de negócios e a persistência de dados orientada a documentos, o que trouxe desafios técnicos enriquecedores, especialmente na modelagem de objetos e na integração entre o back-end e o banco de dados. Embora o escopo inicial tenha se concentrado nas funcionalidades vitais de operação (mesas e cardápio), o sistema foi projetado sob o padrão MVC, garantindo que futuras atualizações, como módulos de relatórios avançados ou integração com sistemas de pagamento, possam ser implementadas com facilidade.
 
 Em suma, o ProntaComanda cumpre seu propósito de demonstrar como a tecnologia pode eliminar falhas de comunicação e otimizar a eficiência operacional no setor de Food Service. O projeto não apenas entrega uma ferramenta funcional para o mercado, mas também consolida o aprendizado em arquiteturas modernas de software e bancos de dados não relacionais.
 
