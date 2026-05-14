@@ -5,7 +5,7 @@
     <img alt="Logo ProntaComanda" src="" width="550">
   </picture>
   
-  # Sistema de Agendamento de Radiologias Odontológicas
+  # ProntaComanda
   ### Centro Paula Souza
   ### Faculdade de Tecnologia de Jahu 
   ### Curso de Tecnologia em Desenvolvimento de Software Multiplataforma
