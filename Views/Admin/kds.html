@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K.D.S</title>
+    <link rel="stylesheet" href="/wwwroot/css/global/color.css">
+    <link rel="stylesheet" href="/wwwroot/css/global/reset.css">
+    <link rel="stylesheet" href="/wwwroot/css/styles/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="kds-page">
+        <!-- Sidebar da esquerda para navegação -->
+        <aside class="admin-sidebar" aria-label="Navegação principal">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-cubes-stacked" aria-hidden="true"></i>
+                <span class="logo-text">ProntaComanda</span>
+            </div>
+            <nav class="sidebar-nav" aria-label="Menu administrativo">
+                <a href="/Views/Admin/cardapio.html" title="Cardápio">
+                    <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+                    <span class="menu-text">Cardápio</span>
+                </a>
+                <a href="/Views/Admin/mesa.html" title="Mesas">
+                    <i class="fa-solid fa-bell-concierge" aria-hidden="true"></i>
+                    <span class="menu-text">Mesas</span>
+                </a>
+                <a href="/Views/Admin/pedidos.html" title="Pedidos">
+                    <i class="fa-solid fa-fire" aria-hidden="true"></i>
+                    <span class="menu-text">Pedidos</span>
+                </a>
+                <a href="/Views/Admin/dashboad.html" title="Dashboard">
+                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+                <a href="#" class="active" title="Funcionários">
+                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                    <span class="menu-text">Funcionários</span>
+                </a>
+            </nav>
+        </aside> <!-- Fim da Sidebar da Esquerda -->
+        
+        <!-- Começo do conteudo principal da pagina kds -->
+        <div class="kds-page-wrapper">
+            <!-- Conteudo do centro da pagina -->
+            <div class="content-wrapper">
+                <main class="kds-content">
+                    <!-- Header -->
+                    <header class="content-header">
+                        <div class="header-title">
+                            <h1>Painel de Pedidos</h1>
+                        </div>
+                    </header> <!-- Fim header -->
+
+                    <!-- Conteúdo principal da página kds -->
+                    <section class="content">
+                        <!-- Começo Em preparo -->
+                        <section class="onGoing-content">
+
+                        </section> <!-- Fim -->
+
+                        <!-- Começo Pronto -->
+                        <section class="Done-content">
+
+                        </section> <!-- Fim -->
+
+                        <!-- Começo entregue -->
+                        <section class="Delivered-content">
+
+                        </section> <!-- Fim -->
+
+                    </section> <!-- Fim do conteudo principal da pagina kds -->
+
+                </main>
+            </div> <!-- fim do conteudo do centro da pagina -->
+
+            <!-- Começo da Side bar da Direita -->
+            <aside class="right-sidebar">
+                <!-- Conteudo -->
+                <div class="sidebar-content">
+                    <!-- Começo Infos cozinha -->
+                    <div class="kitchen-content">
+                        <header class="header-kitchen">
+                                <p>Conzinha</p>
+                        </header>
+
+                        <div class="kitchen-infos">
+
+                        </div>
+                    </div> <!-- Fim Infos Cozinha -->
+
+                    <!-- Começo Infos Bar -->
+                    <div class="bar-content">
+                        <header class="header-bar">
+                                <p>Bar</p>
+                        </header>
+
+                        <div class="bar-infos">
+
+                        </div>
+                    </div> <!-- Fim infos Bar -->
+
+                    <!-- Começo das infosmações de produção -->
+                    <div class="production">
+                        <div class="production-header">
+                            <p>Resumo de Produção</p>
+                        </div>
+                        <!-- Começo do conteudo de Produção -->
+                        <div class="production-content">
+                            <header class="header-production">
+                                <p>Resumo de Itens Pendentes</p>
+                            </header>
+
+                            <div class="production-info">
+
+                            </div>
+                        </div>
+                    </div> <!-- Fim do conteudo das infomações de produção -->
+                </div>
+            </aside> <!-- Fim -->
+        </div>
+    </div>
+</body>
+</html>
