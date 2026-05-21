@@ -11,7 +11,7 @@
   ### Curso de Tecnologia em Desenvolvimento de Software Multiplataforma
   ### Jaú, SP, BR
   ### Início: 3º Semestre / 2026
-  # Documento da aplicação web
+  # Documentação da Aplicação Web
 </div>
 
 # Autores:
@@ -221,26 +221,38 @@ O sistema é operacionalmente viável, priorizando uma interface limpa e intuiti
 ### Modelo de navegação:
 ```mermaid
 graph TD
-    Home --> Sobre
-    Home --> Contato
-    Home --> Login
-    Login --> Usuário
-    Login --> Cadastro
-    Login --> Perfil
-    Login --> Admin
-    Cadastro --> Paciente
-    Cadastro --> RadiologyUnits["Unidades de Radiologia"]
-    Usuário --> Agendamento
-    Agendamento --> RadiologyUnits["Unidades de Radiologia"]
-    Agendamento --> SchedulingInformation["Informações do Agendamento"]
-    Home --> PrivacyPolicy["Políticas de Privacidade"]
-    Home --> Terms["Termos de Uso"]
+    HomeClients["Home de Clientes"] --> Login
+    Login --> AdminMenu["Gerenciamento de Cardápio"]
+	Login --> AdminTables["Gerenciamento de Mesas"]
+	Login --> AdminOrders["Pedidos"]
+	Login --> Dashboard
+	Login --> AdminEmployees["Gerenciamento de Funcionários"]
+    AdminMenu["Gerenciamento de Cardápio"] --> AdminTables["Gerenciamento de Mesas"]
+    AdminMenu["Gerenciamento de Cardápio"] --> AdminOrders["Pedidos"]
+    AdminMenu["Gerenciamento de Cardápio"] --> Dashboard
+    AdminMenu["Gerenciamento de Cardápio"] --> AdminEmployees["Gerenciamento de Funcionários"]
+    AdminTables["Gerenciamento de Mesas"] --> AdminMenu["Gerenciamento de Cardápio"]
+	AdminTables["Gerenciamento de Mesas"] --> AdminOrders["Pedidos"]
+	AdminTables["Gerenciamento de Mesas"] --> Dashboard
+	AdminTables["Gerenciamento de Mesas"] --> AdminEmployees["Gerenciamento de Funcionários"]
+	AdminOrders["Pedidos"] --> AdminMenu["Gerenciamento de Cardápio"]
+	AdminOrders["Pedidos"] --> AdminTables["Gerenciamento de Mesas"]
+	AdminOrders["Pedidos"] --> Dashboard
+	AdminOrders["Pedidos"] --> dminEmployees["Gerenciamento de Funcionários"]
+	Dashboard --> AdminMenu["Gerenciamento de Cardápio"]
+	Dashboard --> AdminTables["Gerenciamento de Mesas"]
+	Dashboard --> AdminOrders["Pedidos"]
+	Dashboard --> AdminEmployees["Gerenciamento de Funcionários"]
+	AdminEmployees["Gerenciamento de Funcionários"] --> AdminMenu["Gerenciamento de Cardápio"]
+	AdminEmployees["Gerenciamento de Funcionários"] --> AdminTables["Gerenciamento de Mesas"]
+	AdminEmployees["Gerenciamento de Funcionários"] --> AdminOrders["Pedidos"]
+	AdminEmployees["Gerenciamento de Funcionários"] --> Dashboard
     
 ```
 [Voltar para o início](#inicio)
 
 # 6. Protótipo
-- ### Link do protótipo com a ferramenta Figma: [Figma - AGEND+](https://www.figma.com/design/DK7p6uT6eyjD93F4SaufMc/AGEND----Site?node-id=0-1&t=EdMXWmEnD2Meu3UL-1)
+- ### Link do protótipo com a ferramenta Figma: [Figma - ProntaComanda](https://www.figma.com/proto/DiucbOuIzhfo5k8jNEIjij/ProntaComanda?node-id=0-1&t=46LvV2O62RCQsEJs-1)
 
 - ### Figura 2 - Protótipo da página principal Home:
 <div align="center">
@@ -255,7 +267,7 @@ graph TD
 [Voltar para o início](#inicio)
 
 # 7. Aplicação
-- ### Link para o nosso repositório do GitHub: [Repositório - AGENDMAIS](https://github.com/BrunoOller/AGENDMAIS)
+- ### Link para o nosso repositório do GitHub: [Repositório - ProntaComanda](https://github.com/BrunoOller/ProntaComanda)
   
 - ### Figura 4 - Página Home:
 <div align="center">
@@ -338,14 +350,12 @@ Em suma, o ProntaComanda cumpre seu propósito de demonstrar como a tecnologia p
 [Voltar para o início](#inicio)
 
 # Referências bibliográficas
-ATLASSIAN. Trello. 2025. Disponível em: [https://trello.com/](https://trello.com/). 
+ATLASSIAN. Trello. 2026. Disponível em: [https://trello.com/](https://trello.com/). 
 
-FIGMA, Inc. Figma: the collaborative interface design tool. 2025. Disponível em: [https://www.figma.com/](https://www.figma.com/).
+FIGMA, Inc. Figma: the collaborative interface design tool. 2026. Disponível em: [https://www.figma.com/](https://www.figma.com/).
 
 MIND THE GRAPH. O que é um estudo de viabilidade em pesquisa? 2023. Disponível em: [https://mindthegraph.com/blog/pt/o-que-e-um-estudo-de-viabilidade-em-pesquisa/](https://mindthegraph.com/blog/pt/o-que-e-um-estudo-de-viabilidade-em-pesquisa/).
 
-SEBRAE. Canvas Sebrae. 2025. Disponível em: [https://canvas-apps.pr.sebrae.com.br/canvas](https://canvas-apps.pr.sebrae.com.br/canvas).
-
-BOOTSTRAP. Bootstrap · The most popular HTML, CSS, and JS library in the world. 2025. Disponível em: [https://getbootstrap.com/](https://getbootstrap.com/). 
+BOOTSTRAP. Bootstrap · The most popular HTML, CSS, and JS library in the world. 2026. Disponível em: [https://getbootstrap.com/](https://getbootstrap.com/). 
 
 [Voltar para o início](#inicio)
