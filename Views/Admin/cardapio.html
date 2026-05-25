@@ -9,12 +9,15 @@
     <link rel="stylesheet" href="/wwwroot/css/global/reset.css">
     <link rel="stylesheet" href="/wwwroot/css/styles/layout.css">
     <link rel="stylesheet" href="/wwwroot/css/styles/cardapio.css">
+    <link rel="stylesheet" href="/wwwroot/css/styles/modal-cardapio.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 </head>
 
 <body>
     <div class="admin-page">
+
+        <!-- ===== SIDEBAR ===== -->
         <aside class="admin-sidebar" aria-label="Navegação principal">
             <div class="sidebar-logo">
                 <i class="fa-solid fa-cubes-stacked" aria-hidden="true"></i>
@@ -44,6 +47,7 @@
             </nav>
         </aside>
 
+        <!-- ===== CONTEÚDO PRINCIPAL ===== -->
         <main class="admin-content">
             <header class="content-header">
                 <div class="header-left">
@@ -55,13 +59,16 @@
                         <i class="fa-solid fa-image"></i>
                         Alterar Banner Clientes
                     </button>
-                    <button class="btn-action" title="Adicionar item">
+                    <!-- data-open-modal aponta para o ID do overlay -->
+                    <button class="btn-action" title="Adicionar item"
+                        data-open-modal="modal-cardapio" data-modal-mode="add">
                         <i class="fa-solid fa-plus"></i>
                         Adicionar Item
                     </button>
                 </div>
             </header>
 
+            <!-- Filtros e busca -->
             <section class="filtering">
                 <div class="filters">
                     <button class="filter selecionado">Tudo</button>
@@ -78,11 +85,13 @@
                 </div>
             </section>
 
+            <!-- Grid de produtos (Swiper) -->
             <div class="swiper">
                 <div class="swiper-wrapper">
+
                     <article class="card swiper-slide">
                         <div class="card-image-container">
-                            <img src="/wwwroot/img/pizza.jpg" alt="imagem de comida" class="card-image">
+                            <img src="/wwwroot/img/pizza.jpg" alt="Pizza Margherita" class="card-image">
                             <div class="card-badge">Disponível</div>
                         </div>
                         <div class="card-text-content">
@@ -91,12 +100,9 @@
                                 <p>Deliciosa pizza com molho de tomate, mozzarella fresca e manjericão.</p>
                             </div>
                             <div class="card-footer">
-                                <div class="card-price">
-                                    <h3>R$45,00</h3>
-                                </div>
+                                <div class="card-price"><h3>R$45,00</h3></div>
                                 <button class="card-edit-btn" title="Editar item">
-                                    <i class="fa-solid fa-edit"></i>
-                                    Editar
+                                    <i class="fa-solid fa-edit"></i> Editar
                                 </button>
                             </div>
                         </div>
@@ -104,7 +110,7 @@
 
                     <article class="card swiper-slide">
                         <div class="card-image-container">
-                            <img src="/wwwroot/img/pizza.jpg" alt="imagem de comida" class="card-image">
+                            <img src="/wwwroot/img/pizza.jpg" alt="Pizza Calabresa" class="card-image">
                             <div class="card-badge">Disponível</div>
                         </div>
                         <div class="card-text-content">
@@ -113,12 +119,9 @@
                                 <p>Crocante e suculenta com calabresa, cebola roxa e queijo derretido.</p>
                             </div>
                             <div class="card-footer">
-                                <div class="card-price">
-                                    <h3>R$50,00</h3>
-                                </div>
+                                <div class="card-price"><h3>R$50,00</h3></div>
                                 <button class="card-edit-btn" title="Editar item">
-                                    <i class="fa-solid fa-edit"></i>
-                                    Editar
+                                    <i class="fa-solid fa-edit"></i> Editar
                                 </button>
                             </div>
                         </div>
@@ -126,7 +129,7 @@
 
                     <article class="card swiper-slide">
                         <div class="card-image-container">
-                            <img src="/wwwroot/img/pizza.jpg" alt="imagem de comida" class="card-image">
+                            <img src="/wwwroot/img/pizza.jpg" alt="Pizza 4 Queijos" class="card-image">
                             <div class="card-badge">Disponível</div>
                         </div>
                         <div class="card-text-content">
@@ -135,12 +138,9 @@
                                 <p>Uma explosão de sabores com mozzarella, gorgonzola, parmesão e brie.</p>
                             </div>
                             <div class="card-footer">
-                                <div class="card-price">
-                                    <h3>R$55,00</h3>
-                                </div>
+                                <div class="card-price"><h3>R$55,00</h3></div>
                                 <button class="card-edit-btn" title="Editar item">
-                                    <i class="fa-solid fa-edit"></i>
-                                    Editar
+                                    <i class="fa-solid fa-edit"></i> Editar
                                 </button>
                             </div>
                         </div>
@@ -148,7 +148,7 @@
 
                     <article class="card swiper-slide">
                         <div class="card-image-container">
-                            <img src="/wwwroot/img/pizza.jpg" alt="imagem de comida" class="card-image">
+                            <img src="/wwwroot/img/pizza.jpg" alt="Pizza Vegetariana" class="card-image">
                             <div class="card-badge">Disponível</div>
                         </div>
                         <div class="card-text-content">
@@ -157,12 +157,9 @@
                                 <p>Saudável e saborosa com pimentão, brócolis, cogumelo e cenoura.</p>
                             </div>
                             <div class="card-footer">
-                                <div class="card-price">
-                                    <h3>R$42,00</h3>
-                                </div>
+                                <div class="card-price"><h3>R$42,00</h3></div>
                                 <button class="card-edit-btn" title="Editar item">
-                                    <i class="fa-solid fa-edit"></i>
-                                    Editar
+                                    <i class="fa-solid fa-edit"></i> Editar
                                 </button>
                             </div>
                         </div>
@@ -170,7 +167,7 @@
 
                     <article class="card swiper-slide">
                         <div class="card-image-container">
-                            <img src="/wwwroot/img/pizza.jpg" alt="imagem de comida" class="card-image">
+                            <img src="/wwwroot/img/pizza.jpg" alt="Refrigerante" class="card-image">
                             <div class="card-badge">Disponível</div>
                         </div>
                         <div class="card-text-content">
@@ -179,12 +176,9 @@
                                 <p>Bebida gelada e refrescante para acompanhar sua pizza favorita.</p>
                             </div>
                             <div class="card-footer">
-                                <div class="card-price">
-                                    <h3>R$5,00</h3>
-                                </div>
+                                <div class="card-price"><h3>R$5,00</h3></div>
                                 <button class="card-edit-btn" title="Editar item">
-                                    <i class="fa-solid fa-edit"></i>
-                                    Editar
+                                    <i class="fa-solid fa-edit"></i> Editar
                                 </button>
                             </div>
                         </div>
@@ -192,34 +186,451 @@
 
                     <article class="card swiper-slide">
                         <div class="card-image-container">
-                            <img src="/wwwroot/img/pizza.jpg" alt="imagem de comida" class="card-image">
+                            <img src="/wwwroot/img/pizza.jpg" alt="Sobremesa Doce" class="card-image">
                             <div class="card-badge">Disponível</div>
                         </div>
                         <div class="card-text-content">
                             <div class="card-name-description">
                                 <h2>Sobremesa Doce</h2>
-                                <p>Irreristível doce para encerrar sua refeição com chave de ouro.</p>
+                                <p>Irresistível doce para encerrar sua refeição com chave de ouro.</p>
                             </div>
                             <div class="card-footer">
-                                <div class="card-price">
-                                    <h3>R$18,00</h3>
-                                </div>
+                                <div class="card-price"><h3>R$18,00</h3></div>
                                 <button class="card-edit-btn" title="Editar item">
-                                    <i class="fa-solid fa-edit"></i>
-                                    Editar
+                                    <i class="fa-solid fa-edit"></i> Editar
                                 </button>
                             </div>
                         </div>
                     </article>
-                </div>
+
+                </div><!-- /.swiper-wrapper -->
                 <div class="swiper-button-prev"></div>
                 <div class="swiper-button-next"></div>
-            </div>
-        </main>
-    </div>
+            </div><!-- /.swiper -->
 
+        </main>
+    </div><!-- /.admin-page -->
+
+    <!-- ============================================================
+         MODAL MULTI-ABA — Adicionar / Editar Item
+         ============================================================ -->
+    <div class="modal-overlay" id="modal-cardapio" role="dialog" aria-modal="true"
+        aria-labelledby="modal-cardapio-title">
+
+        <div class="modal">
+
+            <!-- Cabeçalho do modal -->
+            <div class="modal__header">
+                <span class="modal__title" id="modal-cardapio-title">Adicionando Item ao Menu</span>
+                <button class="modal__close-btn" aria-label="Fechar modal" title="Fechar">&#10005;</button>
+            </div>
+
+            <!-- Abas de navegação -->
+            <div class="modal__tabs" role="tablist">
+                <button class="modal__tab-btn modal__tab-btn--active" role="tab" aria-selected="true"
+                    aria-controls="panel-dados-gerais">Dados Gerais</button>
+                <button class="modal__tab-btn" role="tab" aria-selected="false"
+                    aria-controls="panel-acrescimos">Acréssimos/Extras</button>
+                <button class="modal__tab-btn" role="tab" aria-selected="false"
+                    aria-controls="panel-happy-hour">Happy Hour</button>
+            </div>
+
+            <!-- Corpo do modal (scrollável) -->
+            <div class="modal__body">
+
+                <!-- ========== ABA 1: DADOS GERAIS ========== -->
+                <div class="modal__panel modal__panel--active" id="panel-dados-gerais" role="tabpanel">
+                    <div class="dados-gerais__layout">
+
+                        <!-- Coluna esquerda: formulário -->
+                        <div class="dados-gerais__form-col">
+
+                            <!-- Nome do Item + Nome Curto -->
+                            <div class="modal-form__row">
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label" for="dg-nome">Nome do Item</label>
+                                    <input class="modal-form__input" type="text" id="dg-nome" name="nome"
+                                        autocomplete="off" placeholder="">
+                                </div>
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label" for="dg-nome-curto">Nome Curto (Cozinha)</label>
+                                    <input class="modal-form__input" type="text" id="dg-nome-curto" name="nomeCurto"
+                                        autocomplete="off" placeholder="">
+                                </div>
+                            </div>
+
+                            <!-- Preço + Categoria -->
+                            <div class="modal-form__row">
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label" for="dg-preco">Preço do item</label>
+                                    <input class="modal-form__input" type="number" id="dg-preco" name="preco"
+                                        min="0" step="0.01" placeholder="R$">
+                                </div>
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label" for="dg-categoria">Categoria</label>
+                                    <div class="modal-form__select-wrapper">
+                                        <select class="modal-form__select" id="dg-categoria" name="categoria">
+                                            <option value="">Entrada</option>
+                                            <option value="principal">Principal</option>
+                                            <option value="sobremesa">Sobremesa</option>
+                                            <option value="bebida">Bebida</option>
+                                        </select>
+                                        <span class="modal-form__select-arrow">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Estoque + Sub-Categoria -->
+                            <div class="modal-form__row">
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label" for="dg-estoque">Estoque</label>
+                                    <input class="modal-form__input" type="number" id="dg-estoque" name="estoque"
+                                        min="0" placeholder="67">
+                                    <span class="modal-form__label--hint">Caso não tenha, colocar "0"</span>
+                                </div>
+                                <div class="modal-form__group">
+                                    <label class="modal-form__label" for="dg-subcategoria">Sub-Categoria</label>
+                                    <div class="modal-form__select-wrapper">
+                                        <select class="modal-form__select" id="dg-subcategoria" name="subcategoria">
+                                            <option value="">Massa</option>
+                                            <option value="grill">Grill</option>
+                                            <option value="fritura">Fritura</option>
+                                            <option value="frio">Frio</option>
+                                        </select>
+                                        <span class="modal-form__select-arrow">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Legenda do Item (textarea) -->
+                            <div class="modal-form__group" style="margin-bottom: 0;">
+                                <label class="modal-form__label" for="dg-legenda">Legenda do Item</label>
+                                <textarea class="modal-form__textarea" id="dg-legenda" name="legenda"></textarea>
+                            </div>
+
+                        </div><!-- /.dados-gerais__form-col -->
+
+                        <!-- Coluna direita: imagem + disponibilidade -->
+                        <div class="dados-gerais__media-col">
+
+                            <!-- Upload de imagem -->
+                            <div>
+                                <label class="image-upload__label">Anexar imagem do item:</label>
+                                <div class="image-upload__input-wrapper" title="Clique para selecionar imagem">
+                                    <input class="image-upload__file-input" type="file"
+                                        accept="image/*" id="dg-imagem" aria-label="Selecionar imagem do item">
+                                    <span class="image-upload__filename">Nenhum arquivo</span>
+                                    <span class="image-upload__icon">
+                                        <i class="fa-solid fa-up-right-from-square"></i>
+                                    </span>
+                                </div>
+                                <span class="image-preview__label">Prévia da imagem</span>
+                                <div class="image-preview__box">
+                                    <img src="" alt="Prévia do item" style="display:none;">
+                                    <div class="image-preview__placeholder">
+                                        <i class="fa-regular fa-image"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Disponibilidade -->
+                            <div>
+                                <label class="disponibilidade__label" for="dg-disponibilidade">Disponibilidade</label>
+                                <div class="modal-form__select-wrapper">
+                                    <select class="modal-form__select" id="dg-disponibilidade" name="disponibilidade">
+                                        <option value="disponivel">Disponivel</option>
+                                        <option value="indisponivel">Indisponível</option>
+                                        <option value="esgotado">Esgotado</option>
+                                    </select>
+                                    <span class="modal-form__select-arrow">
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Botão Adicionar / Salvar -->
+                            <div class="modal-form__footer">
+                                <button class="modal-form__submit-btn" type="button">Adicionar</button>
+                            </div>
+
+                        </div><!-- /.dados-gerais__media-col -->
+
+                    </div><!-- /.dados-gerais__layout -->
+                </div><!-- /#panel-dados-gerais -->
+
+                <!-- ========== ABA 2: ACRÉSSIMOS/EXTRAS ========== -->
+                <div class="modal__panel" id="panel-acrescimos" role="tabpanel">
+
+                    <!-- Busca de acréssimo + preço + botão vincular -->
+                    <div class="extras__search-row">
+                        <div class="extras__search-col">
+                            <div class="modal-form__group">
+                                <label class="modal-form__label" for="ext-nome">Nome do Acréssimo</label>
+                                <input class="modal-form__input extras__nome-input" type="text" id="ext-nome"
+                                    autocomplete="off" placeholder="">
+                            </div>
+                        </div>
+                        <div class="extras__price-col">
+                            <div class="modal-form__group">
+                                <label class="modal-form__label" for="ext-preco">Preço Base</label>
+                                <input class="modal-form__input extras__preco-input" type="number" id="ext-preco"
+                                    min="0" step="0.01" placeholder="R$">
+                            </div>
+                        </div>
+                        <button class="extras__vincular-btn" type="button">
+                            [+] Vincular ao Item
+                        </button>
+                    </div>
+                    <p class="extras__hint">*digite para buscar ou criar um novo adicional</p>
+
+                    <!-- Mínimo e máximo de escolhas -->
+                    <div class="extras__minmax-row">
+                        <div class="extras__minmax-col modal-form__group">
+                            <label class="modal-form__label" for="ext-min">Minimo de escolhas</label>
+                            <input class="modal-form__input" type="number" id="ext-min" min="0" placeholder="">
+                        </div>
+                        <div class="extras__minmax-col modal-form__group">
+                            <label class="modal-form__label" for="ext-max">Maximo de escolhas</label>
+                            <input class="modal-form__input" type="number" id="ext-max" min="0" placeholder="">
+                        </div>
+                    </div>
+
+                    <!-- Tabela de modificadores vinculados -->
+                    <p class="extras__table-title">Modificadores Vinculados a este item:</p>
+                    <table class="modal-table" aria-label="Modificadores vinculados">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Preço Base Global</th>
+                                <th>Preço Costumizado (Opcional)</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody class="extras__tbody">
+                            <!-- Exemplo pré-populado -->
+                            <tr>
+                                <td>Bacon Extra</td>
+                                <td>R$:6,00</td>
+                                <td>
+                                    <input type="text" class="modal-table__price-input"
+                                        value="[R$: 8,00]" placeholder="[R$: 0,00]">
+                                </td>
+                                <td style="text-align:center;">
+                                    <button class="modal-table__delete-btn" type="button" title="Remover"
+                                        onclick="this.closest('tr').remove()">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div><!-- /#panel-acrescimos -->
+
+                <!-- ========== ABA 3: HAPPY HOUR ========== -->
+                <div class="modal__panel" id="panel-happy-hour" role="tabpanel">
+
+                    <!-- Preço promocional + dias da semana -->
+                    <div class="happyhour__top-row">
+
+                        <div class="happyhour__price-col modal-form__group">
+                            <label class="modal-form__label" for="hh-preco">Preço Promocional (R$)</label>
+                            <input class="modal-form__input" type="number" id="hh-preco" name="precoHH"
+                                min="0" step="0.01" placeholder="R$">
+                        </div>
+
+                        <div class="happyhour__weekly-col">
+                            <span class="happyhour__weekly-label">Repetição semanal</span>
+                            <div class="happyhour__days-grid" role="group" aria-label="Dias da semana">
+                                <button class="happyhour__day-btn" type="button"
+                                    data-day-index="0" aria-pressed="false">Dom</button>
+                                <button class="happyhour__day-btn" type="button"
+                                    data-day-index="1" aria-pressed="false">Seg</button>
+                                <button class="happyhour__day-btn" type="button"
+                                    data-day-index="2" aria-pressed="false">Ter</button>
+                                <button class="happyhour__day-btn" type="button"
+                                    data-day-index="3" aria-pressed="false">Qua</button>
+                                <button class="happyhour__day-btn" type="button"
+                                    data-day-index="4" aria-pressed="false">Qui</button>
+                                <button class="happyhour__day-btn happyhour__day-btn--active" type="button"
+                                    data-day-index="5" aria-pressed="true">Sex</button>
+                                <button class="happyhour__day-btn happyhour__day-btn--active" type="button"
+                                    data-day-index="6" aria-pressed="true">Sab.</button>
+                            </div>
+                        </div>
+
+                    </div><!-- /.happyhour__top-row -->
+
+                    <!-- Tabela de janela de horários -->
+                    <p class="happyhour__schedule-title">Janela do Horários automatica</p>
+                    <div class="happyhour__table-wrapper">
+                        <table class="modal-table" aria-label="Janela de horários">
+                            <thead>
+                                <tr>
+                                    <th>Dias da Semana</th>
+                                    <th>Horario de Inicio</th>
+                                    <th>Horario de Fim</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody class="happyhour__schedule-tbody">
+                                <!-- Linha: Domingo -->
+                                <tr data-day-index="0">
+                                    <td>Domingo</td>
+                                    <td>
+                                        <div class="modal-form__select-wrapper">
+                                            <select class="modal-form__select select-inicio">
+                                                <option>[18:00]</option>
+                                                <option>[19:00]</option>
+                                                <option>[20:00]</option>
+                                                <option>[21:00]</option>
+                                                <option>[22:00]</option>
+                                            </select>
+                                            <span class="modal-form__select-arrow">
+                                                <i class="fa-solid fa-chevron-down"></i>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="modal-form__select-wrapper">
+                                            <select class="modal-form__select select-fim">
+                                                <option>[18:00]</option>
+                                                <option>[19:00]</option>
+                                                <option selected>[20:00]</option>
+                                                <option>[21:00]</option>
+                                                <option>[22:00]</option>
+                                            </select>
+                                            <span class="modal-form__select-arrow">
+                                                <i class="fa-solid fa-chevron-down"></i>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <button class="modal-table__delete-btn" type="button"
+                                            title="Remover" onclick="removerLinhaHorario(this)">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Linha: Sexta-Feira -->
+                                <tr data-day-index="5">
+                                    <td>Sexta-Feira</td>
+                                    <td>
+                                        <div class="modal-form__select-wrapper">
+                                            <select class="modal-form__select select-inicio">
+                                                <option>[18:00]</option>
+                                                <option>[19:00]</option>
+                                                <option selected>[20:00]</option>
+                                                <option>[21:00]</option>
+                                                <option>[22:00]</option>
+                                            </select>
+                                            <span class="modal-form__select-arrow">
+                                                <i class="fa-solid fa-chevron-down"></i>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="modal-form__select-wrapper">
+                                            <select class="modal-form__select select-fim">
+                                                <option>[18:00]</option>
+                                                <option>[19:00]</option>
+                                                <option>[20:00]</option>
+                                                <option>[21:00]</option>
+                                                <option selected>[22:00]</option>
+                                            </select>
+                                            <span class="modal-form__select-arrow">
+                                                <i class="fa-solid fa-chevron-down"></i>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <button class="modal-table__delete-btn" type="button"
+                                            title="Remover" onclick="removerLinhaHorario(this)">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Linha: Sábado -->
+                                <tr data-day-index="6">
+                                    <td>Sábado</td>
+                                    <td>
+                                        <div class="modal-form__select-wrapper">
+                                            <select class="modal-form__select select-inicio">
+                                                <option>[18:00]</option>
+                                                <option>[19:00]</option>
+                                                <option selected>[20:00]</option>
+                                                <option>[21:00]</option>
+                                                <option>[22:00]</option>
+                                            </select>
+                                            <span class="modal-form__select-arrow">
+                                                <i class="fa-solid fa-chevron-down"></i>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="modal-form__select-wrapper">
+                                            <select class="modal-form__select select-fim">
+                                                <option>[18:00]</option>
+                                                <option>[19:00]</option>
+                                                <option>[20:00]</option>
+                                                <option>[21:00]</option>
+                                                <option selected>[22:00]</option>
+                                            </select>
+                                            <span class="modal-form__select-arrow">
+                                                <i class="fa-solid fa-chevron-down"></i>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <button class="modal-table__delete-btn" type="button"
+                                            title="Remover" onclick="removerLinhaHorario(this)">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div><!-- /.happyhour__table-wrapper -->
+
+                    <!-- Controles adicionais -->
+                    <p class="happyhour__controls-title">Controles Adicionais:</p>
+
+                    <!-- Toggle: Ativar Happy Hour -->
+                    <div class="happyhour__control-row">
+                        <span class="happyhour__control-label">Ativar HappyHour Para Este Item?</span>
+                        <label class="toggle-switch toggle-switch--on" title="Ativar/desativar happy hour">
+                            <input class="toggle-switch__input" type="checkbox" checked>
+                            <span class="toggle-switch__track"></span>
+                            <span class="toggle-switch__label-on">Ativado</span>
+                            <span class="toggle-switch__label-off">Desativado</span>
+                        </label>
+                    </div>
+
+                    <!-- Toggle: Exibir Badge Happy Hour -->
+                    <div class="happyhour__control-row">
+                        <span class="happyhour__control-label">Exibir Badge "HappyHour" no Cardápio Digital?</span>
+                        <label class="toggle-switch toggle-switch--off" title="Exibir/ocultar badge">
+                            <input class="toggle-switch__input" type="checkbox">
+                            <span class="toggle-switch__track"></span>
+                            <span class="toggle-switch__label-on">Ativado</span>
+                            <span class="toggle-switch__label-off">Desativado</span>
+                        </label>
+                    </div>
+
+                </div><!-- /#panel-happy-hour -->
+
+            </div><!-- /.modal__body -->
+        </div><!-- /.modal -->
+    </div><!-- /#modal-cardapio -->
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="/wwwroot/js/cardapio.js"></script>
-</body>
+    <script src="/wwwroot/js/modal-cardapio.js"></script>
 
+</body>
 </html>

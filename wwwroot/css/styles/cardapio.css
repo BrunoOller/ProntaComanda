@@ -504,3 +504,808 @@
         }
     }
 }
+
+/* ============================================================
+   MODAL CARDÁPIO — modal-cardapio.css
+   Modal multi-aba: Dados Gerais | Acréssimos/Extras | Happy Hour
+   Compatível com: cardapio.html
+   Padrão: BEM-like, CSS nesting, variáveis do color.css
+   ============================================================ */
+
+/* ===== OVERLAY ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.modal-overlay.modal-overlay--active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ===== MODAL CONTAINER ===== */
+.modal {
+    background-color: var(--platinum);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 820px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    transform: translateY(20px);
+    transition: transform 0.25s ease;
+}
+
+.modal-overlay.modal-overlay--active .modal {
+    transform: translateY(0);
+}
+
+/* ===== MODAL HEADER ===== */
+.modal__header {
+    background-color: var(--space-indigo);
+    padding: 1rem 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.modal__title {
+    color: var(--platinum);
+    font-family: "Archivo", sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.modal__close-btn {
+    background: none;
+    border: none;
+    color: var(--platinum);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-family: "Archivo", sans-serif;
+    font-weight: 700;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.12);
+        color: white;
+    }
+}
+
+/* ===== ABAS (TABS) ===== */
+.modal__tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    flex-shrink: 0;
+}
+
+.modal__tab-btn {
+    background-color: var(--flag-red);
+    color: var(--platinum);
+    border: none;
+    padding: 0.85rem 1rem;
+    font-family: "Archivo", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    text-align: center;
+
+    &:last-child {
+        border-right: none;
+    }
+
+    &:hover:not(.modal__tab-btn--active) {
+        background-color: #c10829;
+    }
+
+    &.modal__tab-btn--active {
+        background-color: var(--strawberry-red);
+        box-shadow: inset 0 -3px 0 0 white;
+    }
+}
+
+/* ===== MODAL BODY ===== */
+.modal__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 1.6rem;
+    background-color: var(--platinum);
+}
+
+/* ===== PAINÉIS DAS ABAS ===== */
+.modal__panel {
+    display: none;
+}
+
+.modal__panel--active {
+    display: block;
+}
+
+/* ===== CAMPOS GENÉRICOS ===== */
+.modal-form__row {
+    display: flex;
+    gap: 1.2rem;
+    margin-bottom: 1.2rem;
+    align-items: flex-start;
+}
+
+.modal-form__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+}
+
+.modal-form__group--fixed-sm {
+    flex: 0 0 180px;
+}
+
+.modal-form__group--fixed-md {
+    flex: 0 0 240px;
+}
+
+.modal-form__label {
+    font-family: "Archivo", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--space-indigo);
+}
+
+.modal-form__label--hint {
+    font-family: "Rubik", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--grey);
+    margin-top: 0.2rem;
+}
+
+.modal-form__input,
+.modal-form__select,
+.modal-form__textarea {
+    width: 100%;
+    background-color: #d9d9d9;
+    border: 1px solid #b0b0b0;
+    border-radius: 4px;
+    padding: 0.55rem 0.8rem;
+    font-family: "Rubik", sans-serif;
+    font-size: 0.9rem;
+    color: var(--space-indigo);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+
+    &::placeholder {
+        color: #888;
+    }
+
+    &:focus {
+        border-color: var(--flag-red);
+        box-shadow: 0 0 0 2px rgba(217, 9, 41, 0.15);
+    }
+}
+
+.modal-form__select-wrapper {
+    position: relative;
+    width: 100%;
+
+    & .modal-form__select {
+        padding-right: 2.2rem;
+        cursor: pointer;
+    }
+
+    & .modal-form__select-arrow {
+        position: absolute;
+        right: 0.8rem;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--space-indigo);
+        font-size: 0.8rem;
+    }
+}
+
+.modal-form__textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+/* ===== ABA 1: DADOS GERAIS ===== */
+
+/* Layout principal: coluna-esquerda (formulário) + coluna-direita (imagem/disponibilidade) */
+.dados-gerais__layout {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.dados-gerais__form-col {
+    flex: 1;
+    min-width: 0;
+}
+
+.dados-gerais__media-col {
+    flex: 0 0 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Upload de imagem */
+.image-upload__label {
+    font-family: "Archivo", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--space-indigo);
+    margin-bottom: 0.35rem;
+    display: block;
+}
+
+.image-upload__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #d9d9d9;
+    border: 1px solid #b0b0b0;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+
+    &:hover {
+        border-color: var(--flag-red);
+    }
+}
+
+.image-upload__file-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.image-upload__filename {
+    flex: 1;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.85rem;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: "Rubik", sans-serif;
+}
+
+.image-upload__icon {
+    padding: 0.5rem 0.7rem;
+    color: var(--grey);
+    font-size: 1rem;
+    border-left: 1px solid #b0b0b0;
+    background-color: #c8c8c8;
+}
+
+/* Preview de imagem */
+.image-preview__label {
+    font-family: "Rubik", sans-serif;
+    font-size: 0.78rem;
+    color: var(--grey);
+    margin-bottom: 0.35rem;
+    display: block;
+}
+
+.image-preview__box {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #d9d9d9;
+    border: 1px solid #b0b0b0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    & img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none; /* exibido via JS quando imagem for carregada */
+    }
+
+    & .image-preview__placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #aaa;
+        font-size: 2.5rem;
+    }
+}
+
+/* Bloco de disponibilidade */
+.disponibilidade__label {
+    font-family: "Archivo", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--space-indigo);
+    margin-bottom: 0.4rem;
+    display: block;
+}
+
+/* Botão Adicionar (rodapé da aba 1) */
+.modal-form__footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.2rem;
+}
+
+.modal-form__submit-btn {
+    background-color: white;
+    color: var(--space-indigo);
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    padding: 0.6rem 2rem;
+    font-family: "Archivo", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: var(--space-indigo);
+        background-color: var(--space-indigo);
+        color: white;
+    }
+}
+
+/* ===== ABA 2: ACRÉSSIMOS/EXTRAS ===== */
+
+/* Linha de busca + vincular */
+.extras__search-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 0.4rem;
+}
+
+.extras__search-col {
+    flex: 1;
+}
+
+.extras__price-col {
+    flex: 0 0 170px;
+}
+
+.extras__vincular-btn {
+    background-color: var(--flag-red);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1.1rem;
+    font-family: "Archivo", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+        background-color: var(--strawberry-red);
+        transform: translateY(-1px);
+    }
+}
+
+.extras__hint {
+    font-family: "Rubik", sans-serif;
+    font-size: 0.75rem;
+    color: var(--grey);
+    margin-bottom: 1.2rem;
+    margin-top: 0.1rem;
+}
+
+/* Linha min/max */
+.extras__minmax-row {
+    display: flex;
+    gap: 1.2rem;
+    margin-bottom: 1.4rem;
+}
+
+.extras__minmax-col {
+    flex: 0 0 160px;
+}
+
+/* Tabela de modificadores vinculados */
+.extras__table-title {
+    font-family: "Archivo", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--space-indigo);
+    margin-bottom: 0.7rem;
+}
+
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Rubik", sans-serif;
+    font-size: 0.85rem;
+}
+
+.modal-table thead tr {
+    background-color: var(--space-indigo);
+    color: var(--platinum);
+}
+
+.modal-table th {
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    font-family: "Archivo", sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+}
+
+.modal-table td {
+    padding: 0.55rem 0.8rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    color: var(--space-indigo);
+    vertical-align: middle;
+}
+
+.modal-table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.modal-table td:first-child {
+    font-weight: 700;
+}
+
+/* Input preço customizado dentro da tabela */
+.modal-table__price-input {
+    background-color: #d9d9d9;
+    border: 1px solid #b0b0b0;
+    border-radius: 4px;
+    padding: 0.35rem 0.6rem;
+    font-family: "Rubik", sans-serif;
+    font-size: 0.83rem;
+    color: var(--space-indigo);
+    width: 100%;
+    max-width: 130px;
+    outline: none;
+
+    &:focus {
+        border-color: var(--flag-red);
+    }
+}
+
+/* Botão de deletar (lixeira) */
+.modal-table__delete-btn {
+    background-color: var(--flag-red);
+    border: none;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: var(--strawberry-red);
+    }
+}
+
+/* ===== ABA 3: HAPPY HOUR ===== */
+
+/* Preço promocional */
+.happyhour__top-row {
+    display: flex;
+    gap: 2.5rem;
+    align-items: flex-start;
+    margin-bottom: 1.4rem;
+}
+
+.happyhour__price-col {
+    flex: 0 0 200px;
+}
+
+/* Repetição semanal */
+.happyhour__weekly-col {
+    flex: 1;
+}
+
+.happyhour__weekly-label {
+    font-family: "Archivo", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--space-indigo);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.happyhour__days-grid {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.happyhour__day-btn {
+    min-width: 46px;
+    padding: 0.5rem 0.7rem;
+    background-color: var(--space-indigo);
+    color: var(--platinum);
+    border: none;
+    border-radius: 4px;
+    font-family: "Archivo", sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover:not(.happyhour__day-btn--active) {
+        background-color: #3a3d55;
+    }
+
+    &.happyhour__day-btn--active {
+        background-color: var(--flag-red);
+        color: white;
+    }
+}
+
+/* Janela de horários */
+.happyhour__schedule-title {
+    font-family: "Archivo", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--space-indigo);
+    margin-bottom: 0.7rem;
+}
+
+.happyhour__table-wrapper {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1.4rem;
+}
+
+/* Controles adicionais */
+.happyhour__controls-title {
+    font-family: "Archivo", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--space-indigo);
+    margin-bottom: 0.8rem;
+}
+
+.happyhour__control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+}
+
+.happyhour__control-label {
+    font-family: "Rubik", sans-serif;
+    font-size: 0.88rem;
+    color: var(--space-indigo);
+    font-weight: 500;
+}
+
+/* Toggle switch */
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle-switch__input {
+    display: none;
+}
+
+.toggle-switch__track {
+    position: relative;
+    width: 56px;
+    height: 28px;
+    background-color: var(--space-indigo);
+    border-radius: 99px;
+    transition: background-color 0.25s ease;
+    flex-shrink: 0;
+
+    &::after {
+        content: '';
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background-color: white;
+        border-radius: 50%;
+        top: 3px;
+        left: 3px;
+        transition: transform 0.25s ease;
+    }
+}
+
+.toggle-switch__input:checked + .toggle-switch__track {
+    background-color: var(--space-indigo);
+
+    &::after {
+        transform: translateX(28px);
+    }
+}
+
+.toggle-switch__label-off,
+.toggle-switch__label-on {
+    font-family: "Archivo", sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 0.3rem 0.7rem;
+}
+
+/* Toggle "Ativado" (indigo) */
+.toggle-switch--on .toggle-switch__track {
+    background-color: var(--space-indigo);
+}
+
+.toggle-switch--on .toggle-switch__label-on {
+    background-color: var(--space-indigo);
+    color: white;
+    display: inline-block;
+}
+
+.toggle-switch--on .toggle-switch__label-off {
+    display: none;
+}
+
+/* Toggle "Desativado" (red) */
+.toggle-switch--off .toggle-switch__track {
+    background-color: var(--flag-red);
+}
+
+.toggle-switch--off .toggle-switch__label-off {
+    background-color: var(--flag-red);
+    color: white;
+    display: inline-block;
+}
+
+.toggle-switch--off .toggle-switch__label-on {
+    display: none;
+}
+
+/* Checado = ativado */
+.toggle-switch__input:checked ~ .toggle-switch__label-on {
+    display: inline-block;
+}
+
+.toggle-switch__input:checked ~ .toggle-switch__label-off {
+    display: none;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 700px) {
+    .modal {
+        max-height: 95vh;
+    }
+
+    .modal__body {
+        padding: 1rem;
+    }
+
+    /* Aba 1: quebrar layout em coluna */
+    .dados-gerais__layout {
+        flex-direction: column;
+    }
+
+    .dados-gerais__media-col {
+        flex: 1 1 auto;
+        width: 100%;
+        flex-direction: row;
+        gap: 1rem;
+    }
+
+    .image-preview__box {
+        width: 120px;
+        height: 120px;
+        aspect-ratio: auto;
+    }
+
+    /* Aba 2: quebrar search row */
+    .extras__search-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .extras__price-col {
+        flex: 1;
+    }
+
+    .extras__minmax-row {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .extras__minmax-col {
+        flex: 1;
+    }
+
+    /* Aba 3: quebrar top row */
+    .happyhour__top-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .happyhour__price-col {
+        flex: 1;
+        width: 100%;
+    }
+
+    .happyhour__control-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    /* Tabela com scroll horizontal */
+    .happyhour__table-wrapper {
+        overflow-x: auto;
+    }
+
+    .modal-form__row {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .modal-form__group--fixed-sm,
+    .modal-form__group--fixed-md {
+        flex: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal__tabs {
+        font-size: 0.8rem;
+    }
+
+    .modal__tab-btn {
+        padding: 0.7rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .modal__title {
+        font-size: 1rem;
+    }
+
+    .happyhour__days-grid {
+        gap: 0.3rem;
+    }
+
+    .happyhour__day-btn {
+        min-width: 40px;
+        padding: 0.45rem 0.5rem;
+        font-size: 0.78rem;
+    }
+}
