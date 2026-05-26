@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K.D.S</title>
-    <link rel="stylesheet" href="/wwwroot/css/global/color.css">
+    <link rel="stylesheet" href="/wwwroot/css/styles/kds.css">
     <link rel="stylesheet" href="/wwwroot/css/global/reset.css">
+    <link rel="stylesheet" href="/wwwroot/css/global/color.css">
     <link rel="stylesheet" href="/wwwroot/css/styles/layout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 <body>
     <div class="kds-page">
@@ -26,9 +28,9 @@
                     <i class="fa-solid fa-bell-concierge" aria-hidden="true"></i>
                     <span class="menu-text">Mesas</span>
                 </a>
-                <a href="/Views/Admin/pedidos.html" title="Pedidos">
+                <a href="/Views/Admin/kds.html" title="Pedidos">
                     <i class="fa-solid fa-fire" aria-hidden="true"></i>
-                    <span class="menu-text">Pedidos</span>
+                    <span class="menu-text">KDS</span>
                 </a>
                 <a href="/Views/Admin/dashboad.html" title="Dashboard">
                     <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
@@ -41,350 +43,310 @@
             </nav>
         </aside> <!-- Fim da Sidebar da Esquerda -->
         
-        <!-- Começo do conteudo principal da pagina kds -->
+        <!-- ===== WRAPPER: COLUNAS + SIDEBAR DIREITA ===== -->
         <div class="kds-page-wrapper">
-            <!-- Conteudo do centro da pagina -->
+
+            <!-- ===== CONTEÚDO CENTRAL ===== -->
             <div class="content-wrapper">
                 <main class="kds-content">
+
                     <!-- Header -->
                     <header class="content-header">
                         <div class="header-title">
                             <h1>Painel de Pedidos</h1>
                         </div>
-                    </header> <!-- Fim header -->
+                    </header>
 
-                    <!-- Conteúdo principal da página kds -->
-                    <section class="onGoing-colunm">
-                        <!-- Começo "Em preparo"--------------------------------------------------------------------------------------------- -->
-                        <section class="onGoing">
+                    <!-- 3 colunas de status -->
+                    <section class="onGoing-colunm" aria-label="Status dos pedidos">
+
+                        <!-- ========== EM PREPARO ========== -->
+                        <section class="onGoing" aria-label="Em preparo">
                             <header class="onGoing-Header">
-                                <img src="" alt="Fire">
-                                <p>Em Preparo</p>
+                                <i class="fa-solid fa-fire" aria-hidden="true"></i>
+                                <p>Em preparo</p>
                             </header>
-
-                            <!-- Conteudo de toda a estrutura -->
                             <div class="onGoing-content">
-                                <!-- card 1 -->
+
+                                <!-- Card Mesa #1 -->
                                 <div class="card-onGoing">
-                                    <!-- informações de cima -->
                                     <div class="onGoing-infos-top">
-                                        <!-- informações de cima a esquerda -->
                                         <div class="left-infos">
                                             <div class="tableNum">Mesa #1</div>
                                             <div class="comandaNum">Comanda 2</div>
                                         </div>
-                                        <!-- Informações da direita -->
                                         <div class="right-infos">
-                                            <div class="LancadoAs">Lançado as: <br> 12:05</div>
-                                            <div class="TempoEspera">Tempo de espera: <br> 31:13</div>
+                                            <div class="LancadoAs">Lançado às:<br>12:05</div>
+                                            <div class="TempoEspera">Tempo de espera:<br>31:13</div>
                                         </div>
-                                    </div> <!-- Fim infos de cima -->
-
-                                    <div class="horizontal-line"></div>
-
-                                    <!-- Infos do meio -->
-                                    <div class="onGoing-infos-center">
-                                        <div class="onGoing-infos-center content">
-                                            <!-- Item 1 -->
-                                            <div class="item-quantity-name">1x X-burguer</div>
-                                            <div class="item-extras">
-                                                <div class="extra">* Sem vinagrete</div>
-                                                <div class="extra">* Extra Bacon</div>
-                                            </div> 
-                                            <!-- Item 2 -->
-                                            <div class="item-quantity-name">1x Batata Chedar Bacon</div>
-                                            <div class="item-extras">
-                                                <div class="extra">* Sem Batata</div>
-                                            </div>
-                                        </div>
-                                    </div> <!-- Fim infos Meio -->
-
-                                    <!-- Input Marcar Como Pronto -->
-                                    <div class="onGoing-Button">
-                                        <button class="ready">Marcar Como Pronto</button>
                                     </div>
-                                </div> <!-- Fim card 1 -->
+                                    <div class="horizontal-line"></div>
+                                    <div class="onGoing-infos-center">
+                                        <div class="item-quantity-name">1x  X-burguer</div>
+                                        <div class="item-extras">
+                                            <div class="extra">*Sem vinagrete</div>
+                                            <div class="extra">*Extra bacon</div>
+                                        </div>
+                                        <div class="item-quantity-name">1x  Batata Chedar e Bacon</div>
+                                        <div class="item-extras">
+                                            <div class="extra">*Sem batata Chedar e Bacon</div>
+                                        </div>
+                                    </div>
+                                    <div class="onGoing-Button">
+                                        <button class="ready">Marcar como Pronto</button>
+                                    </div>
+                                </div>
 
-                                <!-- card 2 -->
+                                <!-- Card Mesa #1 (2º pedido) -->
                                 <div class="card-onGoing">
-                                    <!-- informações de cima -->
                                     <div class="onGoing-infos-top">
-                                        <!-- informações de cima a esquerda -->
                                         <div class="left-infos">
-                                            <div class="tableNum">Mesa #2</div>
-                                            <div class="comandaNum">Comanda 1</div>
+                                            <div class="tableNum">Mesa #1</div>
+                                            <div class="comandaNum">Comanda 2</div>
                                         </div>
-                                        <!-- Informações da direita -->
                                         <div class="right-infos">
-                                            <div class="LancadoAs">Lançado as: <br> 12:05</div>
-                                            <div class="TempoEspera">Tempo de espera: <br> 31:13</div>
+                                            <div class="LancadoAs">Lançado às:<br>12:05</div>
+                                            <div class="TempoEspera">Tempo de espera:<br>31:13</div>
                                         </div>
-                                    </div> <!-- Fim infos de cima -->
-
-                                    <div class="horizontal-line"></div>
-
-                                    <!-- Infos do meio -->
-                                    <div class="onGoing-infos-center">
-                                        <div class="onGoing-infos-center content">
-                                            <!-- Item 1 -->
-                                            <div class="item-quantity-name">1x X-burguer</div>
-                                            <div class="item-extras">
-                                                <div class="extra">* Extra Bacon</div>
-                                            </div> 
-                                        </div>
-                                    </div> <!-- Fim infos Meio -->
-
-                                    <!-- Input Marcar Como Pronto -->
-                                    <div class="onGoing-Button">
-                                        <button class="ready">Marcar Como Pronto</button>
                                     </div>
-                                </div> <!-- Fim card 2 -->
-                            </div>
-                        </section> <!-- Fim Em Preparo -->
+                                    <div class="horizontal-line"></div>
+                                    <div class="onGoing-infos-center">
+                                        <div class="item-quantity-name">1x  X-burguer</div>
+                                        <div class="item-extras">
+                                            <div class="extra">*Sem vinagrete</div>
+                                            <div class="extra">*Extra bacon</div>
+                                        </div>
+                                    </div>
+                                    <div class="onGoing-Button">
+                                        <button class="ready">Marcar como Pronto</button>
+                                    </div>
+                                </div>
 
-                        <!-- Começo "Pronto"--------------------------------------------------------------------------------------------------- -->
-                        <section class="Done-colunm">
+                            </div><!-- /.onGoing-content -->
+                        </section>
+
+                        <!-- ========== PRONTO ========== -->
+                        <section class="Done-colunm" aria-label="Prontos">
                             <header class="Done-Header">
-                                <img src="" alt="bell">
-                                <p>Em Preparo</p>
+                                <i class="fa-solid fa-bell" aria-hidden="true"></i>
+                                <p>Pronto</p>
                             </header>
-
                             <div class="Done-content">
-                                <!-- card 1 -->
+
+                                <!-- Card Mesa #99 -->
                                 <div class="card-Done">
-                                    <!-- informações de cima -->
                                     <div class="Done-infos-top">
-                                        <!-- informações de cima a esquerda -->
                                         <div class="left-infos">
                                             <div class="tableNum">Mesa #99</div>
                                             <div class="comandaNum">Comanda 2</div>
                                         </div>
-                                        <!-- Informações da direita -->
                                         <div class="right-infos">
-                                            <div class="LancadoAs">Lançado as: <br> 12:05</div>
-                                            <div class="TempoEspera">Tempo de espera: <br> 31:13</div>
+                                            <div class="LancadoAs">Lançado às:<br>12:05</div>
+                                            <div class="TempoEspera">Tempo de espera:<br>31:13</div>
                                         </div>
-                                    </div> <!-- Fim infos de cima -->
-
-                                    <div class="horizontal-line"></div>
-
-                                    <!-- Infos do meio -->
-                                    <div class="Done-infos-center">
-                                        <div class="Done-infos-center content">
-                                            <!-- Item 1 -->
-                                            <div class="item-quantity-name">1x X-burguer</div>
-                                            <div class="item-extras">
-                                                <div class="extra">* Sem vinagrete</div>
-                                                <div class="extra">* Extra Bacon</div>
-                                            </div> 
-                                            <!-- Item 2 -->
-                                            <div class="item-quantity-name">1x Batata Chedar Bacon</div>
-                                            <div class="item-extras">
-                                                <div class="extra">* Sem Batata</div>
-                                            </div>
-                                        </div>
-                                    </div> <!-- Fim infos Meio -->
-
-                                    <!-- Input Marcar Como Entregue -->
-                                    <div class="Done-Button">
-                                        <button class="ready">Marcar Como Entregue</button>
                                     </div>
-                                </div> <!-- Fim card 1 -->
+                                    <div class="horizontal-line"></div>
+                                    <div class="Done-infos-center">
+                                        <div class="item-quantity-name">1x  X-burguer</div>
+                                        <div class="item-extras">
+                                            <div class="extra">*Sem vinagrete</div>
+                                            <div class="extra">*Extra bacon</div>
+                                        </div>
+                                        <div class="item-quantity-name">1x  Batata Chedar e Bacon</div>
+                                        <div class="item-extras">
+                                            <div class="extra">*Sem batata Chedar e Bacon</div>
+                                        </div>
+                                    </div>
+                                    <div class="Done-Button">
+                                        <button class="ready">Marcar como Entregue</button>
+                                    </div>
+                                </div>
 
-                                <!-- card 2 -->
+                                <!-- Card Mesa #113 -->
                                 <div class="card-Done">
-                                    <!-- informações de cima -->
                                     <div class="Done-infos-top">
-                                        <!-- informações de cima a esquerda -->
                                         <div class="left-infos">
                                             <div class="tableNum">Mesa #113</div>
-                                            <div class="comandaNum">Comanda 1</div>
+                                            <div class="comandaNum">Comanda 2</div>
                                         </div>
-                                        <!-- Informações da direita -->
                                         <div class="right-infos">
-                                            <div class="LancadoAs">Lançado as: <br> 12:05</div>
-                                            <div class="TempoEspera">Tempo de espera: <br> 31:13</div>
+                                            <div class="LancadoAs">Lançado às:<br>12:05</div>
+                                            <div class="TempoEspera">Tempo de espera:<br>31:13</div>
                                         </div>
-                                    </div> <!-- Fim infos de cima -->
-
-                                    <div class="horizontal-line"></div>
-
-                                    <!-- Infos do meio -->
-                                    <div class="Done-infos-center">
-                                        <div class="Done-infos-center content">
-                                            <!-- Item 1 -->
-                                            <div class="item-quantity-name">1x X-burguer</div>
-                                            <div class="item-extras">
-                                                <div class="extra">* Extra Bacon</div>
-                                            </div> 
-                                        </div>
-                                    </div> <!-- Fim infos Meio -->
-
-                                    <!-- Input Marcar Como Pronto -->
-                                    <div class="Done-Button">
-                                        <button class="ready">Marcar Como Entregue</button>
                                     </div>
-                                </div> <!-- Fim card 2 -->
+                                    <div class="horizontal-line"></div>
+                                    <div class="Done-infos-center">
+                                        <div class="item-quantity-name">1x  X-burguer</div>
+                                        <div class="item-extras">
+                                            <div class="extra">*Sem vinagrete</div>
+                                            <div class="extra">*Extra bacon</div>
+                                        </div>
+                                        <div class="item-quantity-name">1x  Batata Chedar e Bacon</div>
+                                        <div class="item-extras">
+                                            <div class="extra">*Sem batata Chedar e Bacon</div>
+                                        </div>
+                                    </div>
+                                    <div class="Done-Button">
+                                        <button class="ready">Marcar como Entregue</button>
+                                    </div>
+                                </div>
 
-                                <!-- card 3 -->
+                                <!-- Card Mesa #67 -->
                                 <div class="card-Done">
-                                    <!-- informações de cima -->
                                     <div class="Done-infos-top">
-                                        <!-- informações de cima a esquerda -->
                                         <div class="left-infos">
                                             <div class="tableNum">Mesa #67</div>
-                                            <div class="comandaNum">Comanda 200</div>
+                                            <div class="comandaNum">Comanda 2</div>
                                         </div>
-                                        <!-- Informações da direita -->
                                         <div class="right-infos">
-                                            <div class="LancadoAs">Lançado as: <br> 12:05</div>
-                                            <div class="TempoEspera">Tempo de espera: <br> 31:13</div>
+                                            <div class="LancadoAs">Lançado às:<br>12:05</div>
+                                            <div class="TempoEspera">Tempo de espera:<br>31:13</div>
                                         </div>
-                                    </div> <!-- Fim infos de cima -->
-
-                                    <div class="horizontal-line"></div>
-
-                                    <!-- Infos do meio -->
-                                    <div class="Done-infos-center">
-                                        <div class="Done-infos-center content">
-                                            <!-- Item 1 -->
-                                            <div class="item-quantity-name">1x X-burguer</div>
-                                            <div class="item-extras">
-                                                <div class="extra">* Extra Bacon</div>
-                                            </div> 
-                                        </div>
-                                    </div> <!-- Fim infos Meio -->
-
-                                    <!-- Input Marcar Como Pronto -->
-                                    <div class="Done-Button">
-                                        <button class="ready">Marcar Como Entregue</button>
                                     </div>
-                                </div> <!-- Fim card 3 -->
-                            </div>
-                        </section> <!-- Fim Pronto -->
+                                    <div class="horizontal-line"></div>
+                                    <div class="Done-infos-center">
+                                        <div class="item-quantity-name">1x  X-burguer</div>
+                                        <div class="item-extras">
+                                            <div class="extra">*Sem vinagrete</div>
+                                            <div class="extra">*Extra bacon</div>
+                                        </div>
+                                    </div>
+                                    <div class="Done-Button">
+                                        <button class="ready">Marcar como Entregue</button>
+                                    </div>
+                                </div>
 
-                        <!-- Começo "entregue"------------------------------------------------------------------------------------------------- -->
-                        <section class="Delivered-colunm">
+                            </div><!-- /.Done-content -->
+                        </section>
+
+                        <!-- ========== ENTREGUE ========== -->
+                        <section class="Delivered-colunm" aria-label="Entregues">
                             <header class="Delivered-Header">
-                                <img src="" alt="Fire">
-                                <p>Em Preparo</p>
+                                <i class="fa-solid fa-check" aria-hidden="true"></i>
+                                <p>Entregue</p>
                             </header>
-
                             <div class="Delivered-content">
-                                <!-- card 1 -->
+
+                                <!-- Card Mesa #10 -->
                                 <div class="card-Delivered">
-                                    <!-- informações de cima -->
                                     <div class="Delivered-infos-top">
-                                        <!-- informações de cima a esquerda -->
                                         <div class="left-infos">
                                             <div class="tableNum">Mesa #10</div>
-                                            <div class="comandaNum">Comanda 22</div>
+                                            <div class="comandaNum">Comanda 2</div>
                                         </div>
-                                        <!-- Informações da direita -->
                                         <div class="right-infos">
-                                            <div class="LancadoAs">Lançado as: <br> 12:05</div>
-                                            <div class="TempoEspera">Tempo de espera: <br> 31:13</div>
+                                            <div class="LancadoAs">Lançado às:<br>12:05</div>
+                                            <div class="TempoEspera">Tempo de espera:<br>31:13</div>
                                         </div>
-                                    </div> <!-- Fim infos de cima -->
-
+                                    </div>
                                     <div class="horizontal-line"></div>
-
-                                    <!-- Infos do meio -->
                                     <div class="Delivered-infos-center">
-                                        <div class="Delivered-infos-center content">
-                                            <!-- Item 1 -->
-                                            <div class="item-quantity-name">1x X-burguer</div>
-                                            <div class="item-extras">
-                                                <div class="extra">* Sem vinagrete</div>
-                                                <div class="extra">* Extra Bacon</div>
-                                            </div> 
-                                            <!-- Item 2 -->
-                                            <div class="item-quantity-name">1x Batata Chedar Bacon</div>
-                                            <div class="item-extras">
-                                                <div class="extra">* Sem Batata</div>
-                                            </div>
+                                        <div class="item-quantity-name">1x  X-burguer</div>
+                                        <div class="item-extras">
+                                            <div class="extra">*Sem vinagrete</div>
+                                            <div class="extra">*Extra bacon</div>
                                         </div>
-                                    </div> <!-- Fim infos Meio -->
-                                </div> <!-- Fim card 1 -->
-                            </div>
-                        </section> <!-- Fim Entregue -->
+                                        <div class="item-quantity-name">1x  Batata Chedar e Bacon</div>
+                                        <div class="item-extras">
+                                            <div class="extra">*Sem batata Chedar e Bacon</div>
+                                        </div>
+                                    </div>
+                                    <!-- Sem botão na coluna Entregue -->
+                                </div>
 
-                    </section> <!-- Fim do conteudo principal da pagina kds -->
+                            </div><!-- /.Delivered-content -->
+                        </section>
+
+                    </section><!-- /.onGoing-colunm -->
                 </main>
-            </div> <!-- fim do conteudo do centro da pagina -->
+            </div><!-- /.content-wrapper -->
 
-            <!-- Começo da Side bar da Direita -->
-            <aside class="right-sidebar">
-                <!-- Conteudo -->
+            <!-- ===== SIDEBAR DIREITA ===== -->
+            <aside class="right-sidebar" aria-label="Métricas de produção">
                 <div class="sidebar-content">
-                    <!-- Começo Infos cozinha -->
-                    <div class="kitchen-colunm">
-                        <header class="header-kitchen">
-                                <p>Cozinha</p>
-                        </header>
 
-                        <!-- conteudo cozinha -->
+                    <!-- Bloco Cozinha -->
+                    <div class="kitchen-colunm">
+                        <header class="header-kitchen"><p>Cozinha</p></header>
                         <div class="kitchen-infos">
                             <div class="kitchen-MedTime">
-                                <div class="kitchen-MedTime text">Tempo Médio de Preparo:</div>
-                                <div class="kitchen-MedTime DateTimme">00:40</div>
+                                <span class="text">Tempo Médio de Preparo</span>
+                                <span class="DateTimme">00:40 <i class="fa-solid fa-arrow-trend-up trend-up"></i></span>
                             </div>
-
                             <div class="kitchen-ItensHour">
-                                <div class="kitchen-ItensHour text">Itens por Hora</div>
-                                <div class="kitchen-ItensHour itens">12</div>
+                                <span class="text">Itens por hora:</span>
+                                <span class="itens">12 <i class="fa-solid fa-arrow-trend-up trend-up"></i></span>
                             </div>
-
                             <div class="kitchen-OrdersQueue">
-                                <div class="kitchen-OrdersQueue text">Pedidos na Fila:</div>
-                                <div class="kitchen-OrdersQueue number">2</div>
+                                <span class="text">Pedidos em Fila:</span>
+                                <span class="number">2</span>
                             </div>
-                        </div> <!-- Fim Conteudo Cozinha -->
-                    </div> <!-- Fim Infos Cozinha -->
+                        </div>
+                    </div>
 
-                    <!-- Começo Infos Bar -->
+                    <!-- Bloco Bar -->
                     <div class="bar-content">
-                        <header class="header-bar">
-                                <p>Bar</p>
-                        </header>
-
+                        <header class="header-bar"><p>Bar</p></header>
                         <div class="bar-infos">
                             <div class="bar-MedTime">
-                                <div class="bar-MedTime text">Tempo Médio de Preparo:</div>
-                                <div class="bar-MedTime DateTimme">00:40</div>
+                                <span class="text">Tempo Médio de Preparo</span>
+                                <span class="DateTimme">00:40 <i class="fa-solid fa-arrow-trend-down trend-down"></i></span>
                             </div>
-
                             <div class="bar-ItensHour">
-                                <div class="bar-ItensHour text">Itens por Hora</div>
-                                <div class="bar-ItensHour itens">12</div>
+                                <span class="text">Itens por hora:</span>
+                                <span class="itens">12 <i class="fa-solid fa-arrow-trend-down trend-down"></i></span>
                             </div>
-
                             <div class="bar-OrdersQueue">
-                                <div class="bar-OrdersQueue text">Pedidos na Fila:</div>
-                                <div class="bar-OrdersQueue number">2</div>
+                                <span class="text">Pedidos em Fila:</span>
+                                <span class="number">2</span>
                             </div>
                         </div>
-                    </div> <!-- Fim infos Bar -->
+                    </div>
 
-                    <!-- Começo das infosmações de produção -->
+                    <!-- Resumo de Produção -->
                     <div class="production">
-                        <div class="production-header">
-                            <p>Resumo de Produção</p>
-                        </div>
-                        <!-- Começo do conteudo de Produção -->
+                        <div class="production-header"><p>Resumo de produção</p></div>
                         <div class="production-content">
-                            <header class="header-production">
-                                <p>Resumo de Itens Pendentes:</p>
-                            </header>
-
+                            <header class="header-production"><p>Resumo de Itens Pendentes</p></header>
                             <div class="production-info">
-
+                                <div class="production-item">
+                                    <span class="production-item__name">X-Burguer</span>
+                                    <span class="production-item__qty">999</span>
+                                </div>
+                                <div class="production-item">
+                                    <span class="production-item__name">Batata Chedar e Bacon</span>
+                                    <span class="production-item__qty">10</span>
+                                </div>
+                                <div class="production-item">
+                                    <span class="production-item__name">Água</span>
+                                    <span class="production-item__qty">15</span>
+                                </div>
+                                <div class="production-item">
+                                    <span class="production-item__name">Pizza</span>
+                                    <span class="production-item__qty">1</span>
+                                </div>
+                                <div class="production-item">
+                                    <span class="production-item__name">Inserir Texto</span>
+                                    <span class="production-item__qty">50</span>
+                                </div>
+                                <div class="production-item">
+                                    <span class="production-item__name">Caipirinha</span>
+                                    <span class="production-item__qty">92</span>
+                                </div>
+                                <div class="production-item">
+                                    <span class="production-item__name">Linguiça Toscana</span>
+                                    <span class="production-item__qty">67</span>
+                                </div>
                             </div>
                         </div>
-                    </div> <!-- Fim do conteudo das infomações de produção -->
+                    </div>
+
                 </div>
-            </aside> <!-- Fim side bar da direita-->
-        </div>
-    </div>
+            </aside>
+
+        </div><!-- /.kds-page-wrapper -->
+    </div><!-- /.kds-page -->
+
+    <script src="/wwwroot/js/kds.js"></script>
 </body>
 </html>
