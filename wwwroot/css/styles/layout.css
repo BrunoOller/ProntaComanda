@@ -1,12 +1,20 @@
-/* Estilos do layout administrativo */
+/* ============================================================
+   LAYOUT ADMINISTRATIVO — layout.css
+   Base para todas as páginas do painel (sidebar + conteúdo)
+   ============================================================ */
+
+/* ===== WRAPPER PRINCIPAL ===== */
 .admin-page {
     display: flex;
+    flex-direction: row;        /* sidebar esquerda, conteúdo direita */
     min-height: 100vh;
     background-color: var(--platinum);
 }
 
+/* ===== SIDEBAR ===== */
 .admin-sidebar {
     width: 80px;
+    flex-shrink: 0;             /* nunca encolhe */
     background: linear-gradient(180deg, var(--space-indigo), #1f2233);
     color: white;
     padding: 1rem 0;
@@ -14,12 +22,17 @@
     min-height: 100vh;
     transition: width 0.5s ease;
     overflow: hidden;
+    position: sticky;           /* gruda no topo ao rolar */
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
 }
 
 .admin-sidebar:hover {
     width: 260px;
 }
 
+/* Logo */
 .sidebar-logo {
     display: flex;
     align-items: center;
@@ -49,6 +62,7 @@
     color: #dfe4ee;
 }
 
+/* Nav links */
 .sidebar-nav {
     display: flex;
     flex-direction: column;
@@ -66,7 +80,6 @@
     color: #dfe4ee;
     text-decoration: none;
     transition: all 0.3s ease;
-    position: relative;
     border-radius: 12px 0 0 12px;
 }
 
@@ -104,16 +117,22 @@
     color: var(--flag-red);
 }
 
+/* ===== ÁREA DE CONTEÚDO ===== */
 .admin-content {
-    flex: 1;
+    flex: 1;                    /* ocupa todo o espaço restante */
+    min-width: 0;               /* evita overflow em grids internos */
     padding: 1.3rem 1.5rem;
-    min-width: 0;
+    overflow-y: auto;           /* rola o conteúdo, sidebar fica fixa */
 }
 
+/* ===== HEADER PADRÃO DAS PÁGINAS ===== */
 .content-header {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;        /* título à esquerda, ações à direita */
     align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
     margin-bottom: 1rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
@@ -126,15 +145,17 @@
 
 .content-header p {
     color: var(--grey);
-    margin-bottom: 1rem;
+    margin-bottom: 0;
 }
 
+/* ===== GRID GENÉRICO ===== */
 .content-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
 }
 
+/* Card genérico */
 .card {
     background: white;
     border: 1px solid rgba(0, 0, 0, 0.06);
@@ -153,6 +174,7 @@
     line-height: 1.45;
 }
 
+/* ===== RESPONSIVIDADE ===== */
 @media (max-width: 900px) {
     .admin-page {
         flex-direction: column;
@@ -161,21 +183,20 @@
     .admin-sidebar {
         width: 100%;
         min-height: auto;
+        height: auto;
+        position: relative;     /* sai do sticky em mobile */
         display: flex;
+        flex-direction: row;
         justify-content: space-between;
         align-items: center;
         padding: 0.8rem;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        transition: none;
     }
 
     .admin-sidebar:hover {
         width: 100%;
-    }
-
-    /* forçar não expandir em telas pequenas */
-    .admin-sidebar {
-        transition: none;
     }
 
     .admin-sidebar:hover .sidebar-logo .logo-text,
@@ -215,5 +236,9 @@
 
     .sidebar-logo .logo-text {
         display: none;
+    }
+
+    .admin-content {
+        overflow-y: visible;
     }
 }

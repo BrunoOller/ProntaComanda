@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProntaComanda - Dashboard</title>
-    <link rel="stylesheet" href="/colors.css">
-    <link rel="stylesheet" href="/reset.css">
-    <link rel="stylesheet" href="/dashboard.css"> 
+    <link rel="stylesheet" href="/wwwroot/css/global/color.css">
+    <link rel="stylesheet" href="/wwwroot/css/global/reset.css">
+    <link rel="stylesheet" href="/wwwroot/css/styles/layout.css">
+    <link rel="stylesheet" href="/wwwroot/css/styles/dashboard.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <div class="dashboard-page">
+    <div class="admin-page">
 
         <!-- ===== SIDEBAR ESQUERDA ===== -->
         <aside class="admin-sidebar" aria-label="Navegação principal">
@@ -19,23 +20,23 @@
                 <span class="logo-text">ProntaComanda</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menu administrativo">
-                <a href="/cardapio.html" title="Cardápio">
+                <a href="/Views/Admin/cardapio.html" title="Cardápio">
                     <i class="fa-solid fa-utensils" aria-hidden="true"></i>
                     <span class="menu-text">Cardápio</span>
                 </a>
-                <a href="/mesa.html" title="Mesas">
+                <a href="/Views/Admin/mesa.html" title="Mesas">
                     <i class="fa-solid fa-bell-concierge" aria-hidden="true"></i>
                     <span class="menu-text">Mesas</span>
                 </a>
-                <a href="/kds.html" title="KDS">
+                <a href="/Views/Admin/kds.html" title="Pedidos">
                     <i class="fa-solid fa-fire" aria-hidden="true"></i>
                     <span class="menu-text">KDS</span>
                 </a>
-                <a href="#" class="active" title="Dashboard">
+                <a href="/Views/Admin/dashboad.html" title="Dashboard">
                     <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
                     <span class="menu-text">Dashboard</span>
                 </a>
-                <a href="/funcionarios.html" title="Funcionários">
+                <a href="#" class="active" title="Funcionários">
                     <i class="fa-solid fa-user" aria-hidden="true"></i>
                     <span class="menu-text">Funcionários</span>
                 </a>
@@ -43,10 +44,10 @@
         </aside>
 
         <!-- ===== CONTEÚDO PRINCIPAL ===== -->
-        <main class="dashboard-content">
+        <main class="admin-content dashboard-content">
 
             <!-- ===== HEADER ===== -->
-            <header class="dashboard-header">
+            <header class="content-header dashboard-header">
                 <div class="dashboard-header__title">
                     <h1>Dashboard</h1>
                     <p>Acompanhe o desempenho do seu restaurante em tempo real.</p>
@@ -313,8 +314,7 @@
         </main><!-- /.dashboard-content -->
     </div><!-- /.dashboard-page -->
 
-    <!-- Chart.js — será usado quando o CSS/JS forem implementados -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/dashboard.js"></script> <!-- a implementar -->
+    <script src="/wwwroot/js/dashboard.js"></script> 
 </body>
 </html>
