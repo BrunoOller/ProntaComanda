@@ -34,7 +34,6 @@
     font-weight: 900;
     color: var(--space-indigo);
     text-transform: uppercase;
-    letter-spacing: 0.03em;
 }
 
 .dashboard-header p {

@@ -17,13 +17,18 @@
     gap: 2rem;
 
     & h1 {
+        font-family: "Archivo", sans-serif;
+        font-size: 2rem;
+        font-weight: 900;
         color: var(--space-indigo);
-        margin-bottom: 0.3rem;
+        text-transform: uppercase;
     }
 
     & p {
         color: var(--grey);
-        margin-bottom: 1rem;
+        font-size: 0.88rem;
+        margin-top: 0.15rem;
+        margin-bottom: 0;
     }
 
     & .header-left {
@@ -164,7 +169,8 @@
         height: auto;
     }
 
-    & .swiper-button-next, .swiper-button-prev {
+    & .swiper-button-next,
+    .swiper-button-prev {
         background: rgba(255, 255, 255, 0.9) !important;
         border-radius: 50% !important;
         width: 40px !important;
@@ -827,7 +833,8 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: none; /* exibido via JS quando imagem for carregada */
+        display: none;
+        /* exibido via JS quando imagem for carregada */
     }
 
     & .image-preview__placeholder {
@@ -1149,7 +1156,7 @@
     }
 }
 
-.toggle-switch__input:checked + .toggle-switch__track {
+.toggle-switch__input:checked+.toggle-switch__track {
     background-color: var(--space-indigo);
 
     &::after {
@@ -1197,11 +1204,11 @@
 }
 
 /* Checado = ativado */
-.toggle-switch__input:checked ~ .toggle-switch__label-on {
+.toggle-switch__input:checked~.toggle-switch__label-on {
     display: inline-block;
 }
 
-.toggle-switch__input:checked ~ .toggle-switch__label-off {
+.toggle-switch__input:checked~.toggle-switch__label-off {
     display: none;
 }
 

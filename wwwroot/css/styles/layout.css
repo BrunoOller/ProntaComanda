@@ -6,7 +6,8 @@
 /* ===== WRAPPER PRINCIPAL ===== */
 .admin-page {
     display: flex;
-    flex-direction: row;        /* sidebar esquerda, conteúdo direita */
+    flex-direction: row;
+    /* sidebar esquerda, conteúdo direita */
     min-height: 100vh;
     background-color: var(--platinum);
 }
@@ -14,7 +15,8 @@
 /* ===== SIDEBAR ===== */
 .admin-sidebar {
     width: 80px;
-    flex-shrink: 0;             /* nunca encolhe */
+    flex-shrink: 0;
+    /* nunca encolhe */
     background: linear-gradient(180deg, var(--space-indigo), #1f2233);
     color: white;
     padding: 1rem 0;
@@ -22,7 +24,8 @@
     min-height: 100vh;
     transition: width 0.5s ease;
     overflow: hidden;
-    position: sticky;           /* gruda no topo ao rolar */
+    position: sticky;
+    /* gruda no topo ao rolar */
     top: 0;
     align-self: flex-start;
     height: 100vh;
@@ -119,16 +122,20 @@
 
 /* ===== ÁREA DE CONTEÚDO ===== */
 .admin-content {
-    flex: 1;                    /* ocupa todo o espaço restante */
-    min-width: 0;               /* evita overflow em grids internos */
+    flex: 1;
+    /* ocupa todo o espaço restante */
+    min-width: 0;
+    /* evita overflow em grids internos */
     padding: 1.3rem 1.5rem;
-    overflow-y: auto;           /* rola o conteúdo, sidebar fica fixa */
+    overflow-y: auto;
+    /* rola o conteúdo, sidebar fica fixa */
 }
 
 /* ===== HEADER PADRÃO DAS PÁGINAS ===== */
 .content-header {
     display: flex;
-    flex-direction: row;        /* título à esquerda, ações à direita */
+    flex-direction: row;
+    /* título à esquerda, ações à direita */
     align-items: flex-start;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -139,12 +146,17 @@
 }
 
 .content-header h1 {
+    font-family: "Archivo", sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
     color: var(--space-indigo);
-    margin-bottom: 0.3rem;
+    text-transform: uppercase;
 }
 
 .content-header p {
     color: var(--grey);
+    font-size: 0.88rem;
+    margin-top: 0.15rem;
     margin-bottom: 0;
 }
 
@@ -184,7 +196,8 @@
         width: 100%;
         min-height: auto;
         height: auto;
-        position: relative;     /* sai do sticky em mobile */
+        position: relative;
+        /* sai do sticky em mobile */
         display: flex;
         flex-direction: row;
         justify-content: space-between;
