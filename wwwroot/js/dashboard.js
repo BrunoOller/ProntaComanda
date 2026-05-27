@@ -44,8 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
     };
 
-    let periodoAtivo = 'month';
-
     /* ============================================================
        GRÁFICO DE BARRAS — Faturamento por Mês
        ============================================================ */
@@ -157,8 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('period-btn--active'));
             this.classList.add('period-btn--active');
 
-            periodoAtivo = this.dataset.period;
-            const d = DADOS[periodoAtivo];
+            const d = DADOS[this.dataset.period];
 
             // Atualiza gráfico de barras
             chartBar.data.datasets[0].data = d.faturamento;
@@ -196,15 +193,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.width = entry.target.style.getPropertyValue('--w') ||
-                    getComputedStyle(entry.target).getPropertyValue('--w');
+                entry.target.style.width = entry.target.dataset.targetWidth || '0%';
+                observer.unobserve(entry.target); // anima só uma vez
             }
         });
     }, { threshold: 0.2 });
 
     document.querySelectorAll('.progress-bar').forEach(bar => {
-        // Começa em 0 e anima ao entrar na viewport
-        const target = bar.style.cssText;
+        // Guarda o valor alvo definido no style inline (--w)
+        const targetWidth = bar.style.width || getComputedStyle(bar).getPropertyValue('--w').trim();
+        bar.dataset.targetWidth = targetWidth;
         bar.style.width = '0%';
         setTimeout(() => observer.observe(bar), 100);
     });

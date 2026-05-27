@@ -618,8 +618,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Botão "Adicionar Item" no header
-    const btnAdicionar = document.querySelector('[data-open-modal="modal-cardapio"]');
-    // (já coberto pelo querySelectorAll acima)
+    // Botão "Adicionar Item" no header — coberto pelo querySelectorAll acima
 });
- 
