@@ -1,78 +1,297 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProntaComanda - Layout 1</title>
+    <title>ProntaComanda - Funcionários</title>
     <link rel="stylesheet" href="/wwwroot/css/global/color.css">
     <link rel="stylesheet" href="/wwwroot/css/global/reset.css">
     <link rel="stylesheet" href="/wwwroot/css/styles/layout.css">
+    <link rel="stylesheet" href="/wwwroot/css/styles/funcionarios.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-
 <body>
     <div class="admin-page">
+
+        <!-- ===== SIDEBAR ===== -->
         <aside class="admin-sidebar" aria-label="Navegação principal">
             <div class="sidebar-logo">
                 <i class="fa-solid fa-cubes-stacked" aria-hidden="true"></i>
                 <span class="logo-text">ProntaComanda</span>
             </div>
-            <nav class="sidebar-nav" aria-label="Menu administrativo">
+            <nav class="sidebar-nav">
                 <a href="/Views/Admin/cardapio.html" title="Cardápio">
-                    <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+                    <i class="fa-solid fa-utensils"></i>
                     <span class="menu-text">Cardápio</span>
                 </a>
                 <a href="/Views/Admin/mesa.html" title="Mesas">
-                    <i class="fa-solid fa-bell-concierge" aria-hidden="true"></i>
+                    <i class="fa-solid fa-bell-concierge"></i>
                     <span class="menu-text">Mesas</span>
                 </a>
-                <a href="/Views/Admin/kds.html" title="Pedidos">
-                    <i class="fa-solid fa-fire" aria-hidden="true"></i>
+                <a href="/Views/Admin/kds.html" title="KDS">
+                    <i class="fa-solid fa-fire"></i>
                     <span class="menu-text">KDS</span>
                 </a>
                 <a href="/Views/Admin/dashboad.html" title="Dashboard">
-                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                    <i class="fa-solid fa-chart-line"></i>
                     <span class="menu-text">Dashboard</span>
                 </a>
-                <a href="#" class="active" title="Funcionários">
-                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                <a href="/Views/Admin/funcionarios.html" class="active" title="Funcionários">
+                    <i class="fa-solid fa-user"></i>
                     <span class="menu-text">Funcionários</span>
                 </a>
             </nav>
         </aside>
 
-        <main class="admin-content">
+        <!-- ===== CONTEÚDO ===== -->
+        <main class="admin-content func-content">
+
+            <!-- HEADER -->
             <header class="content-header">
-                <div class="header-left">
-                    <h1>Funcionários</h1>
-                    <p>Visualize e gerencie seus funcionários.</p>
+                <div>
+                    <h1>Administrando Funcionarios</h1>
+                    <p>Gerencie sua equipe por setor.</p>
                 </div>
+                <button class="func-btn-add" onclick="abrirModalAdicionar()">
+                    + Adicionar Funcionario
+                </button>
             </header>
 
-            <section class="content-grid">
-                <article class="card">
-                    <h2>Relatórios</h2>
-                    <p>Resumo de vendas e desempenho.</p>
-                </article>
-
-                <article class="card">
-                    <h2>Atividades Recentes</h2>
-                    <p>Últimos eventos do sistema.</p>
-                </article>
-
-                <article class="card">
-                    <h2>Usuários</h2>
-                    <p>Gerencie permissões e acessos.</p>
-                </article>
-
-                <article class="card">
-                    <h2>Estoque</h2>
-                    <p>Controle de produtos e insumos.</p>
-                </article>
+            <!-- ===== SEÇÃO: ATENDIMENTO ===== -->
+            <section class="func-section" id="section-atendimento">
+                <h2 class="func-section__title">Atendimento</h2>
+                <table class="func-table" aria-label="Funcionários de atendimento">
+                    <thead>
+                        <tr>
+                            <th>Nome do Funcionário</th>
+                            <th>Cargo/Especialidade</th>
+                            <th>Faturamento Mensal</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-atendimento">
+                        <tr data-id="1" data-nome="João Pedro Surita" data-funcao="garcom" data-especialidade="n/a" data-senha="Senha123">
+                            <td class="func-table__nome">João Pedro Surita</td>
+                            <td><span class="func-badge func-badge--garcom">Garçom</span></td>
+                            <td class="func-table__faturamento">R$ 8.941,04</td>
+                            <td class="func-table__acoes">
+                                <button class="func-btn func-btn--editar" onclick="abrirModalEditar(this)">Editar</button>
+                                <button class="func-btn func-btn--pedidos" onclick="abrirModalPedidos(this)">Pedidos Dia</button>
+                                <span class="func-delete-confirm" style="display:none;">
+                                    <button class="func-btn func-btn--confirmar-del" onclick="confirmarDelecao(this)">Confirmar</button>
+                                    <button class="func-btn func-btn--cancelar-del" onclick="cancelarDelecao(this)">Cancelar</button>
+                                </span>
+                                <button class="func-btn func-btn--excluir" onclick="iniciarDelecao(this)">Excluir</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </section>
+
+            <!-- ===== SEÇÃO: COZINHA ===== -->
+            <section class="func-section" id="section-cozinha">
+                <h2 class="func-section__title">Cozinha</h2>
+                <table class="func-table" aria-label="Funcionários da cozinha">
+                    <thead>
+                        <tr>
+                            <th>Nome do Funcionário</th>
+                            <th>Cargo/Especialidade</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-cozinha">
+                        <tr data-id="2" data-nome="João Pedro Surita" data-funcao="cozinheiro" data-especialidade="chapeiro" data-senha="Senha123">
+                            <td class="func-table__nome">João Pedro Surita</td>
+                            <td><span class="func-badge func-badge--cozinheiro">Cozinheiro / Chapeiro</span></td>
+                            <td class="func-table__acoes">
+                                <button class="func-btn func-btn--editar" onclick="abrirModalEditar(this)">Editar</button>
+                                <span class="func-delete-confirm" style="display:none;">
+                                    <button class="func-btn func-btn--confirmar-del" onclick="confirmarDelecao(this)">Confirmar</button>
+                                    <button class="func-btn func-btn--cancelar-del" onclick="cancelarDelecao(this)">Cancelar</button>
+                                </span>
+                                <button class="func-btn func-btn--excluir" onclick="iniciarDelecao(this)">Excluir</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ===== SEÇÃO: GESTÃO & TECNOLOGIA ===== -->
+            <section class="func-section" id="section-gestao">
+                <h2 class="func-section__title">Gestão &amp; Tecnologia</h2>
+                <table class="func-table" aria-label="Funcionários de gestão">
+                    <thead>
+                        <tr>
+                            <th>Nome do Funcionário</th>
+                            <th>Cargo/Especialidade</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-gestao">
+                        <tr data-id="3" data-nome="João Pedro Surita" data-funcao="admin" data-especialidade="n/a" data-senha="Senha123">
+                            <td class="func-table__nome">João Pedro Surita</td>
+                            <td><span class="func-badge func-badge--admin">Desenvolvedor</span></td>
+                            <td class="func-table__acoes">
+                                <button class="func-btn func-btn--editar" onclick="abrirModalEditar(this)">Editar</button>
+                                <span class="func-delete-confirm" style="display:none;">
+                                    <button class="func-btn func-btn--confirmar-del" onclick="confirmarDelecao(this)">Confirmar</button>
+                                    <button class="func-btn func-btn--cancelar-del" onclick="cancelarDelecao(this)">Cancelar</button>
+                                </span>
+                                <button class="func-btn func-btn--excluir" onclick="iniciarDelecao(this)">Excluir</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
         </main>
     </div>
-</body>
 
+    <!-- ============================================================
+         MODAL: ADICIONAR FUNCIONÁRIO
+    ============================================================ -->
+    <div class="modal-overlay" id="modal-adicionar" role="dialog" aria-modal="true" aria-labelledby="titulo-adicionar">
+        <div class="modal func-modal">
+            <div class="modal__header">
+                <span class="modal__title" id="titulo-adicionar">Adicionar Funcionario</span>
+                <button class="modal__close-btn" onclick="fecharModal('modal-adicionar')" aria-label="Fechar">&#10005;</button>
+            </div>
+            <div class="modal__body">
+                <div class="func-modal__grid">
+                    <div class="func-modal__group">
+                        <label class="func-modal__label" for="add-nome">Nome completo do Funcionario</label>
+                        <input class="func-modal__input" type="text" id="add-nome" autocomplete="off">
+                    </div>
+                    <div class="func-modal__group">
+                        <label class="func-modal__label" for="add-funcao">Função</label>
+                        <div class="func-modal__select-wrapper">
+                            <select class="func-modal__select" id="add-funcao" onchange="atualizarEspecialidade(this, 'add-especialidade')">
+                                <option value="garcom">Garçom</option>
+                                <option value="cozinheiro">Cozinheiro</option>
+                                <option value="admin">Administrador</option>
+                                <option value="gerente">Gerente</option>
+                                <option value="dev">Desenvolvedor</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="func-modal__group">
+                        <label class="func-modal__label" for="add-senha">Senha do Funcionário</label>
+                        <input class="func-modal__input" type="password" id="add-senha" autocomplete="new-password">
+                    </div>
+                    <div class="func-modal__group">
+                        <label class="func-modal__label" for="add-especialidade">Especialidade</label>
+                        <div class="func-modal__select-wrapper func-modal__select-wrapper--disabled" id="wrapper-add-esp">
+                            <select class="func-modal__select" id="add-especialidade" disabled>
+                                <option value="n/a">N/A</option>
+                                <option value="chapeiro">Chapeiro</option>
+                                <option value="confeiteiro">Confeiteiro</option>
+                                <option value="sushiman">Sushiman</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <span class="func-modal__hint">Apenas selecionavel com a função "Cozinha"</span>
+                    </div>
+                </div>
+                <div class="func-modal__footer">
+                    <button class="func-modal__btn func-modal__btn--cancelar" onclick="fecharModal('modal-adicionar')">Cancelar</button>
+                    <button class="func-modal__btn func-modal__btn--confirmar" onclick="confirmarAdicionar()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL: EDITAR FUNCIONÁRIO
+    ============================================================ -->
+    <div class="modal-overlay" id="modal-editar" role="dialog" aria-modal="true" aria-labelledby="titulo-editar">
+        <div class="modal func-modal">
+            <div class="modal__header">
+                <span class="modal__title" id="titulo-editar">Editar Informações</span>
+                <button class="modal__close-btn" onclick="fecharModal('modal-editar')" aria-label="Fechar">&#10005;</button>
+            </div>
+            <div class="modal__body">
+                <div class="func-modal__grid">
+                    <div class="func-modal__group">
+                        <label class="func-modal__label" for="edit-nome">Nome completo do Funcionario</label>
+                        <input class="func-modal__input" type="text" id="edit-nome" autocomplete="off">
+                    </div>
+                    <div class="func-modal__group">
+                        <label class="func-modal__label" for="edit-funcao">Função</label>
+                        <div class="func-modal__select-wrapper">
+                            <select class="func-modal__select" id="edit-funcao" onchange="atualizarEspecialidade(this, 'edit-especialidade')">
+                                <option value="garcom">Garçom</option>
+                                <option value="cozinheiro">Cozinheiro</option>
+                                <option value="admin">Administrador</option>
+                                <option value="gerente">Gerente</option>
+                                <option value="dev">Desenvolvedor</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="func-modal__group">
+                        <label class="func-modal__label" for="edit-senha">Senha do Funcionário</label>
+                        <input class="func-modal__input" type="password" id="edit-senha" autocomplete="new-password">
+                    </div>
+                    <div class="func-modal__group">
+                        <label class="func-modal__label" for="edit-especialidade">Especialidade</label>
+                        <div class="func-modal__select-wrapper func-modal__select-wrapper--disabled" id="wrapper-edit-esp">
+                            <select class="func-modal__select" id="edit-especialidade" disabled>
+                                <option value="n/a">N/A</option>
+                                <option value="chapeiro">Chapeiro</option>
+                                <option value="confeiteiro">Confeiteiro</option>
+                                <option value="sushiman">Sushiman</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <span class="func-modal__hint">Apenas selecionavel com a função "Cozinha"</span>
+                    </div>
+                </div>
+                <div class="func-modal__footer">
+                    <button class="func-modal__btn func-modal__btn--cancelar" onclick="fecharModal('modal-editar')">Cancelar</button>
+                    <button class="func-modal__btn func-modal__btn--confirmar" onclick="confirmarEditar()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL: PEDIDOS DO DIA
+    ============================================================ -->
+    <div class="modal-overlay" id="modal-pedidos" role="dialog" aria-modal="true" aria-labelledby="titulo-pedidos">
+        <div class="modal func-modal func-modal--pedidos">
+            <div class="modal__header">
+                <span class="modal__title" id="titulo-pedidos">Pedidos do Dia</span>
+                <button class="modal__close-btn" onclick="fecharModal('modal-pedidos')" aria-label="Fechar">&#10005;</button>
+            </div>
+            <div class="modal__body modal__body--pedidos">
+                <div class="pedidos-table-wrapper">
+                    <table class="pedidos-table">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>Nome do Item</th>
+                                <th>Quantidade</th>
+                                <th>Preço do Item</th>
+                                <th>Total Faturado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pedidos-tbody">
+                            <!-- populado via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <footer class="pedidos-footer">
+                    <span class="pedidos-footer__nome" id="pedidos-nome-func">&gt;Nome do funcionário&lt;</span>
+                    <div class="pedidos-footer__total">
+                        <span>Valor Total Vendido no Dia:</span>
+                        <strong id="pedidos-total">R$ 0,00</strong>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script src="/wwwroot/js/funcionarios.js"></script>
+</body>
 </html>
