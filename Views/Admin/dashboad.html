@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProntaComanda - Layout 1</title>
-    <link rel="stylesheet" href="/wwwroot/css/global/color.css">
-    <link rel="stylesheet" href="/wwwroot/css/global/reset.css">
-    <link rel="stylesheet" href="/wwwroot/css/styles/layout.css">
+    <title>ProntaComanda - Dashboard</title>
+    <link rel="stylesheet" href="/colors.css">
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/dashboard.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-
 <body>
-    <div class="admin-page">
+    <div class="dashboard-page">
+
+        <!-- ===== SIDEBAR ESQUERDA ===== -->
         <aside class="admin-sidebar" aria-label="Navegação principal">
             <div class="sidebar-logo">
                 <i class="fa-solid fa-cubes-stacked" aria-hidden="true"></i>
                 <span class="logo-text">ProntaComanda</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menu administrativo">
-                <a href="/Views/Admin/cardapio.html" title="Cardápio">
+                <a href="/cardapio.html" title="Cardápio">
                     <i class="fa-solid fa-utensils" aria-hidden="true"></i>
                     <span class="menu-text">Cardápio</span>
                 </a>
-                <a href="/Views/Admin/mesa.html" title="Mesas">
+                <a href="/mesa.html" title="Mesas">
                     <i class="fa-solid fa-bell-concierge" aria-hidden="true"></i>
                     <span class="menu-text">Mesas</span>
                 </a>
-                <a href="/Views/Admin/kds.html" title="Pedidos">
+                <a href="/kds.html" title="KDS">
                     <i class="fa-solid fa-fire" aria-hidden="true"></i>
                     <span class="menu-text">KDS</span>
                 </a>
@@ -35,44 +35,286 @@
                     <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
                     <span class="menu-text">Dashboard</span>
                 </a>
-                <a href="/Views/Admin/funcionarios.html" title="Funcionários">
+                <a href="/funcionarios.html" title="Funcionários">
                     <i class="fa-solid fa-user" aria-hidden="true"></i>
                     <span class="menu-text">Funcionários</span>
                 </a>
             </nav>
         </aside>
 
-        <main class="admin-content">
-            <header class="content-header">
-                <div class="header-left">
+        <!-- ===== CONTEÚDO PRINCIPAL ===== -->
+        <main class="dashboard-content">
+
+            <!-- ===== HEADER ===== -->
+            <header class="dashboard-header">
+                <div class="dashboard-header__title">
                     <h1>Dashboard</h1>
-                    <p>Visualize os seus faturamentos totais e diários.</p>
+                    <p>Acompanhe o desempenho do seu restaurante em tempo real.</p>
+                </div>
+
+                <!-- Filtro de período -->
+                <div class="dashboard-header__filters" role="group" aria-label="Filtrar por período">
+                    <button class="period-btn period-btn--active" data-period="today">Hoje</button>
+                    <button class="period-btn" data-period="week">Esta semana</button>
+                    <button class="period-btn" data-period="month">Este mês</button>
                 </div>
             </header>
 
-            <section class="content-grid">
-                <article class="card">
-                    <h2>Relatórios</h2>
-                    <p>Resumo de vendas e desempenho.</p>
-                </article>
+            <!-- ===== SEÇÃO 1: CARDS DE MÉTRICAS ===== -->
+            <section class="metrics-grid" aria-label="Métricas principais">
 
-                <article class="card">
-                    <h2>Atividades Recentes</h2>
-                    <p>Últimos eventos do sistema.</p>
-                </article>
+                <!-- Card: Ganhos do período -->
+                <div class="metric-card metric-card--ganhos">
+                    <div class="metric-card__icon">
+                        <i class="fa-solid fa-sack-dollar" aria-hidden="true"></i>
+                    </div>
+                    <div class="metric-card__body">
+                        <span class="metric-card__label">Ganhos do Período</span>
+                        <strong class="metric-card__value">R$ 15.754,00</strong>
+                        <span class="metric-card__trend metric-card__trend--up">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            15% vs mês anterior
+                        </span>
+                    </div>
+                </div>
 
-                <article class="card">
-                    <h2>Usuários</h2>
-                    <p>Gerencie permissões e acessos.</p>
-                </article>
+                <!-- Card: Pedidos do período -->
+                <div class="metric-card metric-card--pedidos">
+                    <div class="metric-card__icon">
+                        <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+                    </div>
+                    <div class="metric-card__body">
+                        <span class="metric-card__label">Pedidos do Período</span>
+                        <strong class="metric-card__value">5.834</strong>
+                        <span class="metric-card__trend metric-card__trend--down">
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+                            12% vs mês anterior
+                        </span>
+                    </div>
+                </div>
 
-                <article class="card">
-                    <h2>Estoque</h2>
-                    <p>Controle de produtos e insumos.</p>
-                </article>
-            </section>
-        </main>
-    </div>
+                <!-- Card: Ticket Médio -->
+                <div class="metric-card metric-card--ticket">
+                    <div class="metric-card__icon">
+                        <i class="fa-solid fa-tags" aria-hidden="true"></i>
+                    </div>
+                    <div class="metric-card__body">
+                        <span class="metric-card__label">Ticket Médio</span>
+                        <strong class="metric-card__value">R$ 193,58</strong>
+                        <span class="metric-card__trend metric-card__trend--up">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            8% vs mês anterior
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card: Mesas Ativas -->
+                <div class="metric-card metric-card--mesas">
+                    <div class="metric-card__icon">
+                        <i class="fa-solid fa-bell-concierge" aria-hidden="true"></i>
+                    </div>
+                    <div class="metric-card__body">
+                        <span class="metric-card__label">Mesas Ativas</span>
+                        <strong class="metric-card__value">14 <span class="metric-card__value--sub">/ 20</span></strong>
+                        <span class="metric-card__trend metric-card__trend--neutral">
+                            70% de ocupação agora
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card: Total de Funcionários -->
+                <div class="metric-card metric-card--funcionarios">
+                    <div class="metric-card__icon">
+                        <i class="fa-solid fa-users" aria-hidden="true"></i>
+                    </div>
+                    <div class="metric-card__body">
+                        <span class="metric-card__label">Funcionários Ativos</span>
+                        <strong class="metric-card__value">15</strong>
+                        <span class="metric-card__trend metric-card__trend--neutral">
+                            3 turnos hoje
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card: Itens do Cardápio -->
+                <div class="metric-card metric-card--cardapio">
+                    <div class="metric-card__icon">
+                        <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+                    </div>
+                    <div class="metric-card__body">
+                        <span class="metric-card__label">Itens no Cardápio</span>
+                        <strong class="metric-card__value">23</strong>
+                        <span class="metric-card__trend metric-card__trend--neutral">
+                            2 indisponíveis
+                        </span>
+                    </div>
+                </div>
+
+            </section><!-- /.metrics-grid -->
+
+            <!-- ===== SEÇÃO 2: GRÁFICOS ===== -->
+            <section class="charts-row" aria-label="Gráficos de desempenho">
+
+                <!-- Gráfico de barras: Faturamento por mês -->
+                <div class="chart-card chart-card--bar">
+                    <header class="chart-card__header">
+                        <h2 class="chart-card__title">Faturamento por Mês</h2>
+                        <span class="chart-card__subtitle">Ano de 2026</span>
+                    </header>
+                    <div class="chart-card__body">
+                        <!-- Chart.js vai renderizar aqui -->
+                        <canvas id="chart-faturamento" aria-label="Gráfico de faturamento mensal"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico de pizza: Taxa de conversão + tabela de cancelamentos -->
+                <div class="chart-card chart-card--donut">
+                    <header class="chart-card__header">
+                        <h2 class="chart-card__title">Taxa de Conversão de Pedidos</h2>
+                    </header>
+                    <div class="chart-card__body chart-card__body--split">
+
+                        <!-- Pizza/Donut -->
+                        <div class="donut-wrapper">
+                            <canvas id="chart-conversao" aria-label="Gráfico de taxa de conversão"></canvas>
+                        </div>
+
+                        <!-- Tabela de motivos de cancelamento -->
+                        <div class="cancelamentos">
+                            <h3 class="cancelamentos__title">Motivos de Cancelamento</h3>
+                            <table class="cancelamentos__table" aria-label="Motivos de cancelamento de pedidos">
+                                <thead>
+                                    <tr>
+                                        <th>Motivo</th>
+                                        <th>Qtd</th>
+                                        <th>%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Desistência do cliente</td>
+                                        <td>21</td>
+                                        <td>42%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Item em falta</td>
+                                        <td>14</td>
+                                        <td>28%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Erro no lançamento</td>
+                                        <td>9</td>
+                                        <td>18%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Demora no preparo</td>
+                                        <td>6</td>
+                                        <td>12%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section><!-- /.charts-row -->
+
+            <!-- ===== SEÇÃO 3: TABELA TOP PRODUTOS ===== -->
+            <section class="top-produtos" aria-label="Ranking de produtos mais vendidos">
+                <header class="top-produtos__header">
+                    <h2 class="top-produtos__title">Top Produtos do Período</h2>
+                    <span class="top-produtos__subtitle">Ordenado por faturamento</span>
+                </header>
+
+                <div class="top-produtos__table-wrapper">
+                    <table class="top-produtos__table" aria-label="Tabela de produtos mais vendidos">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Produto</th>
+                                <th>Categoria</th>
+                                <th>QTD Vendida</th>
+                                <th>Faturado</th>
+                                <th>Participação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="rank rank--gold">1</td>
+                                <td class="produto-nome">Pizza de Calabresa</td>
+                                <td><span class="categoria-badge">Principal</span></td>
+                                <td>152</td>
+                                <td class="faturado">R$ 9.880,00</td>
+                                <td>
+                                    <div class="progress-bar-wrapper" aria-label="62% do faturamento total">
+                                        <div class="progress-bar" style="width: 62%"></div>
+                                        <span>62%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="rank rank--silver">2</td>
+                                <td class="produto-nome">Hamburguer</td>
+                                <td><span class="categoria-badge">Principal</span></td>
+                                <td>125</td>
+                                <td class="faturado">R$ 4.375,00</td>
+                                <td>
+                                    <div class="progress-bar-wrapper" aria-label="28% do faturamento total">
+                                        <div class="progress-bar" style="width: 28%"></div>
+                                        <span>28%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="rank rank--bronze">3</td>
+                                <td class="produto-nome">Batata Frita</td>
+                                <td><span class="categoria-badge categoria-badge--entrada">Entrada</span></td>
+                                <td>75</td>
+                                <td class="faturado">R$ 1.875,00</td>
+                                <td>
+                                    <div class="progress-bar-wrapper" aria-label="12% do faturamento total">
+                                        <div class="progress-bar" style="width: 12%"></div>
+                                        <span>12%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="rank">4</td>
+                                <td class="produto-nome">Sorvete</td>
+                                <td><span class="categoria-badge categoria-badge--sobremesa">Sobremesa</span></td>
+                                <td>53</td>
+                                <td class="faturado">R$ 1.060,00</td>
+                                <td>
+                                    <div class="progress-bar-wrapper" aria-label="7% do faturamento total">
+                                        <div class="progress-bar" style="width: 7%"></div>
+                                        <span>7%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="rank">5</td>
+                                <td class="produto-nome">Caipirinha</td>
+                                <td><span class="categoria-badge categoria-badge--bebida">Bebida</span></td>
+                                <td>48</td>
+                                <td class="faturado">R$ 960,00</td>
+                                <td>
+                                    <div class="progress-bar-wrapper" aria-label="6% do faturamento total">
+                                        <div class="progress-bar" style="width: 6%"></div>
+                                        <span>6%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section><!-- /.top-produtos -->
+
+        </main><!-- /.dashboard-content -->
+    </div><!-- /.dashboard-page -->
+
+    <!-- Chart.js — será usado quando o CSS/JS forem implementados -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/dashboard.js"></script> <!-- a implementar -->
 </body>
-
 </html>
