@@ -39,12 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
        TODO: buscar de /api/pedidos?funcionario={id}&data={hoje}
     ============================================================ */
     const PEDIDOS_MOCK = [
-        { id: 50, nome: 'Semen de Pitufo', qtd: 10, preco: 894.104, total: 8941.04 },
-        { id: 50, nome: 'Semen de Pitufo', qtd: 10, preco: 894.104, total: 8941.04 },
-        { id: 50, nome: 'Semen de Pitufo', qtd: 10, preco: 894.104, total: 8941.04 },
-        { id: 50, nome: 'Semen de Pitufo', qtd: 10, preco: 894.104, total: 8941.04 },
-        { id: 50, nome: 'Semen de Pitufo', qtd: 10, preco: 894.104, total: 8941.04 },
-        { id: 50, nome: 'Semen de Pitufo', qtd: 10, preco: 894.104, total: 8941.04 },
+        { id: 50, nome: 'Pizza de Calabresa', qtd: 10, preco: 894.104, total: 8941.04 },
+        { id: 50, nome: 'Pizza de Calabresa', qtd: 10, preco: 894.104, total: 8941.04 },
+        { id: 50, nome: 'Pizza de Calabresa', qtd: 10, preco: 894.104, total: 8941.04 },
+        { id: 50, nome: 'Pizza de Calabresa', qtd: 10, preco: 894.104, total: 8941.04 },
+        { id: 50, nome: 'Pizza de Calabresa', qtd: 10, preco: 894.104, total: 8941.04 },
+        { id: 50, nome: 'Pizza de Calabresa', qtd: 10, preco: 894.104, total: 8941.04 },
     ];
 
     /* ============================================================

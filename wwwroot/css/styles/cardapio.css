@@ -17,16 +17,18 @@
     gap: 2rem;
 
     & h1 {
+        font-family: "Archivo", sans-serif;
+        font-size: 2rem;
+        font-weight: 900;
         color: var(--space-indigo);
-        font-size: 1.6rem;
-        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.4px;
-        margin-bottom: 0;
     }
-
+    
     & p {
-        display: none;
+        color: var(--grey);
+        font-size: 0.88rem;
+        margin-top: 0.15rem;
+        margin-bottom: 0;
     }
 
     & .header-left {
@@ -60,7 +62,7 @@
         background-color: #d0d0d0;
         border-color: #888;
         transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 }
 
@@ -168,7 +170,8 @@
         height: auto;
     }
 
-    & .swiper-button-next, .swiper-button-prev {
+    & .swiper-button-next,
+    .swiper-button-prev {
         background: rgba(255, 255, 255, 0.9) !important;
         border-radius: 50% !important;
         width: 40px !important;
@@ -214,7 +217,7 @@
     min-height: 370px;
     background-color: #b0b0b0;
     border-radius: 15px;
-    box-shadow: 0 5px 14px rgba(0,0,0,0.18);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18);
     border: 1px solid #999;
     display: flex;
     flex-direction: column;
@@ -228,7 +231,7 @@
 
     &:hover {
         transform: translateY(-3px);
-        box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
     }
 
     & .card-image-container {
@@ -261,7 +264,7 @@
 
             & i {
                 font-size: 3.5rem;
-                color: rgba(0,0,0,0.4);
+                color: rgba(0, 0, 0, 0.4);
             }
         }
 
@@ -276,7 +279,7 @@
             font-size: 10pt;
             font-weight: 700;
             z-index: 2;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
             letter-spacing: 0.2px;
         }
     }
@@ -348,7 +351,7 @@
 
                 &:hover {
                     background-color: white;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
                 }
             }
         }
@@ -853,7 +856,8 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: none; /* exibido via JS quando imagem for carregada */
+        display: none;
+        /* exibido via JS quando imagem for carregada */
     }
 
     & .image-preview__placeholder {
@@ -1175,7 +1179,7 @@
     }
 }
 
-.toggle-switch__input:checked + .toggle-switch__track {
+.toggle-switch__input:checked+.toggle-switch__track {
     background-color: var(--space-indigo);
 
     &::after {
@@ -1223,11 +1227,11 @@
 }
 
 /* Checado = ativado */
-.toggle-switch__input:checked ~ .toggle-switch__label-on {
+.toggle-switch__input:checked~.toggle-switch__label-on {
     display: inline-block;
 }
 
-.toggle-switch__input:checked ~ .toggle-switch__label-off {
+.toggle-switch__input:checked~.toggle-switch__label-off {
     display: none;
 }
 
