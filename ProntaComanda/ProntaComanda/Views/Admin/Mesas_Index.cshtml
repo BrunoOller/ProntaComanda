@@ -1,0 +1,288 @@
+@model List<ProntaComanda.Models.Mesa>
+@{
+    ViewData["Title"] = "Mesas";
+    var mesasLivres = Model.Count(m => !m.Ocupada);
+    var mesasOcupadas = Model.Count(m => m.Ocupada);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/styles/mesa.css" />
+}
+
+<!-- Layout da página de mesas: usa wrapper próprio com sidebar direita -->
+<div class="admin-page-wrapper" style="display:flex; flex:1; overflow:hidden; min-width:0;">
+
+    <div class="content-wrapper" style="flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0;">
+        <main class="kds-content">
+            <header class="content-header">
+                <div class="header-title">
+                    <h1>Gerenciamento de Mesas</h1>
+                    <p>@mesasOcupadas ocupada(s) · @mesasLivres livre(s)</p>
+                </div>
+                <button class="btn-add-mesa" onclick="abrirModalAdicionarMesa()">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Adicionar Mesa
+                </button>
+            </header>
+
+            <!-- Grid de mesas — renderizado pelo JS com dados do servidor -->
+            <section class="content-grid" id="mesa-grid">
+                @foreach (var mesa in Model)
+                {
+                    <!-- data-* expõe os dados do servidor para o JS sem fetch extra -->
+                    <div class="mesa-card @(mesa.Ocupada ? "mesa-card--ocupada" : "mesa-card--livre")"
+                         data-id="@mesa.Id"
+                         data-numero="@mesa.Numero"
+                         data-ocupada="@mesa.Ocupada.ToString().ToLower()"
+                         data-permanencia="@mesa.PermanenciaSegundos"
+                         data-subtotal="@mesa.Subtotal"
+                         data-total="@mesa.Total"
+                         data-desconto="@mesa.Desconto"
+                         data-tipo-desconto="@mesa.TipoDesconto"
+                         onclick="selecionarMesa(this)">
+                        <div class="mesa-card__numero">Mesa @mesa.Numero</div>
+                        <div class="mesa-card__status">
+                            @if (mesa.Ocupada)
+                            {
+                                <span class="status-badge status-badge--ocupada">Ocupada</span>
+                                <span class="mesa-card__tempo" data-inicio="@mesa.PermanenciaSegundos">
+                                    @TimeSpan.FromSeconds(mesa.PermanenciaSegundos).ToString(@"hh\:mm\:ss")
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-badge--livre">Livre</span>
+                            }
+                        </div>
+                        @if (mesa.Ocupada && mesa.Comandas.Any())
+                        {
+                            <div class="mesa-card__info">
+                                <span>@mesa.Comandas.Count comanda(s)</span>
+                                <span>@mesa.Subtotal.ToString("C2")</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+
+            @if (!Model.Any())
+            {
+                <div class="empty-state">
+                    <i class="fa-solid fa-bell-concierge"></i>
+                    <p>Nenhuma mesa cadastrada ainda.</p>
+                    <p>Clique em <strong>Adicionar Mesa</strong> para começar.</p>
+                </div>
+            }
+        </main>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="right-sidebar" id="right-sidebar">
+        <div class="sidebar-empty" id="sidebar-empty">
+            <i class="fa-solid fa-hand-pointer"></i>
+            <p>Selecione uma mesa para ver os detalhes</p>
+        </div>
+
+        <div class="sidebar-mesa-info" id="sidebar-mesa-info" style="display:none; flex-direction:column; height:100%;">
+            <div class="sidebar-header">
+                <div class="sidebar-header-info">
+                    <h2 id="sidebar-mesa-titulo">Mesa</h2>
+                    <p id="sidebar-mesa-permanencia">Permanência: 0:00:00</p>
+                </div>
+                <button class="sidebar-close-btn" onclick="fecharSidebar()" title="Fechar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn action-btn-primary" onclick="acaoBotao('Adicionar Item')">Adicionar Item</button>
+                <button class="action-btn action-btn-primary" onclick="acaoBotao('Remover Item')">Remover Item</button>
+                <button class="action-btn action-btn-secondary" onclick="abrirModalMoverMesa()">Mover Mesa</button>
+                <button class="action-btn action-btn-secondary" onclick="abrirModalDesconto()">Desconto/Cortesia</button>
+                <button class="action-btn action-btn-tertiary" onclick="abrirPreviaFiscal()">Prévia Fiscal</button>
+                <button class="action-btn action-btn-tertiary" onclick="abrirModalTaxaServico()">Taxa de Serviço/Couvert</button>
+                <button class="action-btn action-btn-secondary span-full" onclick="adicionarComanda()">Adicionar Comanda</button>
+            </div>
+
+            <div class="sidebar-content" id="sidebar-content"></div>
+
+            <div class="comanda-selector">
+                <label>Selecionar por comanda</label>
+                <button onclick="abrirSeletorComanda()">Selecionar</button>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="footer-values">
+                    <div class="value-row">
+                        <span class="label">Sub-Total:</span>
+                        <span class="value" id="footer-subtotal">R$ 0,00</span>
+                    </div>
+                    <div class="value-row">
+                        <span class="label">Taxa de Serviço (10%):</span>
+                        <span class="value" id="footer-taxa">R$ 0,00</span>
+                    </div>
+                    <div class="value-row">
+                        <span class="label">Desconto:</span>
+                        <span class="value" id="footer-desconto">—</span>
+                    </div>
+                </div>
+                <div class="footer-total-row">
+                    <span class="footer-total-label">Total:</span>
+                    <span class="footer-total-value" id="footer-total">R$ 0,00</span>
+                    <button class="btn-finish" onclick="finalizarCompra()">Finalizar Compra</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+</div><!-- /.admin-page-wrapper -->
+
+<!-- MODAL: Adicionar Mesa -->
+<div class="modal-overlay" id="modal-adicionar-mesa" style="display:none;">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Adicionar Mesa</h3>
+            <button class="modal-close" onclick="fecharModal('modal-adicionar-mesa')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <label>Número da Mesa</label>
+            <input type="number" id="input-num-mesa" placeholder="Ex: 25" min="1">
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn-cancel" onclick="fecharModal('modal-adicionar-mesa')">Cancelar</button>
+            <button class="modal-btn-confirm" onclick="confirmarAdicionarMesa()">Adicionar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Mover Mesa -->
+<div class="modal-overlay" id="modal-mover-mesa" style="display:none;">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Mover Mesa</h3>
+            <button class="modal-close" onclick="fecharModal('modal-mover-mesa')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <label>Mover para a Mesa</label>
+            <select id="select-mover-mesa">
+                @foreach (var mesa in Model.Where(m => !m.Ocupada))
+                {
+                    <option value="@mesa.Id">Mesa @mesa.Numero</option>
+                }
+            </select>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn-cancel" onclick="fecharModal('modal-mover-mesa')">Cancelar</button>
+            <button class="modal-btn-confirm" onclick="confirmarMoverMesa()">Mover</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Desconto/Cortesia -->
+<div class="modal-overlay" id="modal-desconto" style="display:none;">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Desconto / Cortesia</h3>
+            <button class="modal-close" onclick="fecharModal('modal-desconto')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <label>Tipo</label>
+            <select id="select-tipo-desconto">
+                <option value="Percentual">Percentual (%)</option>
+                <option value="Valor">Valor Fixo (R$)</option>
+                <option value="Cortesia">Cortesia (100%)</option>
+            </select>
+            <label style="margin-top:1rem;">Valor</label>
+            <input type="number" id="input-desconto" placeholder="Ex: 10" min="0">
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn-cancel" onclick="fecharModal('modal-desconto')">Cancelar</button>
+            <button class="modal-btn-confirm" onclick="confirmarDesconto()">Aplicar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Taxa de Serviço -->
+<div class="modal-overlay" id="modal-taxa" style="display:none;">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Taxa de Serviço / Couvert</h3>
+            <button class="modal-close" onclick="fecharModal('modal-taxa')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <label>Taxa de Serviço (%)</label>
+            <input type="number" id="input-taxa" value="10" min="0" max="100">
+            <p style="font-size:0.82rem; color:var(--grey); margin-top:0.5rem;">
+                Defina 0 para desativar a taxa de serviço.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn-cancel" onclick="fecharModal('modal-taxa')">Cancelar</button>
+            <button class="modal-btn-confirm" onclick="confirmarTaxa()">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Prévia Fiscal -->
+<div class="modal-overlay" id="modal-previa" style="display:none;">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h3>Prévia Fiscal</h3>
+            <button class="modal-close" onclick="fecharModal('modal-previa')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="modal-previa-body"></div>
+        <div class="modal-footer">
+            <button class="modal-btn-cancel" onclick="fecharModal('modal-previa')">Fechar</button>
+            <button class="modal-btn-confirm" onclick="imprimirPrevia()">
+                <i class="fa-solid fa-print"></i> Imprimir
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const MESAS_INICIAIS = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(m => new {
+            id = m.Id,
+            numero = m.Numero,
+            ocupada = m.Ocupada,
+            permanenciaSegundos = m.PermanenciaSegundos,
+            subtotal = m.Subtotal,
+            total = m.Total,
+            desconto = m.Desconto,
+            tipoDesconto = m.TipoDesconto.ToString(),
+            comandas = m.Comandas.Select(c => new {
+                numero = c.Numero,
+                abertaEm = c.AbertoEm,
+                subtotal = c.Subtotal,
+                itens = c.Itens.Select(i => new {
+                    nomeProduto = i.NomeProduto,
+                    quantidade = i.Quantidade,
+                    precoUnitario = i.PrecoUnitario,
+                    totalItem = i.TotalItem,
+                    observacoes = i.Observacoes
+                })
+            })
+        })));
+
+        // URLs dos endpoints para o mesa.js
+        const MESA_API = {
+            criar:    '/mesas/criar',
+            fechar:   (id) => `/mesas/${id}/fechar`,
+            mover:    (id) => `/mesas/${id}/mover`,
+            desconto: (id) => `/mesas/${id}/desconto`,
+            comanda:  (id) => `/mesas/${id}/comandas`,
+        };
+    </script>
+    <script src="~/js/mesa.js"></script>
+}

@@ -1,0 +1,354 @@
+@model List<ProntaComanda.Models.Produto>
+@{
+    ViewData["Title"] = "Cardápio";
+    // Agrupa os produtos por categoria para os filtros
+    var categorias = Model.Select(p => p.CategoriaNome).Distinct().Where(c => !string.IsNullOrEmpty(c)).OrderBy(c => c).ToList();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/styles/cardapio.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+}
+
+<header class="content-header">
+    <div>
+        <h1>Administrando Cardápio Digital</h1>
+        <p>Gerencie o cardápio do seu estabelecimento.</p>
+    </div>
+    <div class="header-buttons">
+        <button class="btn-action" title="Adicionar item"
+                data-open-modal="modal-cardapio" data-modal-mode="add">
+            <i class="fa-solid fa-plus"></i>
+            Adicionar Item
+        </button>
+    </div>
+</header>
+
+<!-- Filtros e busca -->
+<section class="filtering">
+    <div class="filters">
+        <button class="filter selecionado" data-categoria="">Tudo</button>
+        @foreach (var cat in categorias)
+        {
+            <button class="filter" data-categoria="@cat">@cat</button>
+        }
+    </div>
+    <div class="search">
+        <div class="search-block">
+            <input type="search" id="search" placeholder="Pesquisar por Nome">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+    </div>
+</section>
+
+<!-- Grid de produtos (Swiper) -->
+<div class="swiper">
+    <div class="swiper-wrapper" id="produtos-wrapper">
+        @foreach (var produto in Model)
+        {
+            <article class="card swiper-slide"
+                     data-id="@produto.Id"
+                     data-nome="@produto.Nome"
+                     data-nome-curto="@produto.NomeCurto"
+                     data-preco="@produto.Preco"
+                     data-estoque="@produto.Estoque"
+                     data-legenda="@produto.Legenda"
+                     data-categoria="@produto.CategoriaNome"
+                     data-subcategoria="@produto.SubCategoria"
+                     data-disponibilidade="@produto.Disponibilidade">
+
+                <div class="card-image-container">
+                    @if (!string.IsNullOrEmpty(produto.ImagemUrl))
+                    {
+                        <img src="@produto.ImagemUrl" alt="@produto.Nome" class="card-image">
+                    }
+                    else
+                    {
+                        <div class="card-image-placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24"
+                                 fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="1.4"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                        </div>
+                    }
+                    <div class="card-badge card-badge--@produto.Disponibilidade.ToString().ToLower()">
+                        @produto.Disponibilidade
+                    </div>
+                    @if (produto.HappyHour.Ativo && produto.HappyHour.ExibirBadge)
+                    {
+                        <div class="card-badge card-badge--happyhour">Happy Hour</div>
+                    }
+                </div>
+
+                <div class="card-text-content">
+                    <div class="card-name-description">
+                        <h2>@produto.Nome</h2>
+                        <p>@produto.Legenda</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-price">
+                            @if (produto.HappyHour.Ativo && produto.HappyHour.PrecoPromocional > 0)
+                            {
+                                <h3 class="preco-original">R$: @produto.Preco.ToString("N2")</h3>
+                                <h3 class="preco-hh">R$: @produto.HappyHour.PrecoPromocional.ToString("N2")</h3>
+                            }
+                            else
+                            {
+                                <h3>R$: @produto.Preco.ToString("N2")</h3>
+                            }
+                        </div>
+                        <button class="card-edit-btn" title="Editar item">
+                            <i class="fa-solid fa-edit"></i> Editar
+                        </button>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="fa-solid fa-utensils"></i>
+        <p>Nenhum produto cadastrado ainda.</p>
+        <p>Clique em <strong>Adicionar Item</strong> para começar.</p>
+    </div>
+}
+
+<!-- ============================================================
+     MODAL MULTI-ABA — Adicionar / Editar Item
+     ============================================================ -->
+<div class="modal-overlay" id="modal-cardapio" role="dialog" aria-modal="true"
+     aria-labelledby="modal-cardapio-title">
+    <div class="modal">
+
+        <div class="modal__header">
+            <span class="modal__title" id="modal-cardapio-title">Adicionando Item ao Menu</span>
+            <button class="modal__close-btn" aria-label="Fechar modal" title="Fechar">&#10005;</button>
+        </div>
+
+        <div class="modal__tabs" role="tablist">
+            <button class="modal__tab-btn modal__tab-btn--active" role="tab" aria-selected="true"
+                    aria-controls="panel-dados-gerais">Dados Gerais</button>
+            <button class="modal__tab-btn" role="tab" aria-selected="false"
+                    aria-controls="panel-acrescimos">Acréssimos/Extras</button>
+            <button class="modal__tab-btn" role="tab" aria-selected="false"
+                    aria-controls="panel-happy-hour">Happy Hour</button>
+        </div>
+
+        <div class="modal__body">
+
+            <!-- ========== ABA 1: DADOS GERAIS ========== -->
+            <div class="modal__panel modal__panel--active" id="panel-dados-gerais" role="tabpanel">
+                <div class="dados-gerais__layout">
+
+                    <div class="dados-gerais__form-col">
+                        <div class="modal-form__row">
+                            <div class="modal-form__group">
+                                <label class="modal-form__label" for="dg-nome">Nome do Item</label>
+                                <input class="modal-form__input" type="text" id="dg-nome" name="nome" autocomplete="off">
+                            </div>
+                            <div class="modal-form__group">
+                                <label class="modal-form__label" for="dg-nome-curto">Nome Curto (Cozinha)</label>
+                                <input class="modal-form__input" type="text" id="dg-nome-curto" name="nomeCurto" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="modal-form__row">
+                            <div class="modal-form__group">
+                                <label class="modal-form__label" for="dg-preco">Preço do item</label>
+                                <input class="modal-form__input" type="number" id="dg-preco" name="preco" min="0" step="0.01" placeholder="R$">
+                            </div>
+                            <div class="modal-form__group">
+                                <label class="modal-form__label" for="dg-categoria">Categoria</label>
+                                <div class="modal-form__select-wrapper">
+                                    <select class="modal-form__select" id="dg-categoria" name="categoriaNome">
+                                        <option value="Entrada">Entrada</option>
+                                        <option value="Principal">Principal</option>
+                                        <option value="Sobremesa">Sobremesa</option>
+                                        <option value="Bebida">Bebida</option>
+                                    </select>
+                                    <span class="modal-form__select-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-form__row">
+                            <div class="modal-form__group">
+                                <label class="modal-form__label" for="dg-estoque">Estoque</label>
+                                <input class="modal-form__input" type="number" id="dg-estoque" name="estoque" min="0" placeholder="0">
+                                <span class="modal-form__label--hint">Caso não tenha, colocar "0"</span>
+                            </div>
+                            <div class="modal-form__group">
+                                <label class="modal-form__label" for="dg-subcategoria">Sub-Categoria</label>
+                                <div class="modal-form__select-wrapper">
+                                    <select class="modal-form__select" id="dg-subcategoria" name="subCategoria">
+                                        <option value="Massa">Massa</option>
+                                        <option value="Grill">Grill</option>
+                                        <option value="Fritura">Fritura</option>
+                                        <option value="Frio">Frio</option>
+                                    </select>
+                                    <span class="modal-form__select-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-form__group" style="margin-bottom:0;">
+                            <label class="modal-form__label" for="dg-legenda">Legenda do Item</label>
+                            <textarea class="modal-form__textarea" id="dg-legenda" name="legenda"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="dados-gerais__media-col">
+                        <div>
+                            <label class="image-upload__label">Anexar imagem do item:</label>
+                            <div class="image-upload__input-wrapper" title="Clique para selecionar imagem">
+                                <input class="image-upload__file-input" type="file" accept="image/*" id="dg-imagem" aria-label="Selecionar imagem">
+                                <span class="image-upload__filename">Nenhum arquivo</span>
+                                <span class="image-upload__icon"><i class="fa-solid fa-up-right-from-square"></i></span>
+                            </div>
+                            <span class="image-preview__label">Prévia da imagem</span>
+                            <div class="image-preview__box">
+                                <img src="" alt="Prévia" style="display:none;" id="dg-preview-img">
+                                <div class="image-preview__placeholder"><i class="fa-regular fa-image"></i></div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="disponibilidade__label" for="dg-disponibilidade">Disponibilidade</label>
+                            <div class="modal-form__select-wrapper">
+                                <select class="modal-form__select" id="dg-disponibilidade" name="disponibilidade">
+                                    <option value="Disponivel">Disponível</option>
+                                    <option value="Indisponivel">Indisponível</option>
+                                    <option value="Esgotado">Esgotado</option>
+                                </select>
+                                <span class="modal-form__select-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+                            </div>
+                        </div>
+                        <div class="modal-form__footer">
+                            <button class="modal-form__submit-btn" id="btn-submit-produto" type="button">Adicionar</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div><!-- /#panel-dados-gerais -->
+
+            <!-- ========== ABA 2: ACRÉSSIMOS/EXTRAS ========== -->
+            <div class="modal__panel" id="panel-acrescimos" role="tabpanel">
+                <div class="extras__search-row">
+                    <div class="extras__search-col">
+                        <div class="modal-form__group">
+                            <label class="modal-form__label" for="ext-nome">Nome do Acréssimo</label>
+                            <input class="modal-form__input extras__nome-input" type="text" id="ext-nome" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="extras__price-col">
+                        <div class="modal-form__group">
+                            <label class="modal-form__label" for="ext-preco">Preço Base</label>
+                            <input class="modal-form__input extras__preco-input" type="number" id="ext-preco" min="0" step="0.01" placeholder="R$">
+                        </div>
+                    </div>
+                    <button class="extras__vincular-btn" type="button">[+] Vincular ao Item</button>
+                </div>
+                <p class="extras__hint">*digite para buscar ou criar um novo adicional</p>
+                <div class="extras__minmax-row">
+                    <div class="extras__minmax-col modal-form__group">
+                        <label class="modal-form__label" for="ext-min">Mínimo de escolhas</label>
+                        <input class="modal-form__input" type="number" id="ext-min" min="0">
+                    </div>
+                    <div class="extras__minmax-col modal-form__group">
+                        <label class="modal-form__label" for="ext-max">Máximo de escolhas</label>
+                        <input class="modal-form__input" type="number" id="ext-max" min="0">
+                    </div>
+                </div>
+                <p class="extras__table-title">Modificadores Vinculados a este item:</p>
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Preço Base Global</th>
+                            <th>Preço Customizado (Opcional)</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody class="extras__tbody"></tbody>
+                </table>
+            </div><!-- /#panel-acrescimos -->
+
+            <!-- ========== ABA 3: HAPPY HOUR ========== -->
+            <div class="modal__panel" id="panel-happy-hour" role="tabpanel">
+                <div class="happyhour__top-row">
+                    <div class="happyhour__price-col modal-form__group">
+                        <label class="modal-form__label" for="hh-preco">Preço Promocional (R$)</label>
+                        <input class="modal-form__input" type="number" id="hh-preco" name="precoHH" min="0" step="0.01" placeholder="R$">
+                    </div>
+                    <div class="happyhour__weekly-col">
+                        <span class="happyhour__weekly-label">Repetição semanal</span>
+                        <div class="happyhour__days-grid" role="group">
+                            <button class="happyhour__day-btn" type="button" data-day-index="0">Dom</button>
+                            <button class="happyhour__day-btn" type="button" data-day-index="1">Seg</button>
+                            <button class="happyhour__day-btn" type="button" data-day-index="2">Ter</button>
+                            <button class="happyhour__day-btn" type="button" data-day-index="3">Qua</button>
+                            <button class="happyhour__day-btn" type="button" data-day-index="4">Qui</button>
+                            <button class="happyhour__day-btn" type="button" data-day-index="5">Sex</button>
+                            <button class="happyhour__day-btn" type="button" data-day-index="6">Sab.</button>
+                        </div>
+                    </div>
+                </div>
+                <p class="happyhour__schedule-title">Janela de Horários automática</p>
+                <div class="happyhour__table-wrapper">
+                    <table class="modal-table">
+                        <thead>
+                            <tr>
+                                <th>Dia da Semana</th>
+                                <th>Horário de Início</th>
+                                <th>Horário de Fim</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody class="happyhour__schedule-tbody"></tbody>
+                    </table>
+                </div>
+                <p class="happyhour__controls-title">Controles Adicionais:</p>
+                <div class="happyhour__control-row">
+                    <span class="happyhour__control-label">Ativar HappyHour Para Este Item?</span>
+                    <label class="toggle-switch toggle-switch--off" title="Ativar/desativar happy hour">
+                        <input class="toggle-switch__input" type="checkbox" id="hh-ativo">
+                        <span class="toggle-switch__track"></span>
+                        <span class="toggle-switch__label-on">Ativado</span>
+                        <span class="toggle-switch__label-off">Desativado</span>
+                    </label>
+                </div>
+                <div class="happyhour__control-row">
+                    <span class="happyhour__control-label">Exibir Badge "HappyHour" no Cardápio Digital?</span>
+                    <label class="toggle-switch toggle-switch--off" title="Exibir/ocultar badge">
+                        <input class="toggle-switch__input" type="checkbox" id="hh-badge">
+                        <span class="toggle-switch__track"></span>
+                        <span class="toggle-switch__label-on">Ativado</span>
+                        <span class="toggle-switch__label-off">Desativado</span>
+                    </label>
+                </div>
+            </div><!-- /#panel-happy-hour -->
+
+        </div><!-- /.modal__body -->
+    </div><!-- /.modal -->
+</div><!-- /#modal-cardapio -->
+
+<!-- Campo oculto para guardar o ID do produto em edição -->
+<input type="hidden" id="produto-id-edicao" value="">
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="~/js/cardapio.js"></script>
+    <script>
+        // URL base dos endpoints MVC (usada pelo cardapio.js)
+        const API_BASE = {
+            criar: '/produtos/criar',
+            editar: (id) => `/produtos/${id}/editar`,
+            deletar: (id) => `/produtos/${id}/deletar`,
+            disponibilidade: (id) => `/produtos/${id}/disponibilidade`
+        };
+    </script>
+}
