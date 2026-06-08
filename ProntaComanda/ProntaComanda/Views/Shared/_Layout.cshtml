@@ -1,50 +1,68 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - ProntaComanda</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ProntaComanda.styles.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/css/global/reset.css" />
+    <link rel="stylesheet" href="~/css/global/color.css" />
+    <link rel="stylesheet" href="~/css/styles/layout.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="shortcut icon" href="~/img/prontaComanda.png" type="image/x-icon" />
+
+    @RenderSection("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ProntaComanda</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+    <div class="kds-page">
+
+        <!-- ===== SIDEBAR ESQUERDA ===== -->
+        <aside class="admin-sidebar" aria-label="Navegação principal">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-cubes-stacked" aria-hidden="true"></i>
+                <span class="logo-text">ProntaComanda</span>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+            <nav class="sidebar-nav" aria-label="Menu administrativo">
+                <a asp-controller="Produtos" asp-action="Index"
+                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Produtos" ? "active" : "")"
+                   title="Cardápio">
+                    <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+                    <span class="menu-text">Cardápio</span>
+                </a>
+                <a asp-controller="Mesas" asp-action="Index"
+                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Mesas" ? "active" : "")"
+                   title="Mesas">
+                    <i class="fa-solid fa-bell-concierge" aria-hidden="true"></i>
+                    <span class="menu-text">Mesas</span>
+                </a>
+                <a asp-controller="Pedidos" asp-action="Index"
+                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Pedidos" ? "active" : "")"
+                   title="KDS">
+                    <i class="fa-solid fa-fire" aria-hidden="true"></i>
+                    <span class="menu-text">KDS</span>
+                </a>
+                <a asp-controller="Relatorios" asp-action="Index"
+                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Relatorios" ? "active" : "")"
+                   title="Dashboard">
+                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+                <a asp-controller="Funcionarios" asp-action="Index"
+                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Funcionarios" ? "active" : "")"
+                   title="Funcionários">
+                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                    <span class="menu-text">Funcionários</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ===== CONTEÚDO DA PÁGINA ===== -->
+        <div class="kds-page-wrapper">
             @RenderBody()
-        </main>
+        </div>
+
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - ProntaComanda - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

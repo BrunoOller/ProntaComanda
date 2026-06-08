@@ -4,14 +4,8 @@ using ProntaComanda.Repositories.Interfaces;
 
 namespace ProntaComanda.Controllers;
 
-/// <summary>
-/// Gerencia o cardápio digital (RF1, RF2, RF3).
-/// Base: /api/produtos
-/// </summary>
-[ApiController]
-[Route("api/[controller]")]
-[Produces("application/json")]
-public class ProdutosController : ControllerBase
+[Route("produtos")]
+public class ProdutosController : Controller
 {
     private readonly IProdutoRepository _repo;
 
@@ -20,102 +14,79 @@ public class ProdutosController : ControllerBase
         _repo = repo;
     }
 
-    // ── GET /api/produtos ────────────────────────────────────────────────
-    /// <summary>
-    /// Retorna produtos com filtros opcionais por categoria e disponibilidade.
-    /// Também suporta busca por nome via query string.
-    /// Ex: /api/produtos?categoriaId=abc&disponibilidade=Disponivel&busca=pizza
-    /// </summary>
-    [HttpGet]
-    [ProducesResponseType(typeof(List<Produto>), StatusCodes.Status200OK)]
+    // ── GET /produtos ────────────────────────────────────────────────────
+    public async Task<IActionResult> Index()
+    {
+        var produtos = await _repo.GetByFiltroAsync(null, null);
+        return View(produtos);
+    }
+
+    // ── GET /produtos/dados ──────────────────────────────────────────────
+    [HttpGet("dados")]
     public async Task<IActionResult> GetAll(
         [FromQuery] string? categoriaId = null,
         [FromQuery] Disponibilidade? disponibilidade = null,
         [FromQuery] string? busca = null)
     {
-        // Se tiver busca por nome, ignora os outros filtros
         if (!string.IsNullOrWhiteSpace(busca))
-            return Ok(await _repo.SearchByNomeAsync(busca));
+            return Json(await _repo.SearchByNomeAsync(busca));
 
-        return Ok(await _repo.GetByFiltroAsync(categoriaId, disponibilidade));
+        return Json(await _repo.GetByFiltroAsync(categoriaId, disponibilidade));
     }
 
-    // ── GET /api/produtos/{id} ───────────────────────────────────────────
-    /// <summary>Retorna um produto pelo Id.</summary>
+    // ── GET /produtos/{id} ───────────────────────────────────────────────
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(Produto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id)
     {
         var produto = await _repo.GetByIdAsync(id);
-        return produto is null ? NotFound() : Ok(produto);
+        return produto is null ? NotFound() : Json(produto);
     }
 
-    // ── POST /api/produtos ───────────────────────────────────────────────
-    /// <summary>Cria um novo produto no cardápio (RF1).</summary>
-    [HttpPost]
-    [ProducesResponseType(typeof(Produto), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] Produto produto)
+    // ── POST /produtos/criar ─────────────────────────────────────────────
+    [HttpPost("criar")]
+    public async Task<IActionResult> Create(Produto produto)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return View("Index", await _repo.GetByFiltroAsync(null, null));
 
         await _repo.CreateAsync(produto);
-
-        return CreatedAtAction(nameof(GetById), new { id = produto.Id }, produto);
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── PUT /api/produtos/{id} ───────────────────────────────────────────
-    /// <summary>Atualiza um produto existente (RF1).</summary>
-    [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(string id, [FromBody] Produto produto)
+    // ── POST /produtos/{id}/editar ───────────────────────────────────────
+    [HttpPost("{id}/editar")]
+    public async Task<IActionResult> Update(string id, Produto produto)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return View("Index", await _repo.GetByFiltroAsync(null, null));
 
         var existente = await _repo.GetByIdAsync(id);
         if (existente is null) return NotFound();
 
         produto.Id = id;
         await _repo.UpdateAsync(id, produto);
-
-        return NoContent();
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── PATCH /api/produtos/{id}/disponibilidade ─────────────────────────
-    /// <summary>
-    /// Atualiza apenas a disponibilidade de um produto (RF2).
-    /// Operação cirúrgica — não reescreve o documento inteiro.
-    /// </summary>
-    [HttpPatch("{id}/disponibilidade")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateDisponibilidade(
-        string id,
-        [FromBody] Disponibilidade disponibilidade)
+    // ── POST /produtos/{id}/disponibilidade ──────────────────────────────
+    [HttpPost("{id}/disponibilidade")]
+    public async Task<IActionResult> UpdateDisponibilidade(string id, Disponibilidade disponibilidade)
     {
         var existente = await _repo.GetByIdAsync(id);
         if (existente is null) return NotFound();
 
         await _repo.UpdateDisponibilidadeAsync(id, disponibilidade);
-        return NoContent();
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── DELETE /api/produtos/{id} ────────────────────────────────────────
-    /// <summary>Remove um produto do cardápio (RF1).</summary>
-    [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    // ── POST /produtos/{id}/deletar ──────────────────────────────────────
+    [HttpPost("{id}/deletar")]
     public async Task<IActionResult> Delete(string id)
     {
         var existente = await _repo.GetByIdAsync(id);
         if (existente is null) return NotFound();
 
         await _repo.DeleteAsync(id);
-        return NoContent();
+        return RedirectToAction(nameof(Index));
     }
 }

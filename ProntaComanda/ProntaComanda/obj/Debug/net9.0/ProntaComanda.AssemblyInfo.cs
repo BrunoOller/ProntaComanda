@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProntaComanda")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c9a9d70e2e25af9500c8ab4cb4c51a32884c97da")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fe29ca0af37a4cd936885dab681b880b87534317")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProntaComanda")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProntaComanda")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

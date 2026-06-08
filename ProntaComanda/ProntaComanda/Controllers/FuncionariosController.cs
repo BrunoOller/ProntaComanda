@@ -4,14 +4,8 @@ using ProntaComanda.Repositories.Interfaces;
 
 namespace ProntaComanda.Controllers;
 
-/// <summary>
-/// Gerencia os funcionários do restaurante (RF13).
-/// Base: /api/funcionarios
-/// </summary>
-[ApiController]
-[Route("api/[controller]")]
-[Produces("application/json")]
-public class FuncionariosController : ControllerBase
+[Route("funcionarios")]
+public class FuncionariosController : Controller
 {
     private readonly IFuncionarioRepository _repo;
 
@@ -20,84 +14,70 @@ public class FuncionariosController : ControllerBase
         _repo = repo;
     }
 
-    // ── GET /api/funcionarios ────────────────────────────────────────────
-    /// <summary>Retorna todos os funcionários ordenados por nome.</summary>
-    [HttpGet]
-    [ProducesResponseType(typeof(List<Funcionario>), StatusCodes.Status200OK)]
+    // ── GET /funcionarios ────────────────────────────────────────────────
+    public async Task<IActionResult> Index()
+    {
+        var funcionarios = await _repo.GetAllAsync();
+        return View(funcionarios);
+    }
+
+    // ── GET /funcionarios/dados ──────────────────────────────────────────
+    [HttpGet("dados")]
     public async Task<IActionResult> GetAll() =>
-        Ok(await _repo.GetAllAsync());
+        Json(await _repo.GetAllAsync());
 
-    // ── GET /api/funcionarios/funcao/{funcao} ────────────────────────────
-    /// <summary>Retorna funcionários filtrados por função.</summary>
+    // ── GET /funcionarios/funcao/{funcao} ────────────────────────────────
     [HttpGet("funcao/{funcao}")]
-    [ProducesResponseType(typeof(List<Funcionario>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByFuncao(FuncaoUsuario funcao) =>
-        Ok(await _repo.GetByFuncaoAsync(funcao));
+        Json(await _repo.GetByFuncaoAsync(funcao));
 
-    // ── GET /api/funcionarios/{id} ───────────────────────────────────────
-    /// <summary>Retorna um funcionário pelo Id.</summary>
+    // ── GET /funcionarios/{id} ───────────────────────────────────────────
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(Funcionario), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(string id)
     {
         var funcionario = await _repo.GetByIdAsync(id);
-        return funcionario is null ? NotFound() : Ok(funcionario);
+        return funcionario is null ? NotFound() : Json(funcionario);
     }
 
-    // ── POST /api/funcionarios ───────────────────────────────────────────
-    /// <summary>Cria um novo funcionário.</summary>
-    [HttpPost]
-    [ProducesResponseType(typeof(Funcionario), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] Funcionario funcionario)
+    // ── POST /funcionarios/criar ─────────────────────────────────────────
+    [HttpPost("criar")]
+    public async Task<IActionResult> Create(Funcionario funcionario)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return View("Index", await _repo.GetAllAsync());
 
-        // Hash da senha antes de persistir — nunca salvar em texto puro
         funcionario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(funcionario.SenhaHash);
 
         await _repo.CreateAsync(funcionario);
-
-        return CreatedAtAction(nameof(GetById), new { id = funcionario.Id }, funcionario);
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── PUT /api/funcionarios/{id} ───────────────────────────────────────
-    /// <summary>Atualiza um funcionário existente.</summary>
-    [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(string id, [FromBody] Funcionario funcionario)
+    // ── POST /funcionarios/{id}/editar ───────────────────────────────────
+    [HttpPost("{id}/editar")]
+    public async Task<IActionResult> Update(string id, Funcionario funcionario)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return View("Index", await _repo.GetAllAsync());
 
         var existente = await _repo.GetByIdAsync(id);
         if (existente is null) return NotFound();
 
-        // Só refaz o hash se a senha foi alterada (diferente do hash atual)
         if (funcionario.SenhaHash != existente.SenhaHash)
             funcionario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(funcionario.SenhaHash);
 
         funcionario.Id = id;
         await _repo.UpdateAsync(id, funcionario);
-
-        return NoContent();
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── DELETE /api/funcionarios/{id} ────────────────────────────────────
-    /// <summary>Remove um funcionário pelo Id.</summary>
-    [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    // ── POST /funcionarios/{id}/deletar ──────────────────────────────────
+    [HttpPost("{id}/deletar")]
     public async Task<IActionResult> Delete(string id)
     {
         var existente = await _repo.GetByIdAsync(id);
         if (existente is null) return NotFound();
 
         await _repo.DeleteAsync(id);
-        return NoContent();
+        return RedirectToAction(nameof(Index));
     }
 }

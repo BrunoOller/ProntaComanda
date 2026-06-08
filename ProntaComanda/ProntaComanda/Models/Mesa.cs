@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using ProntaComanda.API.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 

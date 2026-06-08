@@ -4,14 +4,8 @@ using ProntaComanda.Repositories.Interfaces;
 
 namespace ProntaComanda.Controllers;
 
-/// <summary>
-/// Gerencia as mesas e comandas do restaurante (RF4, RF5, RF6, RF7, RF11, RF12).
-/// Base: /api/mesas
-/// </summary>
-[ApiController]
-[Route("api/[controller]")]
-[Produces("application/json")]
-public class MesasController : ControllerBase
+[Route("mesas")]
+public class MesasController : Controller
 {
     private readonly IMesaRepository _repo;
 
@@ -20,191 +14,121 @@ public class MesasController : ControllerBase
         _repo = repo;
     }
 
-    // ── GET /api/mesas ───────────────────────────────────────────────────
-    /// <summary>
-    /// Retorna todas as mesas.
-    /// Filtro opcional por status: /api/mesas?ocupada=true
-    /// </summary>
-    [HttpGet]
-    [ProducesResponseType(typeof(List<Mesa>), StatusCodes.Status200OK)]
+    // ── GET /mesas ───────────────────────────────────────────────────────
+    public async Task<IActionResult> Index()
+    {
+        var mesas = await _repo.GetAllAsync();
+        return View(mesas);
+    }
+
+    // ── GET /mesas/dados ─────────────────────────────────────────────────
+    [HttpGet("dados")]
     public async Task<IActionResult> GetAll([FromQuery] bool? ocupada = null)
     {
         if (ocupada.HasValue)
-            return Ok(await _repo.GetByStatusAsync(ocupada.Value));
+            return Json(await _repo.GetByStatusAsync(ocupada.Value));
 
-        return Ok(await _repo.GetAllAsync());
+        return Json(await _repo.GetAllAsync());
     }
 
-    // ── GET /api/mesas/{id} ──────────────────────────────────────────────
-    /// <summary>Retorna uma mesa pelo Id.</summary>
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(Mesa), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(string id)
-    {
-        var mesa = await _repo.GetByIdAsync(id);
-        return mesa is null ? NotFound() : Ok(mesa);
-    }
-
-    // ── GET /api/mesas/numero/{numero} ───────────────────────────────────
-    /// <summary>Retorna uma mesa pelo número.</summary>
+    // ── GET /mesas/numero/{numero} ───────────────────────────────────────
     [HttpGet("numero/{numero:int}")]
-    [ProducesResponseType(typeof(Mesa), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByNumero(int numero)
     {
         var mesa = await _repo.GetByNumeroAsync(numero);
-        return mesa is null ? NotFound() : Ok(mesa);
+        return mesa is null ? NotFound() : Json(mesa);
     }
 
-    // ── POST /api/mesas ──────────────────────────────────────────────────
-    /// <summary>Cadastra uma nova mesa no sistema.</summary>
-    [HttpPost]
-    [ProducesResponseType(typeof(Mesa), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] Mesa mesa)
+    // ── POST /mesas/criar ────────────────────────────────────────────────
+    [HttpPost("criar")]
+    public async Task<IActionResult> Create(Mesa mesa)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return View("Index", await _repo.GetAllAsync());
 
-        // Garante que a mesa começa livre
         mesa.Ocupada = false;
         mesa.OcupadaEm = null;
         mesa.Comandas = [];
 
         await _repo.CreateAsync(mesa);
-
-        return CreatedAtAction(nameof(GetById), new { id = mesa.Id }, mesa);
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── POST /api/mesas/{id}/comandas ────────────────────────────────────
-    /// <summary>
-    /// Abre uma nova comanda na mesa — inicia o atendimento (RF5).
-    /// Marca a mesa como ocupada automaticamente.
-    /// </summary>
+    // ── POST /mesas/{id}/comandas ────────────────────────────────────────
     [HttpPost("{id}/comandas")]
-    [ProducesResponseType(typeof(Mesa), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AddComanda(string id, [FromBody] Comanda comanda)
+    public async Task<IActionResult> AddComanda(string id, Comanda comanda)
     {
         var mesa = await _repo.GetByIdAsync(id);
         if (mesa is null) return NotFound();
 
-        // Número da comanda sequencial dentro da mesa
         comanda.Numero = mesa.Comandas.Count + 1;
         comanda.AbertoEm = DateTime.UtcNow;
 
         await _repo.AddComandaAsync(id, comanda);
-
-        return Ok(await _repo.GetByIdAsync(id));
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── POST /api/mesas/{id}/comandas/{numeroComanda}/itens ──────────────
-    /// <summary>
-    /// Adiciona um item a uma comanda existente (RF6).
-    /// </summary>
+    // ── POST /mesas/{id}/comandas/{numeroComanda}/itens ──────────────────
     [HttpPost("{id}/comandas/{numeroComanda:int}/itens")]
-    [ProducesResponseType(typeof(Mesa), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AddItemComanda(
-        string id,
-        int numeroComanda,
-        [FromBody] ItemComanda item)
+    public async Task<IActionResult> AddItemComanda(string id, int numeroComanda, ItemComanda item)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return RedirectToAction(nameof(Index));
 
         var mesa = await _repo.GetByIdAsync(id);
         if (mesa is null) return NotFound();
 
         var comanda = mesa.Comandas.FirstOrDefault(c => c.Numero == numeroComanda);
-        if (comanda is null)
-            return NotFound(new { message = $"Comanda {numeroComanda} não encontrada na mesa." });
+        if (comanda is null) return NotFound();
 
         await _repo.AddItemComandaAsync(id, numeroComanda, item);
-
-        return Ok(await _repo.GetByIdAsync(id));
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── PATCH /api/mesas/{id}/desconto ───────────────────────────────────
-    /// <summary>
-    /// Aplica desconto, cortesia ou taxa de serviço na mesa (RF12).
-    /// </summary>
-    [HttpPatch("{id}/desconto")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AplicarDesconto(
-        string id,
-        [FromBody] AplicarDescontoRequest request)
+    // ── POST /mesas/{id}/desconto ────────────────────────────────────────
+    [HttpPost("{id}/desconto")]
+    public async Task<IActionResult> AplicarDesconto(string id, decimal desconto, TipoDesconto tipoDesconto)
     {
         var mesa = await _repo.GetByIdAsync(id);
         if (mesa is null) return NotFound();
 
-        await _repo.AplicarDescontoAsync(id, request.Desconto, request.TipoDesconto);
-        return NoContent();
+        await _repo.AplicarDescontoAsync(id, desconto, tipoDesconto);
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── POST /api/mesas/{id}/mover ───────────────────────────────────────
-    /// <summary>
-    /// Transfere todas as comandas para outra mesa (RF7).
-    /// </summary>
+    // ── POST /mesas/{id}/mover ───────────────────────────────────────────
     [HttpPost("{id}/mover")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> MoverComandas(
-        string id,
-        [FromBody] MoverComandasRequest request)
+    public async Task<IActionResult> MoverComandas(string id, string mesaDestinoId)
     {
         var origem = await _repo.GetByIdAsync(id);
-        var destino = await _repo.GetByIdAsync(request.MesaDestinoId);
+        var destino = await _repo.GetByIdAsync(mesaDestinoId);
 
-        if (origem is null || destino is null)
-            return NotFound(new { message = "Mesa de origem ou destino não encontrada." });
+        if (origem is null || destino is null) return NotFound();
+        if (id == mesaDestinoId) return BadRequest();
 
-        if (id == request.MesaDestinoId)
-            return BadRequest(new { message = "Mesa de origem e destino não podem ser iguais." });
-
-        await _repo.MoverComandasAsync(id, request.MesaDestinoId);
-        return NoContent();
+        await _repo.MoverComandasAsync(id, mesaDestinoId);
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── POST /api/mesas/{id}/fechar ──────────────────────────────────────
-    /// <summary>
-    /// Fecha a mesa após pagamento — limpa comandas e libera a mesa.
-    /// </summary>
+    // ── POST /mesas/{id}/fechar ──────────────────────────────────────────
     [HttpPost("{id}/fechar")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Fechar(string id)
     {
         var mesa = await _repo.GetByIdAsync(id);
         if (mesa is null) return NotFound();
 
         await _repo.FecharMesaAsync(id);
-        return NoContent();
+        return RedirectToAction(nameof(Index));
     }
 
-    // ── DELETE /api/mesas/{id} ───────────────────────────────────────────
-    /// <summary>Remove uma mesa do sistema.</summary>
-    [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    // ── POST /mesas/{id}/deletar ─────────────────────────────────────────
+    [HttpPost("{id}/deletar")]
     public async Task<IActionResult> Delete(string id)
     {
         var mesa = await _repo.GetByIdAsync(id);
         if (mesa is null) return NotFound();
 
         await _repo.DeleteAsync(id);
-        return NoContent();
+        return RedirectToAction(nameof(Index));
     }
 }
-
-// ── Request bodies ───────────────────────────────────────────────────────────
-
-/// <summary>Body para PATCH /mesas/{id}/desconto</summary>
-public record AplicarDescontoRequest(decimal Desconto, TipoDesconto TipoDesconto);
-
-/// <summary>Body para POST /mesas/{id}/mover</summary>
-public record MoverComandasRequest(string MesaDestinoId);
