@@ -10,59 +10,51 @@
 }
 
 <!-- Layout da página de mesas: usa wrapper próprio com sidebar direita -->
-<div class="admin-page-wrapper" style="display:flex; flex:1; overflow:hidden; min-width:0;">
+<div class="admin-page-wrapper">
 
-    <div class="content-wrapper" style="flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0;">
-        <main class="kds-content">
-            <header class="content-header">
-                <div class="header-title">
-                    <h1>Gerenciamento de Mesas</h1>
-                    <p>@mesasOcupadas ocupada(s) · @mesasLivres livre(s)</p>
-                </div>
-                <button class="btn-add-mesa" onclick="abrirModalAdicionarMesa()">
-                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                    Adicionar Mesa
-                </button>
-            </header>
+    <div class="content-wrapper">
+        <main class="admin-content">
+            <header class="content-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 2rem; margin-bottom: 1.5rem; width: 100%; max-width: calc(100% - 20px); box-sizing: border-box;">
+    <div class="header-title">
+        <h1 style="margin: 0; font-size: 1.8rem;">Gerenciamento de Mesas</h1>
+        <p style="margin: 5px 0 0 0; color: #666;">@mesasOcupadas ocupadas · @mesasLivres disponíveis</p>
+    </div>
+    
+    <button class="btn-add-mesa" onclick="abrirModalAdicionarMesa()" style="margin-left: 280px; display: flex; align-items: center; gap: 0.6rem;">
+    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+    Adicionar Mesa
+</button>
+</header>
 
             <!-- Grid de mesas — renderizado pelo JS com dados do servidor -->
             <section class="content-grid" id="mesa-grid">
                 @foreach (var mesa in Model)
-                {
-                    <!-- data-* expõe os dados do servidor para o JS sem fetch extra -->
-                    <div class="mesa-card @(mesa.Ocupada ? "mesa-card--ocupada" : "mesa-card--livre")"
-                         data-id="@mesa.Id"
-                         data-numero="@mesa.Numero"
-                         data-ocupada="@mesa.Ocupada.ToString().ToLower()"
-                         data-permanencia="@mesa.PermanenciaSegundos"
-                         data-subtotal="@mesa.Subtotal"
-                         data-total="@mesa.Total"
-                         data-desconto="@mesa.Desconto"
-                         data-tipo-desconto="@mesa.TipoDesconto"
-                         onclick="selecionarMesa(this)">
-                        <div class="mesa-card__numero">Mesa @mesa.Numero</div>
-                        <div class="mesa-card__status">
-                            @if (mesa.Ocupada)
-                            {
-                                <span class="status-badge status-badge--ocupada">Ocupada</span>
-                                <span class="mesa-card__tempo" data-inicio="@mesa.PermanenciaSegundos">
-                                    @TimeSpan.FromSeconds(mesa.PermanenciaSegundos).ToString(@"hh\:mm\:ss")
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="status-badge status-badge--livre">Livre</span>
-                            }
-                        </div>
-                        @if (mesa.Ocupada && mesa.Comandas.Any())
-                        {
-                            <div class="mesa-card__info">
-                                <span>@mesa.Comandas.Count comanda(s)</span>
-                                <span>@mesa.Subtotal.ToString("C2")</span>
-                            </div>
-                        }
-                    </div>
-                }
+{
+    <div class="card @(mesa.Ocupada ? "ocupada" : "disponivel")"
+         data-id="@mesa.Id"
+         data-numero="@mesa.Numero"
+         data-ocupada="@mesa.Ocupada.ToString().ToLower()"
+         data-permanencia="@mesa.PermanenciaSegundos"
+         data-subtotal="@mesa.Subtotal"
+         data-total="@mesa.Total"
+         data-desconto="@mesa.Desconto"
+         data-tipo-desconto="@mesa.TipoDesconto"
+         onclick="selecionarMesa(this)">
+
+        <div class="mesa-label">
+            Mesa
+        </div>
+
+        <div class="mesa-number">
+            @(mesa.Numero.ToString("D2"))
+        </div>
+
+        <div class="mesa-status-bar">
+            @(mesa.Ocupada ? "Ocupada" : "Disponível")
+        </div>
+
+    </div>
+}
             </section>
 
             @if (!Model.Any())
@@ -250,6 +242,85 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="modal-selecionar-comanda" style="display:none;">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Selecionar Comanda</h3>
+            <button class="modal-close" onclick="fecharModal('modal-selecionar-comanda')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 0.5rem; color: var(--grey);">Escolha a comanda alvo para lançar os itens:</p>
+            <select id="select-comanda-ativa" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;">
+                </select>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn-cancel" onclick="fecharModal('modal-selecionar-comanda')">Cancelar</button>
+            <button class="modal-btn-confirm" onclick="confirmarSelecaoComanda()">Selecionar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-adicionar-produto" style="display:none;">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h3>Cardápio - Adicionar Item</h3>
+            <button class="modal-close" onclick="fecharModal('modal-adicionar-produto')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 1rem; color: var(--grey);">Comanda ativa: <strong id="label-comanda-ativa-add">Nenhuma</strong></p>
+            
+            <div class="produto-grid" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                <div class="produto-card" style="border: 1px solid #eee; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #fff;">
+                    <div>
+                        <strong style="font-size: 1.1rem; color: var(--dark);">Hambúrguer Clássico</strong><br>
+                        <span style="color: var(--primary-color); font-weight: bold;">R$ 35,00</span>
+                    </div>
+                    <button class="action-btn action-btn-primary" onclick="dispararAdicaoItemMock('PROD-001', 'Hambúrguer Clássico', 35.00)">Adicionar</button>
+                </div>
+
+                <div class="produto-card" style="border: 1px solid #eee; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #fff;">
+                    <div>
+                        <strong style="font-size: 1.1rem; color: var(--dark);">Coca-Cola Lata 350ml</strong><br>
+                        <span style="color: var(--primary-color); font-weight: bold;">R$ 7,50</span>
+                    </div>
+                    <button class="action-btn action-btn-primary" onclick="dispararAdicaoItemMock('PROD-002', 'Coca-Cola Lata 350ml', 7.50)">Adicionar</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn-cancel" onclick="fecharModal('modal-adicionar-produto')">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-confirmar-estorno" style="display:none;">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Confirmar Estorno</h3>
+            <button class="modal-close" onclick="fecharModal('modal-confirmar-estorno')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Tem certeza que deseja estornar <strong>1x <span id="label-nome-estorno"></span></strong> da comanda?</p>
+            <p style="font-size: 0.85rem; color: #d9534f; margin-top: 15px; padding: 10px; background: #fdf0f0; border-radius: 4px; border-left: 3px solid #d9534f;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Esta ação será registrada no histórico de operações do turno.
+            </p>
+            
+            <input type="hidden" id="hidden-produto-id-estorno">
+            <input type="hidden" id="hidden-preco-estorno">
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn-cancel" onclick="fecharModal('modal-confirmar-estorno')">Cancelar</button>
+            <button class="modal-btn-confirm" onclick="confirmarEstornoItem()" style="background-color: #d9534f; color: white; border: none;">Estornar</button>
+        </div>
+    </div>
+</div>
+
 <!-- Form oculto apenas para expor o token antiforgery ao JS -->
 <form id="__af-form" style="display:none">
     @Html.AntiForgeryToken()
@@ -278,7 +349,7 @@
                     observacoes = i.Observacoes
                 })
             })
-        })));
+        })))
 
         // URLs dos endpoints MVC para o mesa.js
         // Padrão: POST /Controller/Action com params no body
@@ -289,6 +360,7 @@
             desconto: '/Mesas/AplicarDesconto',
             comanda:  '/Mesas/AdicionarComanda',
             deletar:  '/Mesas/Deletar',
+            alterarItem: '/Mesas/AlterarItem'
         };
 
         // Token antiforgery para os POSTs do JS

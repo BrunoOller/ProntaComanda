@@ -92,7 +92,7 @@ public interface IMesaRepository
     /// Adiciona um item a uma comanda específica da mesa (RF6).
     /// Usa $push com filtro de array.
     /// </summary>
-    Task AddItemComandaAsync(string mesaId, int numeroComanda, string produtoId, int quantidade);
+    Task AddItemComandaAsync(string mesaId, int numeroComanda, ItemComanda novoItem);
 
     /// <summary>
     /// Aplica desconto na mesa (RF12).

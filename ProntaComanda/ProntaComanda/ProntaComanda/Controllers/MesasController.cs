@@ -132,22 +132,36 @@ public class MesasController : Controller
         return Ok(new { success = true });
     }
 
-    // 8. Gerenciar Itens na Comanda (Adicionar/Remover via botões +/-)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AlterarItem([FromBody] AlterarItemRequest request)
     {
-        // Validação básica
-        if (request.Quantidade == 0) return BadRequest(new { mensagem = "Quantidade inválida." });
+        try
+        {
+            if (request == null) return BadRequest(new { mensagem = "Requisição vazia." });
+            if (request.Quantidade == 0) return BadRequest(new { mensagem = "Quantidade inválida." });
 
-        await _mesaRepository.AddItemComandaAsync(
-            request.MesaId,
-            request.ComandaNumero,
-            request.ProdutoId,
-            request.Quantidade
-        );
+            // LOG DE SEGURANÇA: Verifique se o ID da mesa está chegando como uma string válida
+            // Se o seu banco usa ObjectId do MongoDB, passar uma string simples pode dar erro.
 
-        return Ok(new { success = true });
+            var itemComanda = new ItemComanda
+            {
+                ProdutoId = request.ProdutoId,
+                NomeProduto = request.NomeProduto,
+                PrecoUnitario = request.PrecoUnitario,
+                Quantidade = request.Quantidade
+            };
+
+            // Vamos rodar isso aqui. Se der erro, ele vai cair no catch e te devolver a mensagem.
+            await _mesaRepository.AddItemComandaAsync(request.MesaId, request.ComandaNumero, itemComanda);
+
+            return Ok(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            // Isso aqui vai te dizer o que realmente está acontecendo no log do servidor
+            return StatusCode(500, new { mensagem = "Erro no servidor: " + ex.Message });
+        }
     }
 }
 
@@ -156,4 +170,13 @@ public record MoverMesaRequest(string MesaOrigemId, string MesaDestinoId);
 public record DescontoRequest(string MesaId, decimal Desconto, TipoDesconto TipoDesconto);
 public record FecharMesaRequest(string MesaId);
 public record DeletarMesaRequest(string MesaId);
-public record AlterarItemRequest(string MesaId, int ComandaNumero, string ProdutoId,int Quantidade);
+
+// O Request agora espera os dados essenciais do produto também
+public record AlterarItemRequest(
+    string MesaId,
+    int ComandaNumero,
+    string ProdutoId,
+    string NomeProduto,
+    decimal PrecoUnitario,
+    int Quantidade
+);

@@ -10,7 +10,7 @@ namespace ProntaComanda.Models;
 /// </summary>
 public class ItemComanda
 {
-    [BsonRepresentation(BsonType.ObjectId)]
+    [BsonRepresentation(BsonType.String)]
     public string ProdutoId { get; set; } = string.Empty;
 
     /// <summary>Snapshot do nome — preserva histórico mesmo se o produto mudar.</summary>

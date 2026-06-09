@@ -204,7 +204,6 @@ C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaCo
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\17369f4yg7-{0}-jxgsuaagik-jxgsuaagik.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\8sknyntfx0-{0}-tcqx2sjy9s-tcqx2sjy9s.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\zuyvyh7num-{0}-e6ok9e4n38-e6ok9e4n38.gz
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\cntw0myn32-{0}-jsbztiyb1z-jsbztiyb1z.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\p5o3xklkb2-{0}-61n19gt1b8-61n19gt1b8.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\d8dmeu5ca7-{0}-ihwq5kt0bz-ihwq5kt0bz.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\n8un38b846-{0}-y0ugk1tduc-y0ugk1tduc.gz
@@ -285,4 +284,5 @@ C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaCo
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\ref\ProntaComanda.dll
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\80bx0ieao0-{0}-4qa3wejakv-4qa3wejakv.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\affmn8npxy-{0}-h0cwkk5rhz-h0cwkk5rhz.gz
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\xinkk3dpid-{0}-7e5d6hww67-7e5d6hww67.gz
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\cntw0myn32-{0}-a2xshm5zsl-a2xshm5zsl.gz
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\xinkk3dpid-{0}-fsl9950bu6-fsl9950bu6.gz

@@ -82,21 +82,45 @@ public class MesaRepository : IMesaRepository
         await _collection.UpdateOneAsync(m => m.Id == mesaId, updateOcupada);
     }
 
-    public async Task AddItemComandaAsync(string mesaId, int numeroComanda, string produtoId, int quantidade)
+    public async Task AddItemComandaAsync(string mesaId, int numeroComanda, ItemComanda novoItem)
     {
-        var filtro = Builders<Mesa>.Filter.And(
-            Builders<Mesa>.Filter.Eq(m => m.Id, mesaId),
-            Builders<Mesa>.Filter.ElemMatch(m => m.Comandas, c => c.Numero == numeroComanda)
-        );
+        var mesa = await GetByIdAsync(mesaId);
+        if (mesa == null) return;
 
-        var update = Builders<Mesa>.Update.Inc("comandas.$.Itens.$[i].Quantidade", quantidade);
+        var comanda = mesa.Comandas.FirstOrDefault(c => c.Numero == numeroComanda);
+        if (comanda == null) return;
 
-        var arrayFilters = new List<ArrayFilterDefinition>
-    {
-        new BsonDocumentArrayFilterDefinition<ItemComanda>(new BsonDocument("i.ProdutoId", produtoId))
-    };
+        var itemExistente = comanda.Itens.FirstOrDefault(i => i.ProdutoId == novoItem.ProdutoId);
 
-        await _collection.UpdateOneAsync(filtro, update, new UpdateOptions { ArrayFilters = arrayFilters });
+        if (itemExistente != null)
+        {
+            // Item JÁ EXISTE: Apenas incrementa a quantidade de forma atômica
+            var filtro = Builders<Mesa>.Filter.And(
+                Builders<Mesa>.Filter.Eq(m => m.Id, mesaId),
+                Builders<Mesa>.Filter.ElemMatch(m => m.Comandas, c => c.Numero == numeroComanda)
+            );
+
+            var update = Builders<Mesa>.Update.Inc("Comandas.$.Itens.$[i].Quantidade", novoItem.Quantidade);
+
+            var arrayFilters = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<ItemComanda>(new BsonDocument("i.ProdutoId", novoItem.ProdutoId))
+            };
+
+            await _collection.UpdateOneAsync(filtro, update, new UpdateOptions { ArrayFilters = arrayFilters });
+        }
+        else
+        {
+            // ITEM NOVO: Faz o push do objeto inteiro para dentro do array da comanda
+            var filtro = Builders<Mesa>.Filter.And(
+                Builders<Mesa>.Filter.Eq(m => m.Id, mesaId),
+                Builders<Mesa>.Filter.Eq("Comandas.Numero", numeroComanda)
+            );
+
+            var update = Builders<Mesa>.Update.Push("Comandas.$.Itens", novoItem);
+
+            await _collection.UpdateOneAsync(filtro, update);
+        }
     }
 
     public async Task RemoverItemComandaAsync(string mesaId, int numeroComanda, string produtoId)

@@ -1,29 +1,36 @@
 // ==========================================
-// 1. ESTADO GLOBAL
+// 1. ESTADO GLOBAL UNIFICADO
 // ==========================================
 const state = {
     // MESAS_INICIAIS vem do Razor (na view)
     mesas: typeof MESAS_INICIAIS !== 'undefined' ? MESAS_INICIAIS : [],
-    mesaSelecionadaId: null
+    mesaSelecionadaId: null,
+    comandaAtivaNumero: null // Controla em qual comanda os itens serão lançados
 };
 
 // ==========================================
-// 2. COMUNICAÇÃO COM O C# (API)
+// 2. COMUNICAÇÃO CENTRALIZADA COM A API (C#)
 // ==========================================
-// Função centralizada para fazer os POSTs sem repetir código
 async function postData(url, data) {
     try {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // O ASP.NET Core procura o token de segurança por padrão neste header
                 'RequestVerificationToken': ANTIFORGERY_TOKEN
             },
             body: JSON.stringify(data)
         });
 
-        const result = await response.json();
+        const txt = await response.text();
+        let result = {};
+
+        try {
+            result = JSON.parse(txt);
+        } catch (e) {
+            // Caso o servidor retorne um erro HTML (como erro 400 ou 500 estruturado)
+            throw new Error(`Erro no servidor (${response.status}). Verifique o console.`);
+        }
 
         if (!response.ok) {
             throw new Error(result.mensagem || "Erro inesperado na operação.");
@@ -32,14 +39,13 @@ async function postData(url, data) {
         return result;
     } catch (error) {
         alert(error.message);
-        throw error; // Repassa o erro para parar a execução da função que chamou
+        throw error;
     }
 }
 
 // ==========================================
-// 3. AÇÕES DA TELA (Conectando botões com a API)
+// 3. AÇÕES DE GERENCIAMENTO (Mesa e Comanda)
 // ==========================================
-
 async function confirmarAdicionarMesa() {
     const inputNum = document.getElementById('input-num-mesa');
     const numero = parseInt(inputNum.value);
@@ -49,11 +55,7 @@ async function confirmarAdicionarMesa() {
         return;
     }
 
-    // Chama o Controller
     await postData(MESA_API.criar, { numero: numero });
-
-    // Como criamos uma mesa nova, a forma mais segura de garantir 
-    // que o Razor re-renderize os cards vazios é dar um reload suave.
     window.location.reload();
 }
 
@@ -64,7 +66,7 @@ async function adicionarComanda() {
 
     if (result.success) {
         alert(`Comanda número ${result.numeroComanda} aberta com sucesso!`);
-        window.location.reload(); // Recarrega para atualizar subtotal e badges
+        window.location.reload();
     }
 }
 
@@ -94,11 +96,10 @@ async function confirmarDesconto() {
     const tipo = document.getElementById('select-tipo-desconto').value;
     const valor = parseFloat(document.getElementById('input-desconto').value || 0);
 
-    // O back-end usa JsonStringEnumConverter — envia a string, não o int
     await postData(MESA_API.desconto, {
         mesaId: state.mesaSelecionadaId,
         desconto: valor,
-        tipoDesconto: tipo  // "Percentual", "Valor" ou "Cortesia"
+        tipoDesconto: tipo
     });
 
     fecharModal('modal-desconto');
@@ -114,27 +115,24 @@ async function finalizarCompra() {
     const result = await postData(MESA_API.fechar, { mesaId: state.mesaSelecionadaId });
 
     if (result.success) {
-        alert(result.mensagem); // "Mesa finalizada e venda registrada com sucesso!"
-        window.location.reload(); // Limpa a mesa da tela
+        alert(result.mensagem);
+        window.location.reload();
     }
 }
 
 // ==========================================
-// 4. INTERFACE E MODAIS
+// 4. CONTROLE DA INTERFACE E SIDEBAR
 // ==========================================
-
 function selecionarMesa(elementoCard) {
-    // Remove a classe de seleção de todas as mesas
-    document.querySelectorAll('.mesa-card').forEach(c => c.classList.remove('selected'));
+    // Remove a seleção visual de todos os cards de mesa
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
 
-    // Adiciona na clicada
+    // Aplica a seleção na mesa clicada
     elementoCard.classList.add('selected');
 
-    // Pega o ID que deixamos escondido no HTML (data-id)
     const id = elementoCard.getAttribute('data-id');
     state.mesaSelecionadaId = id;
 
-    // Acha os dados completos da mesa no state global
     const mesaData = state.mesas.find(m => m.id === id);
     if (!mesaData) return;
 
@@ -146,26 +144,50 @@ function atualizarSidebar(mesa) {
     const sidebarInfo = document.getElementById('sidebar-mesa-info');
     sidebarInfo.style.display = 'flex';
 
-    // Atualiza cabeçalho da sidebar
     document.getElementById('sidebar-mesa-titulo').innerText = `Mesa ${mesa.numero}`;
 
-    // Formata totais
-    const formatBRL = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const formatBRL = (valor) => (valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
     document.getElementById('footer-subtotal').innerText = formatBRL(mesa.subtotal);
     document.getElementById('footer-desconto').innerText = formatBRL(mesa.desconto);
     document.getElementById('footer-total').innerText = formatBRL(mesa.total);
 
-    // Atualiza a lista de comandas no meio da sidebar
     const containerConteudo = document.getElementById('sidebar-content');
-    containerConteudo.innerHTML = ''; // Limpa o anterior
+    containerConteudo.innerHTML = '';
 
     if (mesa.comandas && mesa.comandas.length > 0) {
         mesa.comandas.forEach(c => {
+            let itensHtml = '';
+            if (c.itens && c.itens.length > 0) {
+                c.itens.forEach(i => {
+                    itensHtml += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 5px; padding-left: 10px; font-size: 0.9rem;">
+                            <span>${i.quantidade}x ${i.nomeProduto}</span>
+                            <div style="display:flex; align-items:center; gap: 10px;">
+                                <span style="color:var(--grey);">${formatBRL(i.precoUnitario * i.quantidade)}</span>
+                                <button onclick="event.stopPropagation(); abrirModalEstorno(${c.numero}, '${i.produtoId}', '${i.nomeProduto}', ${i.precoUnitario})" 
+                                        style="background:none; border:none; color:#d9534f; cursor:pointer;" title="Estornar Item">
+                                    <i class="fa-solid fa-minus-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                itensHtml = `<div style="padding-left: 10px; font-size: 0.85rem; color: #999;">Sem itens lançados.</div>`;
+            }
+
+            const isActive = state.comandaAtivaNumero === c.numero;
+            const borderStyle = isActive ? '2px solid #007bff' : '1px solid #eee';
+            const bgStyle = isActive ? '#f8fbff' : 'transparent';
+
             containerConteudo.innerHTML += `
-                <div class="comanda-item" style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                    <strong>Comanda #${c.numero}</strong> <br/>
-                    <small>Subtotal: ${formatBRL(c.subtotal)}</small>
+                <div class="comanda-item" style="border-bottom: ${borderStyle}; background-color: ${bgStyle}; padding: 10px; margin-bottom: 5px; border-radius: 4px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <strong>Comanda #${c.numero} ${isActive ? '<span style="color:#007bff; font-size:0.8rem;">(Ativa)</span>' : ''}</strong> 
+                        <small>${formatBRL(c.subtotal)}</small>
+                    </div>
+                    ${itensHtml}
                 </div>
             `;
         });
@@ -178,50 +200,135 @@ function fecharSidebar() {
     document.getElementById('sidebar-empty').style.display = 'flex';
     document.getElementById('sidebar-mesa-info').style.display = 'none';
     state.mesaSelecionadaId = null;
-    document.querySelectorAll('.mesa-card').forEach(c => c.classList.remove('selected'));
+    state.comandaAtivaNumero = null;
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
 }
 
-// Funções utilitárias de Modal
+// CONTROLE DE EXIBIÇÃO DOS MODAIS INDIVIDUAIS
 function abrirModalAdicionarMesa() { document.getElementById('modal-adicionar-mesa').style.display = 'flex'; }
+// Correção do bug: mapeia o id correto que você usa no HTML do modal-mover-mesa
 function abrirModalMoverMesa() { document.getElementById('modal-mover-mesa').style.display = 'flex'; }
 function abrirModalDesconto() { document.getElementById('modal-desconto').style.display = 'flex'; }
+function fecharModal(idModal) { document.getElementById(idModal).style.display = 'none'; }
 
-function fecharModal(idModal) {
-    document.getElementById(idModal).style.display = 'none';
+// ==========================================
+// 5. LÓGICA DE SELEÇÃO E ADIÇÃO DE PRODUTOS
+// ==========================================
+function abrirSeletorComanda() {
+    if (!state.mesaSelecionadaId) {
+        alert("Selecione uma mesa primeiro.");
+        return;
+    }
+    const mesa = state.mesas.find(m => m.id === state.mesaSelecionadaId);
+
+    if (!mesa || !mesa.comandas || mesa.comandas.length === 0) {
+        alert("Esta mesa não possui comandas abertas. Adicione uma comanda primeiro.");
+        return;
+    }
+
+    const select = document.getElementById('select-comanda-ativa');
+    select.innerHTML = '';
+
+    mesa.comandas.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.numero;
+        option.text = `Comanda #${c.numero}`;
+        if (state.comandaAtivaNumero === c.numero) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    });
+
+    document.getElementById('modal-selecionar-comanda').style.display = 'flex';
 }
 
-/**
- * Incrementa ou decrementa a quantidade de um item na comanda.
- * @param {int} comandaNumero - O número da comanda dentro da mesa.
- * @param {string} produtoId - O ID do produto.
- * @param {int} delta - 1 para adicionar, -1 para remover.
- */
-async function alterarItem(comandaNumero, produtoId, delta) {
-    if (!state.mesaSelecionadaId) return;
+function confirmarSelecaoComanda() {
+    const select = document.getElementById('select-comanda-ativa');
+    if (!select.value) return;
+
+    state.comandaAtivaNumero = parseInt(select.value);
+    fecharModal('modal-selecionar-comanda');
+
+    const mesa = state.mesas.find(m => m.id === state.mesaSelecionadaId);
+    if (mesa) atualizarSidebar(mesa);
+}
+
+function acaoBotao(acao) {
+    if (acao === 'Adicionar Item') {
+        if (!state.comandaAtivaNumero) {
+            alert("Por favor, selecione uma comanda para poder lançar os itens.");
+            abrirSeletorComanda();
+            return;
+        }
+        document.getElementById('label-comanda-ativa-add').innerText = `#${state.comandaAtivaNumero}`;
+        document.getElementById('modal-adicionar-produto').style.display = 'flex';
+    }
+    else if (acao === 'Remover Item') {
+        alert("Para remover, clique no botão de (-) vermelho ao lado do item específico na lista da comanda.");
+    }
+}
+
+async function dispararAdicaoItemMock(produtoId, nome, preco) {
+    if (!state.mesaSelecionadaId || !state.comandaAtivaNumero) return;
 
     try {
         await postData(MESA_API.alterarItem, {
             mesaId: state.mesaSelecionadaId,
-            comandaNumero: comandaNumero,
+            comandaNumero: state.comandaAtivaNumero,
             produtoId: produtoId,
-            quantidade: delta
+            nomeProduto: nome,
+            precoUnitario: preco,
+            quantidade: 1
         });
 
-        // Recarrega os dados para atualizar a sidebar com os novos valores calculados
+        fecharModal('modal-adicionar-produto');
         window.location.reload();
     } catch (error) {
-        console.error("Erro ao alterar item:", error);
+        console.error("Erro ao adicionar item:", error);
     }
 }
-// ==========================================
-// 5. STUBS — funções referenciadas na view, implementação pendente
-// ==========================================
 
-function acaoBotao(acao) {
-    // TODO: implementar modal de adicionar/remover item
-    alert(`Ação "${acao}" em desenvolvimento.`);
+// ==========================================
+// 6. LÓGICA DE ESTORNO
+// ==========================================
+let estornoPendente = null;
+
+function abrirModalEstorno(comandaNum, produtoId, nomeProduto, precoUnitario) {
+    estornoPendente = {
+        comandaNumero: comandaNum,
+        produtoId: produtoId,
+        nomeProduto: nomeProduto,
+        precoUnitario: precoUnitario
+    };
+
+    document.getElementById('label-nome-estorno').innerText = nomeProduto;
+    document.getElementById('modal-confirmar-estorno').style.display = 'flex';
 }
 
+async function confirmarEstornoItem() {
+    if (!state.mesaSelecionadaId || !estornoPendente) return;
+
+    try {
+        await postData(MESA_API.alterarItem, {
+            mesaId: state.mesaSelecionadaId,
+            comandaNumero: estornoPendente.comandaNumero,
+            produtoId: estornoPendente.produtoId,
+            nomeProduto: estornoPendente.nomeProduto,
+            precoUnitario: estornoPendente.precoUnitario,
+            quantidade: -1 // Envia negativo para decrementar no banco
+        });
+
+        fecharModal('modal-confirmar-estorno');
+        estornoPendente = null;
+        window.location.reload();
+    } catch (error) {
+        console.error("Erro ao estornar item:", error);
+    }
+}
+
+// ==========================================
+// 7. STUBS AUXILIARES (Prévia/Taxas)
+// ==========================================
 function abrirPreviaFiscal() {
     if (!state.mesaSelecionadaId) return;
     const mesa = state.mesas.find(m => m.id === state.mesaSelecionadaId);
@@ -234,7 +341,7 @@ function abrirPreviaFiscal() {
         mesa.comandas.forEach(c => {
             html += `<strong>Comanda #${c.numero}</strong><br>`;
             (c.itens || []).forEach(i => {
-                html += `&nbsp;&nbsp;${i.quantidade}x ${i.nomeProduto} — ${formatBRL(i.totalItem)}<br>`;
+                html += `&nbsp;&nbsp;${i.quantidade}x ${i.nomeProduto} — ${formatBRL(i.precoUnitario * i.quantidade)}<br>`;
             });
             html += `<small>Subtotal: ${formatBRL(c.subtotal)}</small><br><br>`;
         });
@@ -247,21 +354,8 @@ function abrirPreviaFiscal() {
     document.getElementById('modal-previa').style.display = 'flex';
 }
 
-function imprimirPrevia() {
-    window.print();
+function imprimirPrevia() { window.print(); }
+if (typeof abrirModalTaxaServico !== 'function') {
+    function abrirModalTaxaServico() { document.getElementById('modal-taxa').style.display = 'flex'; }
 }
-
-function abrirModalTaxaServico() {
-    document.getElementById('modal-taxa').style.display = 'flex';
-}
-
-function confirmarTaxa() {
-    // TODO: implementar taxa de serviço no back-end
-    alert('Taxa de serviço será implementada em breve.');
-    fecharModal('modal-taxa');
-}
-
-function abrirSeletorComanda() {
-    // TODO: implementar seletor de comanda ativa
-    alert('Seletor de comanda em desenvolvimento.');
-}
+function confirmarTaxa() { alert('Taxa de serviço será implementada em breve.'); fecharModal('modal-taxa'); }
