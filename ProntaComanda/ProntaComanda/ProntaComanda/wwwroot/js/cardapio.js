@@ -560,13 +560,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Botão "Adicionar / Salvar Alterações" (submit da aba Dados Gerais)
     document.querySelectorAll('.modal-form__submit-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+
             const overlay = this.closest('.modal-overlay');
             const mode = this.dataset.mode || 'add';
 
-            const nome = overlay.querySelector('[name="nome"]')?.value?.trim();
+            const nomeInput = overlay.querySelector('[name="nome"]');
+            const nome = nomeInput?.value?.trim();
+
+            // Validação visual de campo obrigatório
             if (!nome) {
-                const nomeInput = overlay.querySelector('[name="nome"]');
                 nomeInput?.focus();
                 nomeInput.style.borderColor = 'var(--flag-red)';
                 nomeInput.style.boxShadow = '0 0 0 2px rgba(217,9,41,0.25)';
@@ -577,33 +581,64 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // ── MUDANÇA: preenche os forms ocultos e submete ──────────────────
-            if (mode === 'edit') {
-                const id = overlay.querySelector('[name="nome"]')?.closest('form')?.dataset.produtoId
-                    || document.getElementById('fe-id')?.value;
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            const token = tokenInput ? tokenInput.value : '';
 
-                document.getElementById('fe-nome').value = overlay.querySelector('[name="nome"]').value;
-                document.getElementById('fe-nome-curto').value = overlay.querySelector('[name="nomeCurto"]')?.value || '';
-                document.getElementById('fe-preco').value = overlay.querySelector('[name="preco"]')?.value || '0';
-                document.getElementById('fe-estoque').value = overlay.querySelector('[name="estoque"]')?.value || '0';
-                document.getElementById('fe-legenda').value = overlay.querySelector('[name="legenda"]')?.value || '';
-                document.getElementById('fe-subcategoria').value = overlay.querySelector('[name="subcategoria"]')?.value || '';
-                document.getElementById('fe-disponibilidade').value = overlay.querySelector('[name="disponibilidade"]')?.value || 'Disponivel';
+            // 1. Cria o FormData para suportar arquivos
+            const formData = new FormData();
+            formData.append('__RequestVerificationToken', token);
 
-                document.getElementById('form-editar-produto').submit();
+            // 2. Adiciona os dados em texto
+            formData.append('Nome', nome);
+            formData.append('NomeCurto', overlay.querySelector('[name="nomeCurto"]')?.value || '');
+            formData.append('Preco', parseFloat(overlay.querySelector('[name="preco"]')?.value.replace(',', '.') || 0));
+            formData.append('Estoque', parseInt(overlay.querySelector('[name="estoque"]')?.value || 0, 10));
+            formData.append('Legenda', overlay.querySelector('[name="legenda"]')?.value || '');
+            formData.append('Subcategoria', overlay.querySelector('[name="subcategoria"]')?.value || '');
+            formData.append('Disponibilidade', overlay.querySelector('[name="disponibilidade"]')?.value || 'Disponivel');
 
-            } else {
-                document.getElementById('f-nome').value = overlay.querySelector('[name="nome"]').value;
-                document.getElementById('f-nome-curto').value = overlay.querySelector('[name="nomeCurto"]')?.value || '';
-                document.getElementById('f-preco').value = overlay.querySelector('[name="preco"]')?.value || '0';
-                document.getElementById('f-estoque').value = overlay.querySelector('[name="estoque"]')?.value || '0';
-                document.getElementById('f-legenda').value = overlay.querySelector('[name="legenda"]')?.value || '';
-                document.getElementById('f-subcategoria').value = overlay.querySelector('[name="subcategoria"]')?.value || '';
-                document.getElementById('f-disponibilidade').value = overlay.querySelector('[name="disponibilidade"]')?.value || 'Disponivel';
-
-                document.getElementById('form-criar-produto').submit();
+            // 3. Captura e adiciona o arquivo de imagem (se houver)
+            const fileInput = overlay.querySelector('.image-upload__file-input');
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append('ImagemUpload', fileInput.files[0]);
             }
-            // ─────────────────────────────────────────────────────────────────
+
+            let url = API_BASE.criar;
+
+            if (mode === 'edit') {
+                url = API_BASE.editar;
+
+                // Busca o ID do input oculto dg-id que configuramos no CSHTML
+                const id = document.getElementById('dg-id')?.value;
+
+                if (!id || id === "undefined") {
+                    console.error("Erro: ID do produto não encontrado no momento do envio.");
+                    alert("Não foi possível identificar o produto para edição.");
+                    return;
+                }
+
+                formData.append('Id', id);
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        // O FormData define o Content-Type: multipart/form-data automaticamente
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    console.error("Falha na validação do backend:", response.status);
+                    alert("Ocorreu um erro ao salvar. Verifique os dados preenchidos.");
+                }
+            } catch (error) {
+                console.error("Erro de conexão:", error);
+                alert("Falha ao conectar com o servidor.");
+            }
         });
     });
 
@@ -615,9 +650,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const card = this.closest('.card');
             const id = card?.dataset.id;  // vem do data-id="@produto.Id" no .cshtml
 
-            // Guarda o id no campo oculto do form de edição
-            const feId = document.getElementById('fe-id');
-            if (feId) feId.value = id;
+            // ATRIBUIÇÃO CORRIGIDA: Salva o ID direto no novo input hidden dg-id
+            const dgIdInput = document.getElementById('dg-id');
+            if (dgIdInput) {
+                dgIdInput.value = id || '';
+            }
 
             // Busca os dados reais do produto no servidor para preencher o modal
             try {

@@ -206,7 +206,6 @@ C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaCo
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\zuyvyh7num-{0}-e6ok9e4n38-e6ok9e4n38.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\cntw0myn32-{0}-jsbztiyb1z-jsbztiyb1z.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\p5o3xklkb2-{0}-61n19gt1b8-61n19gt1b8.gz
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\affmn8npxy-{0}-i0wqh6vhal-i0wqh6vhal.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\d8dmeu5ca7-{0}-ihwq5kt0bz-ihwq5kt0bz.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\n8un38b846-{0}-y0ugk1tduc-y0ugk1tduc.gz
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\q86zhqkqxv-{0}-gqiqvxwzoi-gqiqvxwzoi.gz
@@ -286,3 +285,4 @@ C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaCo
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\ProntaComanda.genruntimeconfig.cache
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\ref\ProntaComanda.dll
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\80bx0ieao0-{0}-4qa3wejakv-4qa3wejakv.gz
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\affmn8npxy-{0}-hehizukseu-hehizukseu.gz

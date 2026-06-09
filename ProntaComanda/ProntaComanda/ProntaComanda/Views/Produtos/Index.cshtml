@@ -155,6 +155,7 @@
                 <div class="dados-gerais__layout">
 
                     <div class="dados-gerais__form-col">
+                        <input type="hidden" id="dg-id" name="id" value="" />
                         <div class="modal-form__row">
                             <div class="modal-form__group">
                                 <label class="modal-form__label" for="dg-nome">Nome do Item</label>
@@ -339,8 +340,6 @@
         </div><!-- /.modal__body -->
     </div><!-- /.modal -->
 </div><!-- /#modal-cardapio -->
-<!-- Campo oculto para guardar o ID do produto em edição -->
-<input type="hidden" id="produto-id-edicao" value="">
 
 <!-- Form oculto para expor token antiforgery ao JS -->
 <form id="__af-form" style="display:none">

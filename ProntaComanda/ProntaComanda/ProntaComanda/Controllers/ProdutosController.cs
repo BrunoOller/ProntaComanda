@@ -7,6 +7,7 @@ namespace ProntaComanda.Controllers;
 public class ProdutosController : Controller
 {
     private readonly IProdutoRepository _repo;
+    private readonly IWebHostEnvironment _env;
 
     public ProdutosController(IProdutoRepository repo) => _repo = repo;
 
@@ -37,31 +38,86 @@ public class ProdutosController : Controller
     // POST /Produtos/Criar
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Criar(Produto produto)
+    public async Task<IActionResult> Criar([FromForm] Produto produto, IFormFile? ImagemUpload)
     {
         if (!ModelState.IsValid)
-            return RedirectToAction(nameof(Index));
+        {
+            // Captura exatamente quais campos falharam na validação
+            var erros = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+            return BadRequest(new { success = false, message = "Dados inválidos.", errors = erros });
+        }
+
+        if (ImagemUpload != null && ImagemUpload.Length > 0)
+        {
+            string uploadsFolder = Path.Combine(_env.WebRootPath, "img", "produtos");
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + ImagemUpload.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await ImagemUpload.CopyToAsync(stream);
+            }
+
+            produto.ImagemUrl = $"/img/produtos/{uniqueFileName}";
+        }
 
         await _repo.CreateAsync(produto);
         TempData["Sucesso"] = $"Produto \"{produto.Nome}\" adicionado!";
-        return RedirectToAction(nameof(Index));
+        return Ok(new { success = true });
     }
 
     // POST /Produtos/Editar
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Editar(string id, Produto produto)
+    public async Task<IActionResult> Editar([FromForm] Produto produto, IFormFile? ImagemUpload)
     {
+        // Se o Id vier como a string "undefined" ou nulo, o banco vai quebrar (Erro 500)
+        if (string.IsNullOrEmpty(produto.Id) || produto.Id == "undefined")
+            return BadRequest(new { success = false, message = "O ID do produto não foi enviado ou é inválido." });
+
         if (!ModelState.IsValid)
-            return RedirectToAction(nameof(Index));
+        {
+            var erros = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+            return BadRequest(new { success = false, message = "Dados inválidos.", errors = erros });
+        }
 
-        var existente = await _repo.GetByIdAsync(id);
-        if (existente is null) return NotFound();
+        try
+        {
+            var existente = await _repo.GetByIdAsync(produto.Id);
+            if (existente is null)
+                return NotFound(new { success = false, message = "Produto não encontrado." });
 
-        produto.Id = id;
-        await _repo.UpdateAsync(id, produto);
-        TempData["Sucesso"] = $"Produto \"{produto.Nome}\" atualizado!";
-        return RedirectToAction(nameof(Index));
+            if (ImagemUpload != null && ImagemUpload.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(_env.WebRootPath, "img", "produtos");
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + ImagemUpload.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await ImagemUpload.CopyToAsync(stream);
+                }
+
+                produto.ImagemUrl = $"/img/produtos/{uniqueFileName}";
+            }
+            else
+            {
+                produto.ImagemUrl = existente.ImagemUrl;
+            }
+
+            await _repo.UpdateAsync(produto.Id, produto);
+            TempData["Sucesso"] = $"Produto \"{produto.Nome}\" atualizado!";
+            return Ok(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            // Se der erro no banco (MongoDB), vai cair aqui em vez de quebrar o sistema
+            return StatusCode(500, new { success = false, message = "Erro interno no banco de dados.", detalhe = ex.Message });
+        }
     }
 
     // POST /Produtos/AlterarDisponibilidade

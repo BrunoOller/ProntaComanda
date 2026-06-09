@@ -13,8 +13,8 @@ wwwroot\img\banner-pc.png
 wwwroot\img\banner-pizza.png
 wwwroot\img\pizza.jpg
 wwwroot\img\prontaComanda.png
-wwwroot\js\cardapio.js
 wwwroot\js\clientes.js
+wwwroot\js\dashboard.js
 wwwroot\js\funcionarios.js
 wwwroot\js\kds.js
 wwwroot\js\mesa.js
@@ -79,7 +79,7 @@ wwwroot\lib\jquery\dist\jquery.slim.js
 wwwroot\lib\jquery\dist\jquery.slim.min.js
 wwwroot\lib\jquery\dist\jquery.slim.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\js\dashboard.js
+wwwroot\js\cardapio.js
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\global\color.css
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\global\reset.css
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\site.css
@@ -91,8 +91,8 @@ C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaCo
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\layout.css
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\mesa.css
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\favicon.ico
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\cardapio.js
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\clientes.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\dashboard.js
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\funcionarios.js
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\kds.js
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\mesa.js
@@ -156,4 +156,4 @@ C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaCo
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.slim.min.js
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.slim.min.map
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\LICENSE.txt
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\dashboard.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\cardapio.js
