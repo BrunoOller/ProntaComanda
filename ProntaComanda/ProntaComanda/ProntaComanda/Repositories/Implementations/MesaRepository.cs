@@ -133,7 +133,7 @@ public class MesaRepository : IMesaRepository
 
         // O $pull remove o item da lista 'itens' da comanda que foi identificada pelo $
         // Nota: O filtro "comandas.$.itens" dentro do update usa o operador posicional
-        var update = Builders<Mesa>.Update.PullFilter("comandas.$.Itens",
+        var update = Builders<Mesa>.Update.PullFilter("Comandas.$.Itens",
             Builders<ItemComanda>.Filter.Eq(i => i.ProdutoId, produtoId));
 
         await _collection.UpdateOneAsync(filtro, update);

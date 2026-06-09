@@ -15,46 +15,46 @@
     <div class="content-wrapper">
         <main class="admin-content">
             <header class="content-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 2rem; margin-bottom: 1.5rem; width: 100%; max-width: calc(100% - 20px); box-sizing: border-box;">
-    <div class="header-title">
-        <h1 style="margin: 0; font-size: 1.8rem;">Gerenciamento de Mesas</h1>
-        <p style="margin: 5px 0 0 0; color: #666;">@mesasOcupadas ocupadas · @mesasLivres disponíveis</p>
-    </div>
-    
-    <button class="btn-add-mesa" onclick="abrirModalAdicionarMesa()" style="margin-left: 280px; display: flex; align-items: center; gap: 0.6rem;">
-    <i class="fa-solid fa-plus" aria-hidden="true"></i>
-    Adicionar Mesa
-</button>
-</header>
+                <div class="header-title">
+                    <h1 style="margin: 0; font-size: 1.8rem;">Gerenciamento de Mesas</h1>
+                    <p style="margin: 5px 0 0 0; color: #666;">@mesasOcupadas ocupadas · @mesasLivres disponíveis</p>
+                </div>
+
+                <button class="btn-add-mesa" onclick="abrirModalAdicionarMesa()" style="margin-left: 280px; display: flex; align-items: center; gap: 0.6rem;">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Adicionar Mesa
+                </button>
+            </header>
 
             <!-- Grid de mesas — renderizado pelo JS com dados do servidor -->
             <section class="content-grid" id="mesa-grid">
                 @foreach (var mesa in Model)
-{
-    <div class="card @(mesa.Ocupada ? "ocupada" : "disponivel")"
-         data-id="@mesa.Id"
-         data-numero="@mesa.Numero"
-         data-ocupada="@mesa.Ocupada.ToString().ToLower()"
-         data-permanencia="@mesa.PermanenciaSegundos"
-         data-subtotal="@mesa.Subtotal"
-         data-total="@mesa.Total"
-         data-desconto="@mesa.Desconto"
-         data-tipo-desconto="@mesa.TipoDesconto"
-         onclick="selecionarMesa(this)">
+                {
+                    <div class="card @(mesa.Ocupada ? "ocupada" : "disponivel")"
+                         data-id="@mesa.Id"
+                         data-numero="@mesa.Numero"
+                         data-ocupada="@mesa.Ocupada.ToString().ToLower()"
+                         data-permanencia="@mesa.PermanenciaSegundos"
+                         data-subtotal="@mesa.Subtotal"
+                         data-total="@mesa.Total"
+                         data-desconto="@mesa.Desconto"
+                         data-tipo-desconto="@mesa.TipoDesconto"
+                         onclick="selecionarMesa(this)">
 
-        <div class="mesa-label">
-            Mesa
-        </div>
+                        <div class="mesa-label">
+                            Mesa
+                        </div>
 
-        <div class="mesa-number">
-            @(mesa.Numero.ToString("D2"))
-        </div>
+                        <div class="mesa-number">
+                            @(mesa.Numero.ToString("D2"))
+                        </div>
 
-        <div class="mesa-status-bar">
-            @(mesa.Ocupada ? "Ocupada" : "Disponível")
-        </div>
+                        <div class="mesa-status-bar">
+                            @(mesa.Ocupada ? "Ocupada" : "Disponível")
+                        </div>
 
-    </div>
-}
+                    </div>
+                }
             </section>
 
             @if (!Model.Any())
@@ -128,7 +128,6 @@
     </aside>
 
 </div><!-- /.admin-page-wrapper -->
-
 <!-- MODAL: Adicionar Mesa -->
 <div class="modal-overlay" id="modal-adicionar-mesa" style="display:none;">
     <div class="modal">
@@ -253,7 +252,7 @@
         <div class="modal-body">
             <p style="margin-bottom: 0.5rem; color: var(--grey);">Escolha a comanda alvo para lançar os itens:</p>
             <select id="select-comanda-ativa" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;">
-                </select>
+            </select>
         </div>
         <div class="modal-footer">
             <button class="modal-btn-cancel" onclick="fecharModal('modal-selecionar-comanda')">Cancelar</button>
@@ -272,23 +271,21 @@
         </div>
         <div class="modal-body">
             <p style="margin-bottom: 1rem; color: var(--grey);">Comanda ativa: <strong id="label-comanda-ativa-add">Nenhuma</strong></p>
-            
-            <div class="produto-grid" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
-                <div class="produto-card" style="border: 1px solid #eee; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #fff;">
-                    <div>
-                        <strong style="font-size: 1.1rem; color: var(--dark);">Hambúrguer Clássico</strong><br>
-                        <span style="color: var(--primary-color); font-weight: bold;">R$ 35,00</span>
-                    </div>
-                    <button class="action-btn action-btn-primary" onclick="dispararAdicaoItemMock('PROD-001', 'Hambúrguer Clássico', 35.00)">Adicionar</button>
-                </div>
 
-                <div class="produto-card" style="border: 1px solid #eee; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #fff;">
-                    <div>
-                        <strong style="font-size: 1.1rem; color: var(--dark);">Coca-Cola Lata 350ml</strong><br>
-                        <span style="color: var(--primary-color); font-weight: bold;">R$ 7,50</span>
+            <div class="produto-grid" style="display:grid; grid-template-columns:1fr; gap:10px;">
+                @foreach (var p in (List<ProntaComanda.Models.Produto>)ViewBag.Produtos)
+                {
+                    <div class="produto-card" style="border:1px solid #eee; padding:12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; background:#fff;">
+                        <div>
+                            <strong style="font-size:1.1rem; color:var(--dark);">@p.Nome</strong><br>
+                            <span style="color:var(--primary-color); font-weight:bold;">R$ @p.Preco.ToString("N2")</span>
+                        </div>
+                        <button class="action-btn action-btn-primary"
+                                onclick="dispararAdicaoItem('@p.Id', '@p.Nome', @p.Preco.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture))">
+                            Adicionar
+                        </button>
                     </div>
-                    <button class="action-btn action-btn-primary" onclick="dispararAdicaoItemMock('PROD-002', 'Coca-Cola Lata 350ml', 7.50)">Adicionar</button>
-                </div>
+                }
             </div>
         </div>
         <div class="modal-footer">
@@ -310,7 +307,7 @@
             <p style="font-size: 0.85rem; color: #d9534f; margin-top: 15px; padding: 10px; background: #fdf0f0; border-radius: 4px; border-left: 3px solid #d9534f;">
                 <i class="fa-solid fa-triangle-exclamation"></i> Esta ação será registrada no histórico de operações do turno.
             </p>
-            
+
             <input type="hidden" id="hidden-produto-id-estorno">
             <input type="hidden" id="hidden-preco-estorno">
         </div>
@@ -328,27 +325,31 @@
 
 @section Scripts {
     <script>
-        const MESAS_INICIAIS = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(m => new {
-            id = m.Id,
-            numero = m.Numero,
-            ocupada = m.Ocupada,
-            permanenciaSegundos = m.PermanenciaSegundos,
-            subtotal = m.Subtotal,
-            total = m.Total,
-            desconto = m.Desconto,
-            tipoDesconto = m.TipoDesconto.ToString(),
-            comandas = m.Comandas.Select(c => new {
-                numero = c.Numero,
-                abertaEm = c.AbertoEm,
-                subtotal = c.Subtotal,
-                itens = c.Itens.Select(i => new {
-                    nomeProduto = i.NomeProduto,
-                    quantidade = i.Quantidade,
-                    precoUnitario = i.PrecoUnitario,
-                    totalItem = i.TotalItem,
-                    observacoes = i.Observacoes
-                })
-            })
+        const MESAS_INICIAIS = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(m => new
+            {
+                    id = m.Id,
+                    numero = m.Numero,
+                    ocupada = m.Ocupada,
+                    permanenciaSegundos = m.PermanenciaSegundos,
+                    subtotal = m.Subtotal,
+                    total = m.Total,
+                    desconto = m.Desconto,
+                    tipoDesconto = m.TipoDesconto.ToString(),
+                    comandas = m.Comandas.Select(c => new
+                    {
+                                numero = c.Numero,
+                                abertaEm = c.AbertoEm,
+                                subtotal = c.Subtotal,
+                                itens = c.Itens.Select(i => new
+                                {
+                                                        produtoId = i.ProdutoId,
+                                            nomeProduto = i.NomeProduto,
+                                            quantidade = i.Quantidade,
+                                            precoUnitario = i.PrecoUnitario,
+                                            totalItem = i.TotalItem,
+                                            observacoes = i.Observacoes
+                                })
+                    })
         })))
 
         // URLs dos endpoints MVC para o mesa.js

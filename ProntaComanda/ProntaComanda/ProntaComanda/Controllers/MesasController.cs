@@ -8,18 +8,22 @@ public class MesasController : Controller
 {
     private readonly IMesaRepository _mesaRepository;
     private readonly IHistoricoVendaRepository _historicoRepository;
+    private readonly IProdutoRepository _produtoRepository;
 
     // Injeção de dependência dos dois repositórios necessários
-    public MesasController(IMesaRepository mesaRepository, IHistoricoVendaRepository historicoRepository)
+    public MesasController(IMesaRepository mesaRepository, IHistoricoVendaRepository historicoRepository, IProdutoRepository produtoRepository)
     {
         _mesaRepository = mesaRepository;
         _historicoRepository = historicoRepository;
+        _produtoRepository = produtoRepository;
     }
 
     // 1. Carregamento Inicial da Tela (Gera o HTML + CONST_INICIAIS)
     public async Task<IActionResult> Index()
     {
         var mesas = await _mesaRepository.GetAllAsync();
+        var produtos = await _produtoRepository.GetByFiltroAsync(null, Disponibilidade.Disponivel); // só disponíveis
+        ViewBag.Produtos = produtos;
         return View(mesas);
     }
 
@@ -141,42 +145,72 @@ public class MesasController : Controller
             if (request == null) return BadRequest(new { mensagem = "Requisição vazia." });
             if (request.Quantidade == 0) return BadRequest(new { mensagem = "Quantidade inválida." });
 
-            // LOG DE SEGURANÇA: Verifique se o ID da mesa está chegando como uma string válida
-            // Se o seu banco usa ObjectId do MongoDB, passar uma string simples pode dar erro.
+            var mesa = await _mesaRepository.GetByIdAsync(request.MesaId);
+            if (mesa is null) return NotFound(new { mensagem = "Mesa não encontrada." });
 
-            var itemComanda = new ItemComanda
+            var comanda = mesa.Comandas.FirstOrDefault(c => c.Numero == request.ComandaNumero);
+            if (comanda is null) return NotFound(new { mensagem = "Comanda não encontrada." });
+
+            if (request.Quantidade > 0)
             {
-                ProdutoId = request.ProdutoId,
-                NomeProduto = request.NomeProduto,
-                PrecoUnitario = request.PrecoUnitario,
-                Quantidade = request.Quantidade
-            };
+                // ADICIONAR — o AddItemComandaAsync já trata incremento se o item existir
+                var item = new ItemComanda
+                {
+                    ProdutoId = request.ProdutoId,
+                    NomeProduto = request.NomeProduto,
+                    PrecoUnitario = request.PrecoUnitario,
+                    Quantidade = request.Quantidade
+                };
+                await _mesaRepository.AddItemComandaAsync(request.MesaId, request.ComandaNumero, item);
+            }
+            else
+            {
+                // REMOVER — verifica se vai zerar ou só decrementar
+                var itemExistente = comanda.Itens.FirstOrDefault(i => i.ProdutoId == request.ProdutoId);
+                if (itemExistente is null)
+                    return NotFound(new { mensagem = "Item não encontrado na comanda." });
 
-            // Vamos rodar isso aqui. Se der erro, ele vai cair no catch e te devolver a mensagem.
-            await _mesaRepository.AddItemComandaAsync(request.MesaId, request.ComandaNumero, itemComanda);
+                if (itemExistente.Quantidade + request.Quantidade <= 0)
+                {
+                    // Remove completamente
+                    await _mesaRepository.RemoverItemComandaAsync(
+                        request.MesaId, request.ComandaNumero, request.ProdutoId);
+                }
+                else
+                {
+                    // Decrementa usando o AddItemComandaAsync com quantidade negativa
+                    var item = new ItemComanda
+                    {
+                        ProdutoId = request.ProdutoId,
+                        NomeProduto = request.NomeProduto,
+                        PrecoUnitario = request.PrecoUnitario,
+                        Quantidade = request.Quantidade // já é negativo
+                    };
+                    await _mesaRepository.AddItemComandaAsync(request.MesaId, request.ComandaNumero, item);
+                }
+            }
 
             return Ok(new { success = true });
         }
         catch (Exception ex)
         {
-            // Isso aqui vai te dizer o que realmente está acontecendo no log do servidor
             return StatusCode(500, new { mensagem = "Erro no servidor: " + ex.Message });
         }
     }
+
+    public record AdicionarComandaRequest(string MesaId);
+    public record MoverMesaRequest(string MesaOrigemId, string MesaDestinoId);
+    public record DescontoRequest(string MesaId, decimal Desconto, TipoDesconto TipoDesconto);
+    public record FecharMesaRequest(string MesaId);
+    public record DeletarMesaRequest(string MesaId);
+
+    // O Request agora espera os dados essenciais do produto também
+    public record AlterarItemRequest(
+        string MesaId,
+        int ComandaNumero,
+        string ProdutoId,
+        string NomeProduto,
+        decimal PrecoUnitario,
+        int Quantidade
+    );
 }
-
-public record AdicionarComandaRequest(string MesaId);
-public record MoverMesaRequest(string MesaOrigemId, string MesaDestinoId);
-public record DescontoRequest(string MesaId, decimal Desconto, TipoDesconto TipoDesconto);
-public record FecharMesaRequest(string MesaId);
-public record DeletarMesaRequest(string MesaId);
-
-// O Request agora espera os dados essenciais do produto também
-public record AlterarItemRequest(
-    string MesaId,
-    int ComandaNumero,
-    string ProdutoId,
-    string NomeProduto,
-    decimal PrecoUnitario,
-    int Quantidade
-);

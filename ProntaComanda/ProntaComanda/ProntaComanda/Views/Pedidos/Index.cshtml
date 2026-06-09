@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="~/css/styles/kds.css" />
 }
 
-<!-- O KDS tem layout próprio que precisa sair do admin-content padrão -->
 <div class="kds-page-wrapper" style="display:flex; flex:1; overflow:hidden; min-width:0;">
 
     <div class="content-wrapper" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
@@ -34,7 +33,6 @@
 
             <section class="onGoing-colunm" aria-label="Status dos pedidos">
 
-                <!-- ========== EM PREPARO ========== -->
                 <section class="onGoing" aria-label="Em preparo">
                     <header class="onGoing-Header">
                         <i class="fa-solid fa-fire" aria-hidden="true"></i>
@@ -43,7 +41,7 @@
                     <div class="onGoing-content" id="col-em-preparo">
                         @foreach (var pedido in emPreparo)
                         {
-                            <div class="card-onGoing" data-id="@pedido.Id" data-status="@pedido.Status">
+                            <div class="card-onGoing" data-id="@pedido.Id" data-status="@pedido.Status.ToString()">
                                 <div class="onGoing-infos-top">
                                     <div class="left-infos">
                                         <div class="tableNum">Mesa #@pedido.NumeroMesa</div>
@@ -78,9 +76,8 @@
                                     }
                                 </div>
                                 <div class="onGoing-Button">
-                                    <button class="ready"
-                                            onclick="atualizarStatus('@pedido.Id', 'Pronto')">
-                                        Marcar como Pronto
+                                    <button class="ready">
+                                        @(pedido.Status == StatusPedido.Pendente ? "Iniciar Preparo" : "Marcar como Pronto")
                                     </button>
                                 </div>
                             </div>
@@ -95,7 +92,6 @@
                     </div>
                 </section>
 
-                <!-- ========== PRONTO ========== -->
                 <section class="Done-colunm" aria-label="Prontos">
                     <header class="Done-Header">
                         <i class="fa-solid fa-bell" aria-hidden="true"></i>
@@ -104,7 +100,7 @@
                     <div class="Done-content" id="col-pronto">
                         @foreach (var pedido in prontos)
                         {
-                            <div class="card-Done" data-id="@pedido.Id" data-status="@pedido.Status">
+                            <div class="card-Done" data-id="@pedido.Id" data-status="@pedido.Status.ToString()">
                                 <div class="Done-infos-top">
                                     <div class="left-infos">
                                         <div class="tableNum">Mesa #@pedido.NumeroMesa</div>
@@ -139,10 +135,7 @@
                                     }
                                 </div>
                                 <div class="Done-Button">
-                                    <button class="ready"
-                                            onclick="atualizarStatus('@pedido.Id', 'Entregue')">
-                                        Marcar como Entregue
-                                    </button>
+                                    <button class="ready">Marcar como Entregue</button>
                                 </div>
                             </div>
                         }
@@ -156,7 +149,6 @@
                     </div>
                 </section>
 
-                <!-- ========== ENTREGUE ========== -->
                 <section class="Delivered-colunm" aria-label="Entregues">
                     <header class="Delivered-Header">
                         <i class="fa-solid fa-check" aria-hidden="true"></i>
@@ -165,7 +157,7 @@
                     <div class="Delivered-content" id="col-entregue">
                         @foreach (var pedido in entregues)
                         {
-                            <div class="card-Delivered" data-id="@pedido.Id">
+                            <div class="card-Delivered" data-id="@pedido.Id" data-status="@pedido.Status.ToString()">
                                 <div class="Delivered-infos-top">
                                     <div class="left-infos">
                                         <div class="tableNum">Mesa #@pedido.NumeroMesa</div>
@@ -210,129 +202,57 @@
                     </div>
                 </section>
 
-            </section><!-- /.onGoing-colunm -->
+            </section>
         </main>
-    </div><!-- /.content-wrapper -->
-    <!-- SIDEBAR DIREITA: métricas + resumo -->
-    <aside class="right-sidebar" aria-label="Métricas de produção">
-        <div class="sidebar-content">
+    </div><aside class="right-sidebar" aria-label="Métricas de produção">
+    <div class="sidebar-content">
 
-            <div class="kitchen-colunm">
-                <header class="header-kitchen"><p>Cozinha</p></header>
-                <div class="kitchen-infos">
-                    <div class="kitchen-MedTime">
-                        <span class="text">Tempo Médio de Preparo</span>
-                        <span class="DateTimme" id="kds-med-time">--:--</span>
-                    </div>
-                    <div class="kitchen-ItensHour">
-                        <span class="text">Itens por hora:</span>
-                        <span class="itens" id="kds-itens-hora">--</span>
-                    </div>
-                    <div class="kitchen-OrdersQueue">
-                        <span class="text">Pedidos em Fila:</span>
-                        <span class="number" id="kds-fila">@emPreparo.Count</span>
-                    </div>
+        <div class="kitchen-colunm">
+            <header class="header-kitchen"><p>Cozinha</p></header>
+            <div class="kitchen-infos">
+                <div class="kitchen-MedTime">
+                    <span class="text">Tempo Médio de Preparo</span>
+                    <span class="DateTimme" id="kds-med-time">--:--</span>
+                </div>
+                <div class="kitchen-ItensHour">
+                    <span class="text">Itens por hora:</span>
+                    <span class="itens" id="kds-itens-hora">--</span>
+                </div>
+                <div class="kitchen-OrdersQueue">
+                    <span class="text">Pedidos em Fila:</span>
+                    <span class="number" id="kds-fila">@emPreparo.Count</span>
                 </div>
             </div>
-
-            <div class="production">
-                <div class="production-header"><p>Resumo de produção</p></div>
-                <div class="production-content">
-                    <header class="header-production"><p>Resumo de Itens Pendentes</p></header>
-                    <div class="production-info" id="producao-lista">
-                        @foreach (var item in itensPendentes)
-                        {
-                            <div class="production-item">
-                                <span class="production-item__name">@item.Nome</span>
-                                <span class="production-item__qty">@item.Total</span>
-                            </div>
-                        }
-                        @if (!itensPendentes.Any())
-                        {
-                            <div class="production-item">
-                                <span class="production-item__name" style="color:var(--grey);">Nenhum item pendente</span>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </aside>
 
-</div><!-- /.kds-page-wrapper -->
-<!-- Form oculto para expor token antiforgery ao JS -->
+        <div class="production">
+            <div class="production-header"><p>Resumo de produção</p></div>
+            <div class="production-content">
+                <header class="header-production"><p>Resumo de Itens Pendentes</p></header>
+                <div class="production-info" id="producao-lista">
+                    @foreach (var item in itensPendentes)
+                    {
+                        <div class="production-item">
+                            <span class="production-item__name">@item.Nome</span>
+                            <span class="production-item__qty">@item.Total</span>
+                        </div>
+                    }
+                    @if (!itensPendentes.Any())
+                    {
+                        <div class="production-item">
+                            <span class="production-item__name" style="color:var(--grey);">Nenhum item pendente</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</aside>
+
+</div>
 <form id="__af-form" style="display:none">
     @Html.AntiForgeryToken()
 </form>
 
-@section Scripts {
-    <script>
-        // Função chamada pelos botões "Marcar como Pronto/Entregue"
-        // Faz POST para o endpoint MVC e recarrega a página
-        async function atualizarStatus(pedidoId, novoStatus) {
-            const btn = event.target;
-            btn.disabled = true;
-            btn.textContent = 'Aguarde...';
-
-            try {
-                const formData = new FormData();
-                formData.append('novoStatus', novoStatus);
-
-                // Endpoint MVC: POST /Pedidos/AtualizarStatus
-                formData.append('id', pedidoId);
-                formData.append('__RequestVerificationToken',
-                    document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '');
-
-                const response = await fetch('/Pedidos/AtualizarStatus', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok || response.redirected) {
-                    // Anima saída do card antes de recarregar
-                    const card = btn.closest('[data-id]');
-                    if (card) {
-                        card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-                        card.style.opacity = '0';
-                        card.style.transform = 'scale(0.9)';
-                        setTimeout(() => location.reload(), 300);
-                    } else {
-                        location.reload();
-                    }
-                } else {
-                    btn.disabled = false;
-                    btn.textContent = novoStatus === 'Pronto' ? 'Marcar como Pronto' : 'Marcar como Entregue';
-                    alert('Erro ao atualizar status. Tente novamente.');
-                }
-            } catch (err) {
-                btn.disabled = false;
-                btn.textContent = novoStatus === 'Pronto' ? 'Marcar como Pronto' : 'Marcar como Entregue';
-                console.error('Erro:', err);
-            }
-        }
-
-        // Atualiza o cronômetro de tempo de espera a cada segundo
-        function atualizarCronometros() {
-            document.querySelectorAll('.TempoEspera[data-lancado]').forEach(el => {
-                const lancado = new Date(el.dataset.lancado);
-                const diff = Math.floor((Date.now() - lancado.getTime()) / 1000);
-                const min = Math.floor(diff / 60).toString().padStart(2, '0');
-                const seg = (diff % 60).toString().padStart(2, '0');
-                el.innerHTML = `Tempo de espera:<br>${min}:${seg}`;
-
-                // Muda cor conforme urgência
-                const card = el.closest('[data-id]');
-                if (card && diff > 900) card.style.borderLeft = '3px solid var(--flag-red)';
-                else if (card && diff > 600) card.style.borderLeft = '3px solid #f39c12';
-            });
-        }
-
-        setInterval(atualizarCronometros, 1000);
-        atualizarCronometros();
-
-        // Auto-refresh a cada 30 segundos para pegar novos pedidos
-        // (substituir por SignalR futuramente para tempo real sem reload)
-        setTimeout(() => location.reload(), 30000);
-    </script>
-}
+<script src="~/js/kds.js" asp-append-version="true"></script>

@@ -95,6 +95,11 @@ public interface IMesaRepository
     Task AddItemComandaAsync(string mesaId, int numeroComanda, ItemComanda novoItem);
 
     /// <summary>
+    /// Remove um item de uma comanda específica da mesa.
+    /// </summary>
+    Task RemoverItemComandaAsync(string mesaId, int numeroComanda, string produtoId);
+
+    /// <summary>
     /// Aplica desconto na mesa (RF12).
     /// </summary>
     Task AplicarDescontoAsync(string mesaId, decimal desconto, TipoDesconto tipo);

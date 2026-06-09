@@ -5,7 +5,8 @@ const state = {
     // MESAS_INICIAIS vem do Razor (na view)
     mesas: typeof MESAS_INICIAIS !== 'undefined' ? MESAS_INICIAIS : [],
     mesaSelecionadaId: null,
-    comandaAtivaNumero: null // Controla em qual comanda os itens serão lançados
+    comandaAtivaNumero: null, // Controla em qual comanda os itens serão lançados
+    taxaServico: 10 // Taxa de serviço padrão (10%)
 };
 
 // ==========================================
@@ -268,7 +269,7 @@ function acaoBotao(acao) {
     }
 }
 
-async function dispararAdicaoItemMock(produtoId, nome, preco) {
+async function dispararAdicaoItem(produtoId, nome, preco) {
     if (!state.mesaSelecionadaId || !state.comandaAtivaNumero) return;
 
     try {
@@ -358,4 +359,21 @@ function imprimirPrevia() { window.print(); }
 if (typeof abrirModalTaxaServico !== 'function') {
     function abrirModalTaxaServico() { document.getElementById('modal-taxa').style.display = 'flex'; }
 }
-function confirmarTaxa() { alert('Taxa de serviço será implementada em breve.'); fecharModal('modal-taxa'); }
+function confirmarTaxa() {
+    const val = parseFloat(document.getElementById('input-taxa').value);
+    state.taxaServico = isNaN(val) ? 10 : Math.max(0, Math.min(100, val));
+    fecharModal('modal-taxa');
+
+    // Atualiza o footer com a nova taxa
+    const mesa = state.mesas.find(m => m.id === state.mesaSelecionadaId);
+    if (mesa) {
+        const subtotal = mesa.subtotal || 0;
+        const taxa = subtotal * (state.taxaServico / 100);
+        const desconto = mesa.desconto || 0;
+        const total = subtotal + taxa - desconto;
+
+        const fmt = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        document.getElementById('footer-taxa').innerText = fmt(taxa);
+        document.getElementById('footer-total').innerText = fmt(total);
+    }
+}
