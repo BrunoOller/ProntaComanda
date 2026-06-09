@@ -1,0 +1,257 @@
+/* ============================================================
+   clientes.css — Página pública do cardápio (Home/Clientes)
+   Segue o design da print: banner + grid 3 colunas
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    background-color: #f0f0f0;
+    font-family: "Archivo", "Inter", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== BANNER ===== */
+.banner {
+    width: 100%;
+    height: 480px;
+    background-color: #b0b0b0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner .banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ===== WRAPPER PRINCIPAL ===== */
+.main-wrapper {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 1.6rem 1.5rem 3rem;
+}
+
+/* ===== FILTERING ===== */
+.filtering {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Filtros (pills) */
+.filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter {
+    padding: 0.45rem 1.15rem;
+    height: 36px;
+    font-size: 11pt;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    background-color: #e4e4e4;
+    color: #1b1b1b;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.filter:hover {
+    background-color: #d0d0d0;
+}
+
+.filter.selecionado {
+    background-color: var(--flag-red, #D90429);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 3px 8px rgba(217, 4, 41, 0.3);
+}
+
+.filter.selecionado:hover {
+    background-color: #ef233c;
+}
+
+/* Campo de busca */
+.search {
+    flex: 0 0 320px;
+}
+
+.search-block {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-block input {
+    width: 100%;
+    height: 36px;
+    padding: 0 2.4rem 0 1rem;
+    border-radius: 5px;
+    border: 1px solid #9a9a9a;
+    background-color: #e4e4e4;
+    font-size: 11pt;
+    font-family: inherit;
+    color: #1b1b1b;
+    outline: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.search-block input:focus {
+    border-color: #292b3b;
+}
+
+.search-block input[type="search"]::-webkit-search-cancel-button {
+    display: none;
+}
+
+.search-block i {
+    position: absolute;
+    right: 10px;
+    color: #6e6e6e;
+    font-size: 13pt;
+    pointer-events: none;
+}
+
+/* ===== GRID DE PRODUTOS ===== */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.4rem;
+}
+
+/* ===== CARD ===== */
+.product-card {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.17);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: default;
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.22);
+}
+
+/* Área da imagem — fundo cinza médio */
+.product-card .card-image-wrap {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background-color: #b0b0b0;
+    flex-shrink: 0;
+}
+
+.product-card .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Placeholder SVG centralizado */
+.product-card .card-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #b0b0b0;
+}
+
+/* Badge "Disponível" */
+.product-card .card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: var(--flag-red, #D90429);
+    color: #fff;
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 10pt;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    letter-spacing: 0.2px;
+    font-family: inherit;
+}
+
+/* Área de texto — fundo escuro (space-indigo) */
+.product-card .card-text {
+    background-color: var(--space-indigo, #292b3b);
+    padding: 1rem 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.6rem;
+}
+
+.product-card .card-name-desc h2 {
+    font-size: 14pt;
+    font-weight: 900;
+    color: #edf2f4;
+    margin-bottom: 0.4rem;
+}
+
+.product-card .card-name-desc p {
+    font-size: 9.5pt;
+    font-weight: 400;
+    color: rgba(237, 242, 244, 0.82);
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-card .card-price h3 {
+    font-size: 15pt;
+    font-weight: 700;
+    color: #edf2f4;
+    margin-top: 0.2rem;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 960px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .search {
+        flex: 1 1 100%;
+        order: 3;
+    }
+}
+
+@media (max-width: 580px) {
+    .banner {
+        height: 160px;
+    }
+
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        gap: 0.35rem;
+    }
+
+    .filter {
+        padding: 0.4rem 0.85rem;
+        font-size: 10pt;
+    }
+}
