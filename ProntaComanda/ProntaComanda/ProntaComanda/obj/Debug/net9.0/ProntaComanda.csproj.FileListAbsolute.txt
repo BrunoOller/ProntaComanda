@@ -285,4 +285,4 @@ C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaCo
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\ProntaComanda.genruntimeconfig.cache
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\ref\ProntaComanda.dll
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\80bx0ieao0-{0}-4qa3wejakv-4qa3wejakv.gz
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\affmn8npxy-{0}-hehizukseu-hehizukseu.gz
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\obj\Debug\net9.0\compressed\affmn8npxy-{0}-zndlm3p52p-zndlm3p52p.gz

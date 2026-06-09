@@ -418,7 +418,10 @@ function vincularAcrescimo(modalOverlay) {
    ============================================================ */
 
 function limparFormulario(modalOverlay) {
-    modalOverlay.querySelectorAll('input:not([type="file"]), textarea').forEach(el => el.value = '');
+    // Limpa inputs mas preserva dataset do submit (guarda o ID em edição)
+    modalOverlay.querySelectorAll('input:not([type="file"]), textarea').forEach(el => {
+        if (el.id !== 'dg-id') el.value = ''; // dg-id é limpo só quando sai do modo edit
+    });
     modalOverlay.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
 
     // Limpa preview de imagem
@@ -452,7 +455,8 @@ function preencherFormulario(modalOverlay, data) {
         const nomeEl = modalOverlay.querySelector('[name="nome"]');
         if (nomeEl) nomeEl.value = data.nome;
     }
-    if (data.nomeCurto) {
+    // nomeCurto é o campo do JSON (camelCase do C#)
+    if (data.nomeCurto !== undefined && data.nomeCurto !== null) {
         const nomeCurtoEl = modalOverlay.querySelector('[name="nomeCurto"]');
         if (nomeCurtoEl) nomeCurtoEl.value = data.nomeCurto;
     }
@@ -468,15 +472,17 @@ function preencherFormulario(modalOverlay, data) {
         const legendaEl = modalOverlay.querySelector('[name="legenda"]');
         if (legendaEl) legendaEl.value = data.legenda;
     }
-    if (data.categoria) {
-        const catEl = modalOverlay.querySelector('[name="categoria"]');
-        if (catEl) catEl.value = data.categoria;
+    // O endpoint /Produtos/Buscar retorna camelCase — usar categoriaNome e subCategoria
+    if (data.categoriaNome) {
+        const catEl = modalOverlay.querySelector('[name="categoriaNome"]');
+        if (catEl) catEl.value = data.categoriaNome;
     }
-    if (data.subcategoria) {
-        const subEl = modalOverlay.querySelector('[name="subcategoria"]');
-        if (subEl) subEl.value = data.subcategoria;
+    if (data.subCategoria) {
+        const subEl = modalOverlay.querySelector('[name="subCategoria"]');
+        if (subEl) subEl.value = data.subCategoria;
     }
-    if (data.disponibilidade) {
+    // disponibilidade vem como string do JSON (ex: "Disponivel") graças ao JsonStringEnumConverter
+    if (data.disponibilidade !== undefined) {
         const dispEl = modalOverlay.querySelector('[name="disponibilidade"]');
         if (dispEl) dispEl.value = data.disponibilidade;
     }
@@ -608,12 +614,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (mode === 'edit') {
                 url = API_BASE.editar;
 
-                // Busca o ID do input oculto dg-id que configuramos no CSHTML
-                const id = document.getElementById('dg-id')?.value;
+                // Lê o ID: primeiro do dataset do botão (mais confiável),
+                // depois do input hidden como fallback
+                const submitBtn = overlay.querySelector('.modal-form__submit-btn');
+                const id = submitBtn?.dataset.produtoId
+                    || document.getElementById('dg-id')?.value;
 
-                if (!id || id === "undefined") {
-                    console.error("Erro: ID do produto não encontrado no momento do envio.");
-                    alert("Não foi possível identificar o produto para edição.");
+                if (!id || id === 'undefined' || id === '') {
+                    console.error('Erro: ID do produto não encontrado.', { submitBtn, id });
+                    alert('Não foi possível identificar o produto para edição. Feche e tente novamente.');
                     return;
                 }
 
@@ -650,19 +659,28 @@ document.addEventListener('DOMContentLoaded', function () {
             const card = this.closest('.card');
             const id = card?.dataset.id;  // vem do data-id="@produto.Id" no .cshtml
 
-            // ATRIBUIÇÃO CORRIGIDA: Salva o ID direto no novo input hidden dg-id
-            const dgIdInput = document.getElementById('dg-id');
-            if (dgIdInput) {
-                dgIdInput.value = id || '';
-            }
-
             // Busca os dados reais do produto no servidor para preencher o modal
             try {
                 const res = await fetch(`/Produtos/Buscar?id=${id}`);
                 const data = await res.json();
+
+                // Guarda o ID em DOIS lugares para garantia:
+                // 1. No input hidden dg-id (para fallback)
+                const dgIdInput = document.getElementById('dg-id');
+                if (dgIdInput) dgIdInput.value = id || '';
+
+                // 2. No dataset do botão de submit — não é limpo pelo limparFormulario
+                const submitBtn = document.getElementById('btn-submit-produto');
+                if (submitBtn) submitBtn.dataset.produtoId = id || '';
+
                 abrirModal('modal-cardapio', 'edit', data);
             } catch {
                 // Se falhar, abre o modal com os dados visuais do card
+                const dgIdInput = document.getElementById('dg-id');
+                if (dgIdInput) dgIdInput.value = id || '';
+                const submitBtn = document.getElementById('btn-submit-produto');
+                if (submitBtn) submitBtn.dataset.produtoId = id || '';
+
                 const data = {
                     nome: card.querySelector('h2')?.textContent || '',
                     legenda: card.querySelector('p')?.textContent || '',

@@ -9,7 +9,11 @@ public class ProdutosController : Controller
     private readonly IProdutoRepository _repo;
     private readonly IWebHostEnvironment _env;
 
-    public ProdutosController(IProdutoRepository repo) => _repo = repo;
+    public ProdutosController(IProdutoRepository repo, IWebHostEnvironment env)
+    {
+        _repo = repo;
+        _env = env;
+    }
 
     // GET /Produtos
     public async Task<IActionResult> Index(string? busca = null, string? categoria = null)
