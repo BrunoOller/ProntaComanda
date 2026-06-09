@@ -26,41 +26,55 @@ public class FuncionariosController : Controller
     // POST /Funcionarios/Criar
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Criar(Funcionario funcionario)
+    public async Task<IActionResult> Criar([FromBody] CriarFuncionarioRequest request)
     {
-        if (!ModelState.IsValid)
-            return RedirectToAction(nameof(Index));
+        if (string.IsNullOrWhiteSpace(request.Nome) || string.IsNullOrWhiteSpace(request.SenhaHash))
+            return BadRequest(new { mensagem = "Nome e senha são obrigatórios." });
 
-        funcionario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(funcionario.SenhaHash);
+        var funcionario = new Funcionario
+        {
+            Nome = request.Nome,
+            Funcao = Enum.Parse<FuncaoUsuario>(request.Funcao),
+            Especialidade = Enum.Parse<EspecialidadeCozinha>(request.Especialidade),
+            SenhaHash = BCrypt.Net.BCrypt.HashPassword(request.SenhaHash)
+        };
+
         await _repo.CreateAsync(funcionario);
-        return RedirectToAction(nameof(Index));
+        return Ok();
     }
 
     // POST /Funcionarios/Editar
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Editar(string id, Funcionario funcionario)
+    public async Task<IActionResult> Editar([FromBody] EditarFuncionarioRequest request)
     {
-        if (!ModelState.IsValid)
-            return RedirectToAction(nameof(Index));
-
-        var existente = await _repo.GetByIdAsync(id);
+        var existente = await _repo.GetByIdAsync(request.FuncionarioId);
         if (existente is null) return NotFound();
 
-        if (funcionario.SenhaHash != existente.SenhaHash)
-            funcionario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(funcionario.SenhaHash);
+        existente.Nome = request.Funcionario.Nome;
+        existente.Funcao = Enum.Parse<FuncaoUsuario>(request.Funcionario.Funcao);
+        existente.Especialidade = Enum.Parse<EspecialidadeCozinha>(request.Funcionario.Especialidade);
 
-        funcionario.Id = id;
-        await _repo.UpdateAsync(id, funcionario);
-        return RedirectToAction(nameof(Index));
+        if (!string.IsNullOrWhiteSpace(request.Funcionario.SenhaHash))
+            existente.SenhaHash = BCrypt.Net.BCrypt.HashPassword(request.Funcionario.SenhaHash);
+        // se senha vazia, mantém o hash existente
+
+        await _repo.UpdateAsync(request.FuncionarioId, existente);
+        return Ok();
     }
 
     // POST /Funcionarios/Deletar
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Deletar(string id)
+    public async Task<IActionResult> Deletar([FromBody] DeletarFuncionarioRequest request)
     {
-        await _repo.DeleteAsync(id);
-        return RedirectToAction(nameof(Index));
+        await _repo.DeleteAsync(request.Id);
+        return Ok();
     }
 }
+
+// ── Request records ──────────────────────────────────────────────────────────
+public record CriarFuncionarioRequest(string Nome, string Funcao, string Especialidade, string SenhaHash);
+public record FuncionarioEditData(string Nome, string Funcao, string Especialidade, string SenhaHash);
+public record EditarFuncionarioRequest(string FuncionarioId, FuncionarioEditData Funcionario);
+public record DeletarFuncionarioRequest(string Id);

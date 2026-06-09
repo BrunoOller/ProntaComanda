@@ -76,7 +76,7 @@
             {
                 <tr data-id="@f.Id" data-nome="@f.Nome" data-funcao="@f.Funcao" data-especialidade="@f.Especialidade">
                     <td class="func-table__nome">@f.Nome</td>
-                    <td><span class="func-badge func-badge--cozinheiro">Cozinheiro / @f.Especialidade</span></td>
+                    <td><span class="func-badge func-badge--cozinheiro">Cozinheiro@(f.Especialidade != EspecialidadeCozinha.NA ? " / " + f.Especialidade : "")</span></td>
                     <td class="func-table__acoes">
                         <button class="func-btn func-btn--editar" onclick="abrirModalEditar(this)">Editar</button>
                         <span class="func-delete-confirm" style="display:none;">
@@ -235,7 +235,7 @@
 </div>
 
 <!-- FORMULÁRIOS OCULTOS -->
-<form id="form-criar-func" asp-action="Criar" method="post" style="display:none">
+<form id="form-criar-func" asp-controller="Funcionarios" asp-action="Criar" method="post" style="display:none">
     @Html.AntiForgeryToken()
     <input type="hidden" name="Nome" id="f-func-nome">
     <input type="hidden" name="Funcao" id="f-func-funcao">
@@ -243,18 +243,27 @@
     <input type="hidden" name="SenhaHash" id="f-func-senha">
 </form>
 
-<form id="form-editar-func" asp-action="Editar" method="post" style="display:none">
+<form id="form-editar-func"
+      asp-controller="Funcionarios"
+      asp-action="Editar"
+      method="post"
+      style="display:none">
     @Html.AntiForgeryToken()
-    <input type="hidden" name="id" id="fe-func-id">
-    <input type="hidden" name="Nome" id="fe-func-nome">
-    <input type="hidden" name="Funcao" id="fe-func-funcao">
-    <input type="hidden" name="Especialidade" id="fe-func-esp">
-    <input type="hidden" name="SenhaHash" id="fe-func-senha">
+    <input type="hidden" name="funcionarioId" id="fe-func-id">
+    <input type="hidden" name="funcionario.Nome" id="fe-func-nome">
+    <input type="hidden" name="funcionario.Funcao" id="fe-func-funcao">
+    <input type="hidden" name="funcionario.Especialidade" id="fe-func-esp">
+    <input type="hidden" name="funcionario.SenhaHash" id="fe-func-senha">
 </form>
 
-<form id="form-deletar-func" asp-action="Deletar" method="post" style="display:none">
+<form id="form-deletar-func" asp-controller="Funcionarios" asp-action="Deletar" method="post" style="display:none">
     @Html.AntiForgeryToken()
     <input type="hidden" name="id" id="fd-func-id">
+</form>
+
+<!-- Form apenas para expor o token antiforgery ao JS -->
+<form id="__af-form" style="display:none">
+    @Html.AntiForgeryToken()
 </form>
 
 @section Scripts {

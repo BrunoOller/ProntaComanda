@@ -7,6 +7,7 @@ wwwroot\css\styles\dashboard.css
 wwwroot\css\styles\funcionarios.css
 wwwroot\css\styles\kds.css
 wwwroot\css\styles\layout.css
+wwwroot\css\styles\mesa.css
 wwwroot\favicon.ico
 wwwroot\img\banner-pc.png
 wwwroot\img\banner-pizza.png
@@ -20,6 +21,7 @@ wwwroot\js\clientes.js
 wwwroot\js\dashboard.js
 wwwroot\js\funcionarios.js
 wwwroot\js\kds.js
+wwwroot\js\mesa.js
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
@@ -81,82 +83,80 @@ wwwroot\lib\jquery\dist\jquery.slim.js
 wwwroot\lib\jquery\dist\jquery.slim.min.js
 wwwroot\lib\jquery\dist\jquery.slim.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\styles\mesa.css
-wwwroot\js\mesa.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\global\color.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\global\reset.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\site.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\cardapio.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\clientes.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\dashboard.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\funcionarios.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\kds.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\layout.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\favicon.ico
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\cardapio.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\clientes.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\dashboard.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\funcionarios.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\kds.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\site.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation\dist\additional-methods.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation\dist\jquery.validate.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation\LICENSE.md
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.min.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.min.map
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.slim.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.slim.min.js
-C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.slim.min.map
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\LICENSE.txt
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.slim.min.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.slim.min.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.slim.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.min.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.min.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery\dist\jquery.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation\LICENSE.md
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\site.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation\dist\jquery.validate.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation\dist\additional-methods.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\site.js
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\mesa.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\kds.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\funcionarios.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\dashboard.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\clientes.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\cardapio.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\favicon.ico
 C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\js\mesa.js
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\layout.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\kds.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\funcionarios.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\dashboard.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\clientes.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\styles\cardapio.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\global\reset.css
+C:\Users\Usuario\OneDrive\Área de Trabalho\ProntaComanda\ProntaComanda\ProntaComanda\ProntaComanda\wwwroot\css\global\color.css
