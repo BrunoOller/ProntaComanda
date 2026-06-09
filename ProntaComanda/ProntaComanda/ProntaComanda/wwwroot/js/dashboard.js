@@ -10,39 +10,40 @@ document.addEventListener('DOMContentLoaded', () => {
        PALETA — alinhada com color.css do projeto
        ============================================================ */
     const COR = {
-        indigo:     '#292B3B',
-        red:        '#D90429',
-        redLight:   'rgba(217, 4, 41, 0.15)',
-        platinum:   '#EDF2F4',
-        grey:       '#A6A9AE',
-        green:      '#27ae60',
-        orange:     '#f39c12',
-        gridLine:   'rgba(0,0,0,0.06)',
+        indigo: '#292B3B',
+        red: '#D90429',
+        redLight: 'rgba(217, 4, 41, 0.15)',
+        platinum: '#EDF2F4',
+        grey: '#A6A9AE',
+        green: '#27ae60',
+        orange: '#f39c12',
+        gridLine: 'rgba(0,0,0,0.06)',
     };
 
     /* ============================================================
-       DADOS MOCKADOS POR PERÍODO
+       LABELS DOS MESES
        ============================================================ */
-    const DADOS = {
-        today: {
-            faturamento: [0,0,0,0,0,0,0,0,0,0,0,3.2],
-            labels: ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'],
-            conversao: { concluidos: 94, cancelados: 6 },
-            ganhos: 'R$ 3.240,00', pedidos: '189', ticket: 'R$ 171,43',
-        },
-        week: {
-            faturamento: [0,0,0,0,0,0,0,0,0,0,0,18.5],
-            labels: ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'],
-            conversao: { concluidos: 92, cancelados: 8 },
-            ganhos: 'R$ 8.120,00', pedidos: '521', ticket: 'R$ 155,85',
-        },
-        month: {
-            faturamento: [60,45,78,29,20,68,40,80,8,45,35,74],
-            labels: ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'],
-            conversao: { concluidos: 91.7, cancelados: 8.3 },
-            ganhos: 'R$ 15.754,00', pedidos: '5.834', ticket: 'R$ 193,58',
-        },
-    };
+    const LABELS_MESES = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+
+    /* ============================================================
+       BUSCA DADOS REAIS DO SERVIDOR
+       Endpoint: GET /Relatorios/Dados?periodo={periodo}
+       Retorna: RelatorioVendas serializado como JSON
+       ============================================================ */
+    async function buscarDados(periodo) {
+        try {
+            const res = await fetch(`/Relatorios/Dados?periodo=${periodo}`);
+            if (!res.ok) throw new Error('Falha na requisição');
+            return await res.json();
+        } catch (err) {
+            console.error('[Dashboard] Erro ao buscar dados:', err);
+            return null;
+        }
+    }
+
+    function formatBRL(valor) {
+        return (valor ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
 
     /* ============================================================
        GRÁFICO DE BARRAS — Faturamento por Mês
@@ -91,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 y: {
                     grid: { color: COR.gridLine },
-                    border: { dash: [4,4] },
+                    border: { dash: [4, 4] },
                     ticks: {
                         font: { family: 'Rubik', size: 11 },
                         color: COR.grey,
@@ -151,40 +152,51 @@ document.addEventListener('DOMContentLoaded', () => {
        FILTRO DE PERÍODO
        ============================================================ */
     document.querySelectorAll('.period-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', async function () {
             document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('period-btn--active'));
             this.classList.add('period-btn--active');
+            this.textContent = 'Carregando...';
 
-            const d = DADOS[this.dataset.period];
+            const dados = await buscarDados(this.dataset.period);
+            this.textContent = this.dataset.period === 'today' ? 'Hoje'
+                : this.dataset.period === 'week' ? 'Esta semana'
+                    : 'Este mês';
 
-            // Atualiza gráfico de barras
-            chartBar.data.datasets[0].data = d.faturamento;
-            chartBar.data.datasets[0].backgroundColor = d.faturamento.map((_, i) =>
-                i === 11 ? COR.red : 'rgba(41,43,59,0.18)'
-            );
-            chartBar.update('active');
-
-            // Atualiza donut
-            chartDonut.data.datasets[0].data = [d.conversao.concluidos, d.conversao.cancelados];
-            chartDonut.update('active');
-
-            // Atualiza cards de métrica
-            // TODO: quando back-end estiver pronto, esses valores virão da API
-            atualizarCards(d);
+            if (!dados) return;
+            atualizarDashboard(dados);
         });
     });
 
     /**
-     * Atualiza os valores visíveis nos cards de métrica.
-     * @param {Object} d — dados do período
+     * Atualiza gráficos e cards com dados vindos do servidor.
+     * @param {Object} dados — RelatorioVendas desserializado
      */
-    function atualizarCards(d) {
-        const ganhos = document.querySelector('.metric-card--ganhos .metric-card__value');
-        const pedidos = document.querySelector('.metric-card--pedidos .metric-card__value');
-        const ticket  = document.querySelector('.metric-card--ticket .metric-card__value');
-        if (ganhos) ganhos.textContent = d.ganhos;
-        if (pedidos) pedidos.textContent = d.pedidos;
-        if (ticket) ticket.textContent = d.ticket;
+    function atualizarDashboard(dados) {
+        // Gráfico de barras
+        const fat = dados.faturamentoPorMes ?? new Array(12).fill(0);
+        chartBar.data.datasets[0].data = fat;
+        chartBar.data.datasets[0].backgroundColor = fat.map((_, i) =>
+            i === 11 ? COR.red : 'rgba(41,43,59,0.18)'
+        );
+        chartBar.update('active');
+
+        // Gráfico donut
+        const concluidos = dados.totalPedidos ?? 0;
+        const cancelados = dados.totalCancelados ?? 0;
+        chartDonut.data.datasets[0].data = [concluidos, cancelados];
+        chartDonut.update('active');
+
+        // Cards de métrica
+        const elGanhos = document.getElementById('metric-ganhos');
+        const elPedidos = document.getElementById('metric-pedidos');
+        const elTicket = document.getElementById('metric-ticket');
+        const elCancelados = document.getElementById('metric-cancelados');
+        const elConversao = document.getElementById('metric-conversao');
+        if (elGanhos) elGanhos.textContent = formatBRL(dados.ganhosTotais);
+        if (elPedidos) elPedidos.textContent = dados.totalPedidos ?? 0;
+        if (elTicket) elTicket.textContent = formatBRL(dados.ticketMedio);
+        if (elCancelados) elCancelados.textContent = dados.totalCancelados ?? 0;
+        if (elConversao) elConversao.textContent = `${(dados.taxaConversao ?? 0).toFixed(1)}%`;
     }
 
     /* ============================================================

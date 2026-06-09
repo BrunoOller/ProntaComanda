@@ -5,8 +5,8 @@
     ViewData["ActivePage"] = "Funcionarios";
 
     var atendimento = Model.Where(f => f.Funcao == FuncaoUsuario.Garcom).ToList();
-    var cozinha     = Model.Where(f => f.Funcao == FuncaoUsuario.Cozinheiro).ToList();
-    var gestao      = Model.Where(f => f.Funcao == FuncaoUsuario.Gerente
+    var cozinha = Model.Where(f => f.Funcao == FuncaoUsuario.Cozinheiro).ToList();
+    var gestao = Model.Where(f => f.Funcao == FuncaoUsuario.Gerente
                                     || f.Funcao == FuncaoUsuario.Administrador
                                     || f.Funcao == FuncaoUsuario.Desenvolvedor).ToList();
 }
@@ -15,124 +15,120 @@
     <link rel="stylesheet" href="~/css/styles/funcionarios.css" />
 }
 
-<main class="admin-content func-content">
+<header class="content-header">
+    <div>
+        <h1>Administrando Funcionários</h1>
+        <p>Gerencie sua equipe por setor.</p>
+    </div>
+    <button class="func-btn-add" onclick="abrirModalAdicionar()">
+        + Adicionar Funcionário
+    </button>
+</header>
 
-    <header class="content-header">
-        <div>
-            <h1>Administrando Funcionários</h1>
-            <p>Gerencie sua equipe por setor.</p>
-        </div>
-        <button class="func-btn-add" onclick="abrirModalAdicionar()">
-            + Adicionar Funcionário
-        </button>
-    </header>
-
-    <!-- SEÇÃO: ATENDIMENTO -->
-    <section class="func-section" id="section-atendimento">
-        <h2 class="func-section__title">Atendimento</h2>
-        <table class="func-table">
-            <thead>
-                <tr>
-                    <th>Nome do Funcionário</th>
-                    <th>Cargo/Especialidade</th>
-                    <th>Ações</th>
+<!-- SEÇÃO: ATENDIMENTO -->
+<section class="func-section" id="section-atendimento">
+    <h2 class="func-section__title">Atendimento</h2>
+    <table class="func-table">
+        <thead>
+            <tr>
+                <th>Nome do Funcionário</th>
+                <th>Cargo/Especialidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tbody-atendimento">
+            @foreach (var f in atendimento)
+            {
+                <tr data-id="@f.Id" data-nome="@f.Nome" data-funcao="@f.Funcao" data-especialidade="@f.Especialidade">
+                    <td class="func-table__nome">@f.Nome</td>
+                    <td><span class="func-badge func-badge--garcom">Garçom</span></td>
+                    <td class="func-table__acoes">
+                        <button class="func-btn func-btn--editar" onclick="abrirModalEditar(this)">Editar</button>
+                        <span class="func-delete-confirm" style="display:none;">
+                            <button class="func-btn func-btn--confirmar-del" onclick="confirmarDelecao(this)">Confirmar</button>
+                            <button class="func-btn func-btn--cancelar-del" onclick="cancelarDelecao(this)">Cancelar</button>
+                        </span>
+                        <button class="func-btn func-btn--excluir" onclick="iniciarDelecao(this)">Excluir</button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody id="tbody-atendimento">
-                @foreach (var f in atendimento)
-                {
-                    <tr data-id="@f.Id" data-nome="@f.Nome" data-funcao="@f.Funcao" data-especialidade="@f.Especialidade">
-                        <td class="func-table__nome">@f.Nome</td>
-                        <td><span class="func-badge func-badge--garcom">Garçom</span></td>
-                        <td class="func-table__acoes">
-                            <button class="func-btn func-btn--editar" onclick="abrirModalEditar(this)">Editar</button>
-                            <span class="func-delete-confirm" style="display:none;">
-                                <button class="func-btn func-btn--confirmar-del" onclick="confirmarDelecao(this)">Confirmar</button>
-                                <button class="func-btn func-btn--cancelar-del" onclick="cancelarDelecao(this)">Cancelar</button>
-                            </span>
-                            <button class="func-btn func-btn--excluir" onclick="iniciarDelecao(this)">Excluir</button>
-                        </td>
-                    </tr>
-                }
-                @if (!atendimento.Any())
-                {
-                    <tr><td colspan="3" style="text-align:center;color:var(--grey);padding:1rem;">Nenhum garçom cadastrado.</td></tr>
-                }
-            </tbody>
-        </table>
-    </section>
+            }
+            @if (!atendimento.Any())
+            {
+                <tr><td colspan="3" style="text-align:center;color:var(--grey);padding:1rem;">Nenhum garçom cadastrado.</td></tr>
+            }
+        </tbody>
+    </table>
+</section>
 
-    <!-- SEÇÃO: COZINHA -->
-    <section class="func-section" id="section-cozinha">
-        <h2 class="func-section__title">Cozinha</h2>
-        <table class="func-table">
-            <thead>
-                <tr>
-                    <th>Nome do Funcionário</th>
-                    <th>Cargo/Especialidade</th>
-                    <th>Ações</th>
+<!-- SEÇÃO: COZINHA -->
+<section class="func-section" id="section-cozinha">
+    <h2 class="func-section__title">Cozinha</h2>
+    <table class="func-table">
+        <thead>
+            <tr>
+                <th>Nome do Funcionário</th>
+                <th>Cargo/Especialidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tbody-cozinha">
+            @foreach (var f in cozinha)
+            {
+                <tr data-id="@f.Id" data-nome="@f.Nome" data-funcao="@f.Funcao" data-especialidade="@f.Especialidade">
+                    <td class="func-table__nome">@f.Nome</td>
+                    <td><span class="func-badge func-badge--cozinheiro">Cozinheiro / @f.Especialidade</span></td>
+                    <td class="func-table__acoes">
+                        <button class="func-btn func-btn--editar" onclick="abrirModalEditar(this)">Editar</button>
+                        <span class="func-delete-confirm" style="display:none;">
+                            <button class="func-btn func-btn--confirmar-del" onclick="confirmarDelecao(this)">Confirmar</button>
+                            <button class="func-btn func-btn--cancelar-del" onclick="cancelarDelecao(this)">Cancelar</button>
+                        </span>
+                        <button class="func-btn func-btn--excluir" onclick="iniciarDelecao(this)">Excluir</button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody id="tbody-cozinha">
-                @foreach (var f in cozinha)
-                {
-                    <tr data-id="@f.Id" data-nome="@f.Nome" data-funcao="@f.Funcao" data-especialidade="@f.Especialidade">
-                        <td class="func-table__nome">@f.Nome</td>
-                        <td><span class="func-badge func-badge--cozinheiro">Cozinheiro / @f.Especialidade</span></td>
-                        <td class="func-table__acoes">
-                            <button class="func-btn func-btn--editar" onclick="abrirModalEditar(this)">Editar</button>
-                            <span class="func-delete-confirm" style="display:none;">
-                                <button class="func-btn func-btn--confirmar-del" onclick="confirmarDelecao(this)">Confirmar</button>
-                                <button class="func-btn func-btn--cancelar-del" onclick="cancelarDelecao(this)">Cancelar</button>
-                            </span>
-                            <button class="func-btn func-btn--excluir" onclick="iniciarDelecao(this)">Excluir</button>
-                        </td>
-                    </tr>
-                }
-                @if (!cozinha.Any())
-                {
-                    <tr><td colspan="3" style="text-align:center;color:var(--grey);padding:1rem;">Nenhum cozinheiro cadastrado.</td></tr>
-                }
-            </tbody>
-        </table>
-    </section>
+            }
+            @if (!cozinha.Any())
+            {
+                <tr><td colspan="3" style="text-align:center;color:var(--grey);padding:1rem;">Nenhum cozinheiro cadastrado.</td></tr>
+            }
+        </tbody>
+    </table>
+</section>
 
-    <!-- SEÇÃO: GESTÃO & TECNOLOGIA -->
-    <section class="func-section" id="section-gestao">
-        <h2 class="func-section__title">Gestão &amp; Tecnologia</h2>
-        <table class="func-table">
-            <thead>
-                <tr>
-                    <th>Nome do Funcionário</th>
-                    <th>Cargo/Especialidade</th>
-                    <th>Ações</th>
+<!-- SEÇÃO: GESTÃO & TECNOLOGIA -->
+<section class="func-section" id="section-gestao">
+    <h2 class="func-section__title">Gestão &amp; Tecnologia</h2>
+    <table class="func-table">
+        <thead>
+            <tr>
+                <th>Nome do Funcionário</th>
+                <th>Cargo/Especialidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tbody-gestao">
+            @foreach (var f in gestao)
+            {
+                <tr data-id="@f.Id" data-nome="@f.Nome" data-funcao="@f.Funcao" data-especialidade="@f.Especialidade">
+                    <td class="func-table__nome">@f.Nome</td>
+                    <td><span class="func-badge func-badge--admin">@f.Funcao</span></td>
+                    <td class="func-table__acoes">
+                        <button class="func-btn func-btn--editar" onclick="abrirModalEditar(this)">Editar</button>
+                        <span class="func-delete-confirm" style="display:none;">
+                            <button class="func-btn func-btn--confirmar-del" onclick="confirmarDelecao(this)">Confirmar</button>
+                            <button class="func-btn func-btn--cancelar-del" onclick="cancelarDelecao(this)">Cancelar</button>
+                        </span>
+                        <button class="func-btn func-btn--excluir" onclick="iniciarDelecao(this)">Excluir</button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody id="tbody-gestao">
-                @foreach (var f in gestao)
-                {
-                    <tr data-id="@f.Id" data-nome="@f.Nome" data-funcao="@f.Funcao" data-especialidade="@f.Especialidade">
-                        <td class="func-table__nome">@f.Nome</td>
-                        <td><span class="func-badge func-badge--admin">@f.Funcao</span></td>
-                        <td class="func-table__acoes">
-                            <button class="func-btn func-btn--editar" onclick="abrirModalEditar(this)">Editar</button>
-                            <span class="func-delete-confirm" style="display:none;">
-                                <button class="func-btn func-btn--confirmar-del" onclick="confirmarDelecao(this)">Confirmar</button>
-                                <button class="func-btn func-btn--cancelar-del" onclick="cancelarDelecao(this)">Cancelar</button>
-                            </span>
-                            <button class="func-btn func-btn--excluir" onclick="iniciarDelecao(this)">Excluir</button>
-                        </td>
-                    </tr>
-                }
-                @if (!gestao.Any())
-                {
-                    <tr><td colspan="3" style="text-align:center;color:var(--grey);padding:1rem;">Nenhum gestor cadastrado.</td></tr>
-                }
-            </tbody>
-        </table>
-    </section>
-
-</main>
+            }
+            @if (!gestao.Any())
+            {
+                <tr><td colspan="3" style="text-align:center;color:var(--grey);padding:1rem;">Nenhum gestor cadastrado.</td></tr>
+            }
+        </tbody>
+    </table>
+</section>
 
 <!-- MODAL: ADICIONAR -->
 <div class="modal-overlay" id="modal-adicionar" role="dialog" aria-modal="true">
@@ -241,19 +237,19 @@
 <!-- FORMULÁRIOS OCULTOS -->
 <form id="form-criar-func" asp-action="Criar" method="post" style="display:none">
     @Html.AntiForgeryToken()
-    <input type="hidden" name="Nome"         id="f-func-nome">
-    <input type="hidden" name="Funcao"       id="f-func-funcao">
+    <input type="hidden" name="Nome" id="f-func-nome">
+    <input type="hidden" name="Funcao" id="f-func-funcao">
     <input type="hidden" name="Especialidade" id="f-func-esp">
-    <input type="hidden" name="SenhaHash"    id="f-func-senha">
+    <input type="hidden" name="SenhaHash" id="f-func-senha">
 </form>
 
 <form id="form-editar-func" asp-action="Editar" method="post" style="display:none">
     @Html.AntiForgeryToken()
-    <input type="hidden" name="id"           id="fe-func-id">
-    <input type="hidden" name="Nome"         id="fe-func-nome">
-    <input type="hidden" name="Funcao"       id="fe-func-funcao">
+    <input type="hidden" name="id" id="fe-func-id">
+    <input type="hidden" name="Nome" id="fe-func-nome">
+    <input type="hidden" name="Funcao" id="fe-func-funcao">
     <input type="hidden" name="Especialidade" id="fe-func-esp">
-    <input type="hidden" name="SenhaHash"    id="fe-func-senha">
+    <input type="hidden" name="SenhaHash" id="fe-func-senha">
 </form>
 
 <form id="form-deletar-func" asp-action="Deletar" method="post" style="display:none">

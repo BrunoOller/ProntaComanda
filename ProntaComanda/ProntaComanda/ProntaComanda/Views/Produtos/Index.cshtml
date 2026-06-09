@@ -135,11 +135,17 @@
 
         <div class="modal__tabs" role="tablist">
             <button class="modal__tab-btn modal__tab-btn--active" role="tab" aria-selected="true"
-                    aria-controls="panel-dados-gerais">Dados Gerais</button>
+                    aria-controls="panel-dados-gerais">
+                Dados Gerais
+            </button>
             <button class="modal__tab-btn" role="tab" aria-selected="false"
-                    aria-controls="panel-acrescimos">Acréssimos/Extras</button>
+                    aria-controls="panel-acrescimos">
+                Acréssimos/Extras
+            </button>
             <button class="modal__tab-btn" role="tab" aria-selected="false"
-                    aria-controls="panel-happy-hour">Happy Hour</button>
+                    aria-controls="panel-happy-hour">
+                Happy Hour
+            </button>
         </div>
 
         <div class="modal__body">
@@ -234,7 +240,6 @@
 
                 </div>
             </div><!-- /#panel-dados-gerais -->
-
             <!-- ========== ABA 2: ACRÉSSIMOS/EXTRAS ========== -->
             <div class="modal__panel" id="panel-acrescimos" role="tabpanel">
                 <div class="extras__search-row">
@@ -276,7 +281,6 @@
                     <tbody class="extras__tbody"></tbody>
                 </table>
             </div><!-- /#panel-acrescimos -->
-
             <!-- ========== ABA 3: HAPPY HOUR ========== -->
             <div class="modal__panel" id="panel-happy-hour" role="tabpanel">
                 <div class="happyhour__top-row">
@@ -335,20 +339,29 @@
         </div><!-- /.modal__body -->
     </div><!-- /.modal -->
 </div><!-- /#modal-cardapio -->
-
 <!-- Campo oculto para guardar o ID do produto em edição -->
 <input type="hidden" id="produto-id-edicao" value="">
+
+<!-- Form oculto para expor token antiforgery ao JS -->
+<form id="__af-form" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="~/js/cardapio.js"></script>
     <script>
-        // URL base dos endpoints MVC (usada pelo cardapio.js)
+        // URLs dos endpoints MVC para o cardapio.js
+        // Padrão: POST /Controller/Action com id como form param
         const API_BASE = {
-            criar: '/produtos/criar',
-            editar: (id) => `/produtos/${id}/editar`,
-            deletar: (id) => `/produtos/${id}/deletar`,
-            disponibilidade: (id) => `/produtos/${id}/disponibilidade`
+        criar:           '/Produtos/Criar',
+        editar:          '/Produtos/Editar',
+        deletar:         '/Produtos/Deletar',
+        disponibilidade: '/Produtos/AlterarDisponibilidade',
+        buscar:          (id) => `/Produtos/Buscar?id=${id}`,
         };
+
+        // Token antiforgery para os POSTs do JS
+        const ANTIFORGERY_TOKEN = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
     </script>
 }

@@ -2,9 +2,9 @@
 @using ProntaComanda.Models
 @{
     ViewData["Title"] = "KDS";
-    var emPreparo  = Model.Where(p => p.Status == StatusPedido.Pendente || p.Status == StatusPedido.EmPreparo).ToList();
-    var prontos    = Model.Where(p => p.Status == StatusPedido.Pronto).ToList();
-    var entregues  = Model.Where(p => p.Status == StatusPedido.Entregue).ToList();
+    var emPreparo = Model.Where(p => p.Status == StatusPedido.Pendente || p.Status == StatusPedido.EmPreparo).ToList();
+    var prontos = Model.Where(p => p.Status == StatusPedido.Pronto).ToList();
+    var entregues = Model.Where(p => p.Status == StatusPedido.Entregue).ToList();
 
     // Resumo de itens pendentes (colunas Em Preparo + Pronto)
     var itensPendentes = emPreparo.Concat(prontos)
@@ -213,7 +213,6 @@
             </section><!-- /.onGoing-colunm -->
         </main>
     </div><!-- /.content-wrapper -->
-
     <!-- SIDEBAR DIREITA: métricas + resumo -->
     <aside class="right-sidebar" aria-label="Métricas de produção">
         <div class="sidebar-content">
@@ -262,6 +261,10 @@
     </aside>
 
 </div><!-- /.kds-page-wrapper -->
+<!-- Form oculto para expor token antiforgery ao JS -->
+<form id="__af-form" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
 
 @section Scripts {
     <script>
@@ -276,7 +279,12 @@
                 const formData = new FormData();
                 formData.append('novoStatus', novoStatus);
 
-                const response = await fetch(`/pedidos/${pedidoId}/status`, {
+                // Endpoint MVC: POST /Pedidos/AtualizarStatus
+                formData.append('id', pedidoId);
+                formData.append('__RequestVerificationToken',
+                    document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '');
+
+                const response = await fetch('/Pedidos/AtualizarStatus', {
                     method: 'POST',
                     body: formData
                 });

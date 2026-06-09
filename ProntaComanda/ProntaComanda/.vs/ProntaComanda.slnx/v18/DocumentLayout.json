@@ -1,9 +1,41 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\bruno\\Desktop\\ProntaComanda\\ProntaComanda\\ProntaComanda\\",
+  "WorkspaceRootPath": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|c:\\users\\bruno\\desktop\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda\\wwwroot\\js\\cardapio.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "AbsoluteMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|c:\\users\\usuario\\onedrive\\\u00E1rea de trabalho\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|solutionrelative:prontacomanda\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|c:\\users\\usuario\\onedrive\\\u00E1rea de trabalho\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda\\wwwroot\\js\\dashboard.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|solutionrelative:prontacomanda\\wwwroot\\js\\dashboard.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|c:\\users\\usuario\\onedrive\\\u00E1rea de trabalho\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda\\views\\pedidos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|solutionrelative:prontacomanda\\views\\pedidos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|c:\\users\\usuario\\onedrive\\\u00E1rea de trabalho\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda\\views\\produtos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|solutionrelative:prontacomanda\\views\\produtos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|c:\\users\\usuario\\onedrive\\\u00E1rea de trabalho\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda\\views\\mesas\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|solutionrelative:prontacomanda\\views\\mesas\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|c:\\users\\usuario\\onedrive\\\u00E1rea de trabalho\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda\\views\\relatorios\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|solutionrelative:prontacomanda\\views\\relatorios\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|c:\\users\\usuario\\onedrive\\\u00E1rea de trabalho\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda\\views\\funcionarios\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|solutionrelative:prontacomanda\\views\\funcionarios\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|c:\\users\\usuario\\onedrive\\\u00E1rea de trabalho\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|solutionrelative:prontacomanda\\prontacomanda.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|c:\\users\\usuario\\onedrive\\\u00E1rea de trabalho\\prontacomanda\\prontacomanda\\prontacomanda\\prontacomanda\\wwwroot\\js\\cardapio.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{C7E3467E-B527-F692-BA0A-C52A4FBD18BD}|ProntaComanda\\ProntaComanda.csproj|solutionrelative:prontacomanda\\wwwroot\\js\\cardapio.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     }
   ],
@@ -14,23 +46,119 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 0,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
-            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "ProntaComanda\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "ProntaComanda\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEMAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-09T03:03:31.096Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "dashboard.js",
+              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\wwwroot\\js\\dashboard.js",
+              "RelativeDocumentMoniker": "ProntaComanda\\wwwroot\\js\\dashboard.js",
+              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\wwwroot\\js\\dashboard.js",
+              "RelativeToolTip": "ProntaComanda\\wwwroot\\js\\dashboard.js",
+              "ViewState": "AgIAAMIAAAAAAAAAAAAiwN0AAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-06-09T03:02:14.541Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Pedidos\\Index.cshtml",
+              "RelativeDocumentMoniker": "ProntaComanda\\Views\\Pedidos\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Pedidos\\Index.cshtml",
+              "RelativeToolTip": "ProntaComanda\\Views\\Pedidos\\Index.cshtml",
+              "ViewState": "AgIAADcBAAAAAAAAAAAiwEoBAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-09T03:01:16.15Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Produtos\\Index.cshtml",
+              "RelativeDocumentMoniker": "ProntaComanda\\Views\\Produtos\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Produtos\\Index.cshtml",
+              "RelativeToolTip": "ProntaComanda\\Views\\Produtos\\Index.cshtml",
+              "ViewState": "AgIAAFUBAAAAAAAAAAAiwG8BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-09T03:00:42.633Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Mesas\\Index.cshtml",
+              "RelativeDocumentMoniker": "ProntaComanda\\Views\\Mesas\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Mesas\\Index.cshtml",
+              "RelativeToolTip": "ProntaComanda\\Views\\Mesas\\Index.cshtml",
+              "ViewState": "AgIAAA8BAAAAAAAAAAAiwCoBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-09T03:00:00.869Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Relatorios\\Index.cshtml",
+              "RelativeDocumentMoniker": "ProntaComanda\\Views\\Relatorios\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Relatorios\\Index.cshtml",
+              "RelativeToolTip": "ProntaComanda\\Views\\Relatorios\\Index.cshtml",
+              "ViewState": "AgIAALoAAAAAAAAAAAAiwNUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-09T02:59:20.088Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Funcionarios\\Index.cshtml",
+              "RelativeDocumentMoniker": "ProntaComanda\\Views\\Funcionarios\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\Views\\Funcionarios\\Index.cshtml",
+              "RelativeToolTip": "ProntaComanda\\Views\\Funcionarios\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-09T02:53:48.535Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ProntaComanda",
+              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda.csproj",
+              "RelativeDocumentMoniker": "ProntaComanda\\ProntaComanda.csproj",
+              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda.csproj",
+              "RelativeToolTip": "ProntaComanda\\ProntaComanda.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-09T02:51:46.445Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "cardapio.js",
-              "DocumentMoniker": "C:\\Users\\bruno\\Desktop\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\wwwroot\\js\\cardapio.js",
+              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\wwwroot\\js\\cardapio.js",
               "RelativeDocumentMoniker": "ProntaComanda\\wwwroot\\js\\cardapio.js",
-              "ToolTip": "C:\\Users\\bruno\\Desktop\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\wwwroot\\js\\cardapio.js",
+              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\\u00C1rea de Trabalho\\ProntaComanda\\ProntaComanda\\ProntaComanda\\ProntaComanda\\wwwroot\\js\\cardapio.js",
               "RelativeToolTip": "ProntaComanda\\wwwroot\\js\\cardapio.js",
               "ViewState": "AgIAAB8CAAAAAAAAAAAqwHwCAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",

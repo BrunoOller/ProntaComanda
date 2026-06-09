@@ -250,6 +250,11 @@
     </div>
 </div>
 
+<!-- Form oculto apenas para expor o token antiforgery ao JS -->
+<form id="__af-form" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
 @section Scripts {
     <script>
         const MESAS_INICIAIS = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Select(m => new {
@@ -275,14 +280,19 @@
             })
         })));
 
-        // URLs dos endpoints para o mesa.js
+        // URLs dos endpoints MVC para o mesa.js
+        // Padrão: POST /Controller/Action com params no body
         const MESA_API = {
-            criar:    '/mesas/criar',
-            fechar:   (id) => `/mesas/${id}/fechar`,
-            mover:    (id) => `/mesas/${id}/mover`,
-            desconto: (id) => `/mesas/${id}/desconto`,
-            comanda:  (id) => `/mesas/${id}/comandas`,
+            criar:    '/Mesas/Criar',
+            fechar:   '/Mesas/FecharMesa',
+            mover:    '/Mesas/MoverMesa',
+            desconto: '/Mesas/AplicarDesconto',
+            comanda:  '/Mesas/AdicionarComanda',
+            deletar:  '/Mesas/Deletar',
         };
+
+        // Token antiforgery para os POSTs do JS
+        const ANTIFORGERY_TOKEN = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
     </script>
     <script src="~/js/mesa.js"></script>
 }
