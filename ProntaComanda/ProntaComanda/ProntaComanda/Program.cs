@@ -21,8 +21,14 @@ builder.Services.AddSingleton<MongoDbContext>();
 builder.Services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IMesaRepository, MesaRepository>();
+builder.Services.AddScoped<IHistoricoVendaRepository, HistoricoVendaRepository>();
 builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 builder.Services.AddScoped<IRelatorioRepository, RelatorioRepository>();
+
+// ── Antiforgery — permite enviar token via header em requisições JSON ───────────
+builder.Services.AddAntiforgery(options => {
+    options.HeaderName = "RequestVerificationToken";
+});
 
 // ── MVC ───────────────────────────────────────────────────────────────────────
 builder.Services.AddControllersWithViews()

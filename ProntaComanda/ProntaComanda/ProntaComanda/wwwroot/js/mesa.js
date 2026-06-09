@@ -1,396 +1,267 @@
-// ============================================================
-//  ProntaComanda — mesa.js
-//  Gerenciamento de Mesas (Front-End Only)
-// ============================================================
-
-// ---- ESTADO DA APLICAÇÃO ----
+// ==========================================
+// 1. ESTADO GLOBAL
+// ==========================================
 const state = {
-    mesaSelecionada: null,
-    taxaServico: 10, // %
-    mesas: [
-        { num: 1,  ocupada: false, permanencia: 0, comandas: [] },
-        { num: 2,  ocupada: true,  permanencia: 5625, comandas: [
-            { id: 1, itens: [
-                { quant: 1, nome: "Pão",    preco: 100.00 },
-                { quant: 2, nome: "Água",   preco: 50.00  },
-                { quant: 2, nome: "Salame", preco: 25.00  },
-                { quant: 1, nome: "Suco",   preco: 0.00   },
-            ]},
-            { id: 2, itens: [
-                { quant: 1, nome: "Pão",    preco: 100.00 },
-                { quant: 2, nome: "Água",   preco: 50.00  },
-                { quant: 2, nome: "Salame", preco: 25.00  },
-                { quant: 1, nome: "Suco",   preco: 0.00   },
-            ]},
-        ]},
-        { num: 3,  ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 4,  ocupada: true,  permanencia: 1230, comandas: [
-            { id: 1, itens: [
-                { quant: 2, nome: "Refrigerante", preco: 5.00  },
-                { quant: 1, nome: "Hambúrguer",   preco: 28.00 },
-                { quant: 3, nome: "Batata Frita", preco: 12.00 },
-            ]}
-        ]},
-        { num: 5,  ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 6,  ocupada: true,  permanencia: 2700, comandas: [
-            { id: 1, itens: [
-                { quant: 1, nome: "Pizza",   preco: 45.00 },
-                { quant: 2, nome: "Cerveja", preco: 8.00  },
-            ]}
-        ]},
-        { num: 7,  ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 8,  ocupada: true,  permanencia: 480,  comandas: [] },
-        { num: 9,  ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 10, ocupada: true,  permanencia: 900,  comandas: [] },
-        { num: 11, ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 12, ocupada: true,  permanencia: 3600, comandas: [] },
-        { num: 13, ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 14, ocupada: true,  permanencia: 720,  comandas: [] },
-        { num: 15, ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 16, ocupada: true,  permanencia: 1800, comandas: [] },
-        { num: 17, ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 18, ocupada: true,  permanencia: 2100, comandas: [] },
-        { num: 19, ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 20, ocupada: true,  permanencia: 300,  comandas: [] },
-        { num: 21, ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 22, ocupada: true,  permanencia: 600,  comandas: [] },
-        { num: 23, ocupada: false, permanencia: 0,    comandas: [] },
-        { num: 24, ocupada: true,  permanencia: 9405, comandas: [] },
-    ]
+    // MESAS_INICIAIS vem do Razor (na view)
+    mesas: typeof MESAS_INICIAIS !== 'undefined' ? MESAS_INICIAIS : [],
+    mesaSelecionadaId: null
 };
 
-// ---- UTILITÁRIOS ----
-function pad(n) { return String(n).padStart(2, '0'); }
+// ==========================================
+// 2. COMUNICAÇÃO COM O C# (API)
+// ==========================================
+// Função centralizada para fazer os POSTs sem repetir código
+async function postData(url, data) {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // O ASP.NET Core procura o token de segurança por padrão neste header
+                'RequestVerificationToken': ANTIFORGERY_TOKEN
+            },
+            body: JSON.stringify(data)
+        });
 
-function formatarTempo(seg) {
-    const h = Math.floor(seg / 3600);
-    const m = Math.floor((seg % 3600) / 60);
-    const s = seg % 60;
-    return `${h}:${pad(m)}:${pad(s)}`;
-}
+        const result = await response.json();
 
-function formatarMoeda(v) {
-    return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function calcularSubtotal(mesa) {
-    return mesa.comandas.reduce((acc, c) =>
-        acc + c.itens.reduce((a, i) => a + i.quant * i.preco, 0), 0);
-}
-
-function getMesa(num) { return state.mesas.find(m => m.num === num); }
-
-// ---- RELÓGIO DAS MESAS ----
-setInterval(() => {
-    state.mesas.forEach(m => { if (m.ocupada) m.permanencia++; });
-    if (state.mesaSelecionada) {
-        const m = getMesa(state.mesaSelecionada);
-        if (m && m.ocupada) {
-            const el = document.getElementById('sidebar-mesa-permanencia');
-            if (el) el.textContent = `Permanência: ${formatarTempo(m.permanencia)}`;
+        if (!response.ok) {
+            throw new Error(result.mensagem || "Erro inesperado na operação.");
         }
+
+        return result;
+    } catch (error) {
+        alert(error.message);
+        throw error; // Repassa o erro para parar a execução da função que chamou
     }
-}, 1000);
-
-// ---- RENDERIZAR GRID ----
-function renderizarGrid() {
-    const grid = document.getElementById('mesa-grid');
-    grid.innerHTML = '';
-    state.mesas.forEach(m => {
-        const numStr = pad(m.num);
-        const card = document.createElement('article');
-        card.className = `card ${m.ocupada ? 'ocupada' : 'disponivel'}`;
-        if (state.mesaSelecionada === m.num) card.classList.add('selected');
-        card.setAttribute('data-mesa', m.num);
-        card.innerHTML = `
-            <div class="mesa-label">Mesa</div>
-            <div class="mesa-number">${numStr}</div>
-            <div class="mesa-status-bar">${m.ocupada ? 'Ocupada' : 'Disponível'}</div>
-        `;
-        card.addEventListener('click', () => selecionarMesa(m.num));
-        grid.appendChild(card);
-    });
 }
 
-// ---- SELECIONAR MESA ----
-function selecionarMesa(num) {
-    const anterior = state.mesaSelecionada;
-    state.mesaSelecionada = num;
+// ==========================================
+// 3. AÇÕES DA TELA (Conectando botões com a API)
+// ==========================================
 
-    // Atualiza seleção visual nos cards
-    document.querySelectorAll('.card').forEach(c => {
-        c.classList.toggle('selected', parseInt(c.dataset.mesa) === num);
-    });
+async function confirmarAdicionarMesa() {
+    const inputNum = document.getElementById('input-num-mesa');
+    const numero = parseInt(inputNum.value);
 
-    const mesa = getMesa(num);
-    document.getElementById('sidebar-empty').style.display = 'none';
-    const info = document.getElementById('sidebar-mesa-info');
-    info.style.display = 'flex';
-
-    document.getElementById('sidebar-mesa-titulo').textContent = `Mesa ${pad(num)}`;
-    document.getElementById('sidebar-mesa-permanencia').textContent =
-        mesa.ocupada ? `Permanência: ${formatarTempo(mesa.permanencia)}` : 'Disponível';
-
-    renderizarComandas(mesa);
-    atualizarFooter(mesa);
-}
-
-// ---- FECHAR SIDEBAR ----
-function fecharSidebar() {
-    state.mesaSelecionada = null;
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-    document.getElementById('sidebar-empty').style.display = 'flex';
-    document.getElementById('sidebar-mesa-info').style.display = 'none';
-}
-
-// ---- RENDERIZAR COMANDAS ----
-function renderizarComandas(mesa) {
-    const container = document.getElementById('sidebar-content');
-    container.innerHTML = '';
-
-    if (!mesa.ocupada || mesa.comandas.length === 0) {
-        container.innerHTML = `<p style="color:var(--grey);font-size:0.88rem;text-align:center;margin-top:1rem;">Nenhuma comanda registrada.</p>`;
+    if (isNaN(numero) || numero <= 0) {
+        alert("Digite um número de mesa válido.");
         return;
     }
 
-    mesa.comandas.forEach(c => {
-        const block = document.createElement('div');
-        block.className = 'comanda-block';
+    // Chama o Controller
+    await postData(MESA_API.criar, { numero: numero });
 
-        const subtotalComanda = c.itens.reduce((a, i) => a + i.quant * i.preco, 0);
-        const rows = c.itens.map(i => `
-            <tr>
-                <td>${i.quant}</td>
-                <td>${i.nome}</td>
-                <td>R$ ${formatarMoeda(i.preco)}</td>
-                <td>R$ ${formatarMoeda(i.quant * i.preco)}</td>
-            </tr>
-        `).join('');
-
-        block.innerHTML = `
-            <div class="comanda-block-header">Comanda ${c.id}</div>
-            <table class="orders-table">
-                <thead>
-                    <tr>
-                        <th>QUANT.</th>
-                        <th>Nome do Item</th>
-                        <th>Preço</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-            </table>
-        `;
-        container.appendChild(block);
-    });
+    // Como criamos uma mesa nova, a forma mais segura de garantir 
+    // que o Razor re-renderize os cards vazios é dar um reload suave.
+    window.location.reload();
 }
 
-// ---- ATUALIZAR FOOTER ----
-function atualizarFooter(mesa) {
-    const subtotal = calcularSubtotal(mesa);
-    const taxa = subtotal * (state.taxaServico / 100);
-    const desconto = mesa.desconto || 0;
-    const total = subtotal + taxa - desconto;
+async function adicionarComanda() {
+    if (!state.mesaSelecionadaId) return;
 
-    document.getElementById('footer-subtotal').textContent = `R$ ${formatarMoeda(subtotal)}`;
-    document.getElementById('footer-taxa').textContent = `R$ ${formatarMoeda(taxa)} (${state.taxaServico}%)`;
-    document.getElementById('footer-desconto').textContent = desconto > 0 ? `R$ ${formatarMoeda(desconto)}` : 'Null';
-    document.getElementById('footer-total').textContent = `${formatarMoeda(total)}`;
-}
+    const result = await postData(MESA_API.comanda, { mesaId: state.mesaSelecionadaId });
 
-// ---- MODAIS ----
-function abrirModal(id) { document.getElementById(id).style.display = 'flex'; }
-function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
-
-// Fecha modal ao clicar fora
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', e => {
-        if (e.target === overlay) overlay.style.display = 'none';
-    });
-});
-
-// ---- ADICIONAR MESA ----
-function abrirModalAdicionarMesa() { abrirModal('modal-adicionar-mesa'); }
-
-function confirmarAdicionarMesa() {
-    const val = parseInt(document.getElementById('input-num-mesa').value);
-    if (!val || val < 1) { alert('Informe um número de mesa válido.'); return; }
-    if (getMesa(val)) { alert(`A Mesa ${val} já existe.`); return; }
-    state.mesas.push({ num: val, ocupada: false, permanencia: 0, comandas: [] });
-    state.mesas.sort((a, b) => a.num - b.num);
-    renderizarGrid();
-    fecharModal('modal-adicionar-mesa');
-    document.getElementById('input-num-mesa').value = '';
-}
-
-// ---- MOVER MESA ----
-function abrirModalMoverMesa() {
-    if (!state.mesaSelecionada) return;
-    const select = document.getElementById('select-mover-mesa');
-    select.innerHTML = state.mesas
-        .filter(m => m.num !== state.mesaSelecionada && !m.ocupada)
-        .map(m => `<option value="${m.num}">Mesa ${pad(m.num)} — Disponível</option>`)
-        .join('');
-    if (!select.options.length) {
-        alert('Não há mesas disponíveis para mover.'); return;
+    if (result.success) {
+        alert(`Comanda número ${result.numeroComanda} aberta com sucesso!`);
+        window.location.reload(); // Recarrega para atualizar subtotal e badges
     }
-    abrirModal('modal-mover-mesa');
 }
 
-function confirmarMoverMesa() {
-    const destino = parseInt(document.getElementById('select-mover-mesa').value);
-    const origem = getMesa(state.mesaSelecionada);
-    const dest   = getMesa(destino);
-    if (!origem || !dest) return;
+async function confirmarMoverMesa() {
+    if (!state.mesaSelecionadaId) return;
 
-    // Transfere dados
-    dest.ocupada     = origem.ocupada;
-    dest.permanencia = origem.permanencia;
-    dest.comandas    = origem.comandas;
-    dest.desconto    = origem.desconto;
+    const selectDestino = document.getElementById('select-mover-mesa');
+    const mesaDestinoId = selectDestino.value;
 
-    // Libera origem
-    origem.ocupada     = false;
-    origem.permanencia = 0;
-    origem.comandas    = [];
-    delete origem.desconto;
-
-    fecharModal('modal-mover-mesa');
-    renderizarGrid();
-    selecionarMesa(destino);
-}
-
-// ---- DESCONTO ----
-function abrirModalDesconto() {
-    if (!state.mesaSelecionada) return;
-    abrirModal('modal-desconto');
-}
-
-function confirmarDesconto() {
-    const mesa = getMesa(state.mesaSelecionada);
-    if (!mesa) return;
-    const tipo  = document.getElementById('select-tipo-desconto').value;
-    const valor = parseFloat(document.getElementById('input-desconto').value) || 0;
-    const subtotal = calcularSubtotal(mesa);
-
-    if (tipo === 'cortesia') {
-        mesa.desconto = subtotal;
-    } else if (tipo === 'percentual') {
-        mesa.desconto = subtotal * (valor / 100);
-    } else {
-        mesa.desconto = valor;
+    if (!mesaDestinoId) {
+        alert("Selecione uma mesa de destino.");
+        return;
     }
+
+    await postData(MESA_API.mover, {
+        mesaOrigemId: state.mesaSelecionadaId,
+        mesaDestinoId: mesaDestinoId
+    });
+
+    alert("Mesa movida com sucesso!");
+    window.location.reload();
+}
+
+async function confirmarDesconto() {
+    if (!state.mesaSelecionadaId) return;
+
+    const tipo = document.getElementById('select-tipo-desconto').value;
+    const valor = parseFloat(document.getElementById('input-desconto').value || 0);
+
+    // O back-end usa JsonStringEnumConverter — envia a string, não o int
+    await postData(MESA_API.desconto, {
+        mesaId: state.mesaSelecionadaId,
+        desconto: valor,
+        tipoDesconto: tipo  // "Percentual", "Valor" ou "Cortesia"
+    });
 
     fecharModal('modal-desconto');
-    atualizarFooter(mesa);
+    window.location.reload();
 }
 
-// ---- TAXA DE SERVIÇO ----
+async function finalizarCompra() {
+    if (!state.mesaSelecionadaId) return;
+
+    const confirmar = confirm("Tem certeza que deseja finalizar a mesa e fechar a conta?");
+    if (!confirmar) return;
+
+    const result = await postData(MESA_API.fechar, { mesaId: state.mesaSelecionadaId });
+
+    if (result.success) {
+        alert(result.mensagem); // "Mesa finalizada e venda registrada com sucesso!"
+        window.location.reload(); // Limpa a mesa da tela
+    }
+}
+
+// ==========================================
+// 4. INTERFACE E MODAIS
+// ==========================================
+
+function selecionarMesa(elementoCard) {
+    // Remove a classe de seleção de todas as mesas
+    document.querySelectorAll('.mesa-card').forEach(c => c.classList.remove('selected'));
+
+    // Adiciona na clicada
+    elementoCard.classList.add('selected');
+
+    // Pega o ID que deixamos escondido no HTML (data-id)
+    const id = elementoCard.getAttribute('data-id');
+    state.mesaSelecionadaId = id;
+
+    // Acha os dados completos da mesa no state global
+    const mesaData = state.mesas.find(m => m.id === id);
+    if (!mesaData) return;
+
+    atualizarSidebar(mesaData);
+}
+
+function atualizarSidebar(mesa) {
+    document.getElementById('sidebar-empty').style.display = 'none';
+    const sidebarInfo = document.getElementById('sidebar-mesa-info');
+    sidebarInfo.style.display = 'flex';
+
+    // Atualiza cabeçalho da sidebar
+    document.getElementById('sidebar-mesa-titulo').innerText = `Mesa ${mesa.numero}`;
+
+    // Formata totais
+    const formatBRL = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    document.getElementById('footer-subtotal').innerText = formatBRL(mesa.subtotal);
+    document.getElementById('footer-desconto').innerText = formatBRL(mesa.desconto);
+    document.getElementById('footer-total').innerText = formatBRL(mesa.total);
+
+    // Atualiza a lista de comandas no meio da sidebar
+    const containerConteudo = document.getElementById('sidebar-content');
+    containerConteudo.innerHTML = ''; // Limpa o anterior
+
+    if (mesa.comandas && mesa.comandas.length > 0) {
+        mesa.comandas.forEach(c => {
+            containerConteudo.innerHTML += `
+                <div class="comanda-item" style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                    <strong>Comanda #${c.numero}</strong> <br/>
+                    <small>Subtotal: ${formatBRL(c.subtotal)}</small>
+                </div>
+            `;
+        });
+    } else {
+        containerConteudo.innerHTML = `<p style="text-align:center; color:#999; margin-top:20px;">Nenhuma comanda aberta nesta mesa.</p>`;
+    }
+}
+
+function fecharSidebar() {
+    document.getElementById('sidebar-empty').style.display = 'flex';
+    document.getElementById('sidebar-mesa-info').style.display = 'none';
+    state.mesaSelecionadaId = null;
+    document.querySelectorAll('.mesa-card').forEach(c => c.classList.remove('selected'));
+}
+
+// Funções utilitárias de Modal
+function abrirModalAdicionarMesa() { document.getElementById('modal-adicionar-mesa').style.display = 'flex'; }
+function abrirModalMoverMesa() { document.getElementById('modal-mover-mesa').style.display = 'flex'; }
+function abrirModalDesconto() { document.getElementById('modal-desconto').style.display = 'flex'; }
+
+function fecharModal(idModal) {
+    document.getElementById(idModal).style.display = 'none';
+}
+
+/**
+ * Incrementa ou decrementa a quantidade de um item na comanda.
+ * @param {int} comandaNumero - O número da comanda dentro da mesa.
+ * @param {string} produtoId - O ID do produto.
+ * @param {int} delta - 1 para adicionar, -1 para remover.
+ */
+async function alterarItem(comandaNumero, produtoId, delta) {
+    if (!state.mesaSelecionadaId) return;
+
+    try {
+        await postData(MESA_API.alterarItem, {
+            mesaId: state.mesaSelecionadaId,
+            comandaNumero: comandaNumero,
+            produtoId: produtoId,
+            quantidade: delta
+        });
+
+        // Recarrega os dados para atualizar a sidebar com os novos valores calculados
+        window.location.reload();
+    } catch (error) {
+        console.error("Erro ao alterar item:", error);
+    }
+}
+// ==========================================
+// 5. STUBS — funções referenciadas na view, implementação pendente
+// ==========================================
+
+function acaoBotao(acao) {
+    // TODO: implementar modal de adicionar/remover item
+    alert(`Ação "${acao}" em desenvolvimento.`);
+}
+
+function abrirPreviaFiscal() {
+    if (!state.mesaSelecionadaId) return;
+    const mesa = state.mesas.find(m => m.id === state.mesaSelecionadaId);
+    if (!mesa) return;
+
+    const formatBRL = (v) => (v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    let html = `<h4>Mesa ${mesa.numero}</h4><hr>`;
+
+    if (mesa.comandas && mesa.comandas.length > 0) {
+        mesa.comandas.forEach(c => {
+            html += `<strong>Comanda #${c.numero}</strong><br>`;
+            (c.itens || []).forEach(i => {
+                html += `&nbsp;&nbsp;${i.quantidade}x ${i.nomeProduto} — ${formatBRL(i.totalItem)}<br>`;
+            });
+            html += `<small>Subtotal: ${formatBRL(c.subtotal)}</small><br><br>`;
+        });
+    } else {
+        html += '<p>Sem itens lançados.</p>';
+    }
+
+    html += `<hr><strong>Total: ${formatBRL(mesa.total)}</strong>`;
+    document.getElementById('modal-previa-body').innerHTML = html;
+    document.getElementById('modal-previa').style.display = 'flex';
+}
+
+function imprimirPrevia() {
+    window.print();
+}
+
 function abrirModalTaxaServico() {
-    document.getElementById('input-taxa').value = state.taxaServico;
-    abrirModal('modal-taxa');
+    document.getElementById('modal-taxa').style.display = 'flex';
 }
 
 function confirmarTaxa() {
-    const val = parseFloat(document.getElementById('input-taxa').value);
-    state.taxaServico = isNaN(val) ? 10 : Math.max(0, Math.min(100, val));
+    // TODO: implementar taxa de serviço no back-end
+    alert('Taxa de serviço será implementada em breve.');
     fecharModal('modal-taxa');
-    if (state.mesaSelecionada) atualizarFooter(getMesa(state.mesaSelecionada));
 }
 
-// ---- PRÉVIA FISCAL ----
-function abrirPreviaFiscal() {
-    if (!state.mesaSelecionada) return;
-    const mesa = getMesa(state.mesaSelecionada);
-    const subtotal = calcularSubtotal(mesa);
-    const taxa     = subtotal * (state.taxaServico / 100);
-    const desconto = mesa.desconto || 0;
-    const total    = subtotal + taxa - desconto;
-    const agora    = new Date().toLocaleString('pt-BR');
-
-    let linhas = '';
-    mesa.comandas.forEach(c => {
-        linhas += `<tr><td colspan="4" style="font-weight:700;padding-top:0.5rem;">Comanda ${c.id}</td></tr>`;
-        c.itens.forEach(i => {
-            linhas += `<tr>
-                <td>${i.quant}x</td>
-                <td>${i.nome}</td>
-                <td>R$ ${formatarMoeda(i.preco)}</td>
-                <td>R$ ${formatarMoeda(i.quant * i.preco)}</td>
-            </tr>`;
-        });
-    });
-
-    document.getElementById('modal-previa-body').innerHTML = `
-        <div class="previa-fiscal">
-            <div class="previa-title">ProntaComanda</div>
-            <div class="previa-sub">Prévia Fiscal — Mesa ${pad(mesa.num)}<br>${agora}</div>
-            <hr>
-            <table class="orders-table" style="margin-bottom:0.5rem;">
-                <thead><tr><th>Qtd</th><th>Item</th><th>Unit.</th><th>Total</th></tr></thead>
-                <tbody>${linhas || '<tr><td colspan="4" style="text-align:center;color:var(--grey)">Sem itens</td></tr>'}</tbody>
-            </table>
-            <hr>
-            <div class="previa-totais">
-                <span><b>Sub-Total</b><b>R$ ${formatarMoeda(subtotal)}</b></span>
-                <span><b>Taxa de Serviço (${state.taxaServico}%)</b><b>R$ ${formatarMoeda(taxa)}</b></span>
-                <span><b>Desconto</b><b>${desconto > 0 ? 'R$ ' + formatarMoeda(desconto) : 'Null'}</b></span>
-                <hr style="border-top:2px solid var(--space-indigo);margin:0.4rem 0;">
-                <span style="font-size:1.1rem;"><b>TOTAL</b><b>R$ ${formatarMoeda(total)}</b></span>
-            </div>
-        </div>
-    `;
-    abrirModal('modal-previa');
-}
-
-function imprimirPrevia() { window.print(); }
-
-// ---- ADICIONAR COMANDA ----
-function adicionarComanda() {
-    if (!state.mesaSelecionada) return;
-    const mesa = getMesa(state.mesaSelecionada);
-    if (!mesa.ocupada) {
-        mesa.ocupada = true;
-        // Atualiza visual do card
-        const card = document.querySelector(`[data-mesa="${mesa.num}"]`);
-        if (card) {
-            card.classList.remove('disponivel');
-            card.classList.add('ocupada');
-            card.querySelector('.mesa-status-bar').textContent = 'Ocupada';
-        }
-    }
-    const nextId = mesa.comandas.length + 1;
-    mesa.comandas.push({ id: nextId, itens: [] });
-    renderizarComandas(mesa);
-    atualizarFooter(mesa);
-}
-
-// ---- SELETOR DE COMANDA ----
 function abrirSeletorComanda() {
-    if (!state.mesaSelecionada) return;
-    const mesa = getMesa(state.mesaSelecionada);
-    if (!mesa.comandas.length) { alert('Nenhuma comanda nesta mesa.'); return; }
-    const opc = mesa.comandas.map(c => `Comanda ${c.id}`).join('\n');
-    alert(`Comandas disponíveis:\n${opc}\n\n(Integração com Back-End futura)`);
+    // TODO: implementar seletor de comanda ativa
+    alert('Seletor de comanda em desenvolvimento.');
 }
-
-// ---- AÇÃO GENÉRICA FRONT-END ----
-function acaoBotao(nome) {
-    alert(`"${nome}" — funcionalidade conectada ao Back-End em breve.`);
-}
-
-// ---- FINALIZAR COMPRA ----
-function finalizarCompra() {
-    if (!state.mesaSelecionada) return;
-    if (!confirm(`Confirmar fechamento da Mesa ${pad(state.mesaSelecionada)}?`)) return;
-    const mesa = getMesa(state.mesaSelecionada);
-    mesa.ocupada     = false;
-    mesa.permanencia = 0;
-    mesa.comandas    = [];
-    delete mesa.desconto;
-    fecharSidebar();
-    renderizarGrid();
-}
-
-// ---- INIT ----
-renderizarGrid();

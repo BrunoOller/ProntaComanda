@@ -92,7 +92,7 @@ public interface IMesaRepository
     /// Adiciona um item a uma comanda específica da mesa (RF6).
     /// Usa $push com filtro de array.
     /// </summary>
-    Task AddItemComandaAsync(string mesaId, int numeroComanda, ItemComanda item);
+    Task AddItemComandaAsync(string mesaId, int numeroComanda, string produtoId, int quantidade);
 
     /// <summary>
     /// Aplica desconto na mesa (RF12).
@@ -168,4 +168,16 @@ public interface IRelatorioRepository
 
     /// <summary>Retorna os relatórios já gerados, do mais recente ao mais antigo.</summary>
     Task<List<RelatorioVendas>> GetHistoricoAsync(int limite = 12);
+}
+
+public interface IHistoricoVendaRepository
+{
+    // Salva o registro quando a mesa é fechada
+    Task CriarAsync(HistoricoVenda historico);
+
+    // Busca todas as vendas (útil para relatórios gerais)
+    Task<List<HistoricoVenda>> ObterTodosAsync();
+
+    // Busca as vendas de um período (essencial para os gráficos do Dashboard)
+    Task<List<HistoricoVenda>> ObterPorPeriodoAsync(DateTime inicio, DateTime fim);
 }

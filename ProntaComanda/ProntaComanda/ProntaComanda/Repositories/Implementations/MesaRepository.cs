@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using ProntaComanda.Data;
 using ProntaComanda.Models;
 using ProntaComanda.Repositories.Interfaces;
@@ -81,27 +82,39 @@ public class MesaRepository : IMesaRepository
         await _collection.UpdateOneAsync(m => m.Id == mesaId, updateOcupada);
     }
 
-    /// <inheritdoc/>
-    public async Task AddItemComandaAsync(string mesaId, int numeroComanda, ItemComanda item)
+    public async Task AddItemComandaAsync(string mesaId, int numeroComanda, string produtoId, int quantidade)
     {
-        // Filtra o documento da mesa E o elemento correto dentro do array de comandas
-        var filtroMesa = Builders<Mesa>.Filter.Eq(m => m.Id, mesaId);
-        var filtroComanda = Builders<Mesa>.Filter.ElemMatch(
-            m => m.Comandas,
-            c => c.Numero == numeroComanda
+        var filtro = Builders<Mesa>.Filter.And(
+            Builders<Mesa>.Filter.Eq(m => m.Id, mesaId),
+            Builders<Mesa>.Filter.ElemMatch(m => m.Comandas, c => c.Numero == numeroComanda)
         );
 
-        // $push no array aninhado usando o operador posicional $
-        var update = Builders<Mesa>.Update
-            .Push("comandas.$.itens", item);
+        var update = Builders<Mesa>.Update.Inc("comandas.$.Itens.$[i].Quantidade", quantidade);
 
-        await _collection.UpdateOneAsync(
-            filtroMesa & filtroComanda,
-            update
-        );
+        var arrayFilters = new List<ArrayFilterDefinition>
+    {
+        new BsonDocumentArrayFilterDefinition<ItemComanda>(new BsonDocument("i.ProdutoId", produtoId))
+    };
+
+        await _collection.UpdateOneAsync(filtro, update, new UpdateOptions { ArrayFilters = arrayFilters });
     }
 
-    /// <inheritdoc/>
+    public async Task RemoverItemComandaAsync(string mesaId, int numeroComanda, string produtoId)
+    {
+        // Filtro: Mesa correta, Comanda correta
+        var filtro = Builders<Mesa>.Filter.And(
+            Builders<Mesa>.Filter.Eq(m => m.Id, mesaId),
+            Builders<Mesa>.Filter.ElemMatch(m => m.Comandas, c => c.Numero == numeroComanda)
+        );
+
+        // O $pull remove o item da lista 'itens' da comanda que foi identificada pelo $
+        // Nota: O filtro "comandas.$.itens" dentro do update usa o operador posicional
+        var update = Builders<Mesa>.Update.PullFilter("comandas.$.Itens",
+            Builders<ItemComanda>.Filter.Eq(i => i.ProdutoId, produtoId));
+
+        await _collection.UpdateOneAsync(filtro, update);
+    }
+
     public async Task AplicarDescontoAsync(string mesaId, decimal desconto, TipoDesconto tipo)
     {
         var update = Builders<Mesa>.Update
@@ -114,21 +127,35 @@ public class MesaRepository : IMesaRepository
     /// <inheritdoc/>
     public async Task MoverComandasAsync(string mesaOrigemId, string mesaDestinoId)
     {
-        // Busca as comandas da mesa de origem
         var origem = await GetByIdAsync(mesaOrigemId);
         if (origem is null || origem.Comandas.Count == 0) return;
 
-        // Adiciona as comandas na mesa de destino
+        var destino = await GetByIdAsync(mesaDestinoId);
+        if (destino is null) return;
+
+        // PREVENÇÃO DE FALHA: Se a destino já estiver ocupada, mantemos o horário 
+        // de quem chegou primeiro para não estragar a métrica de tempo.
+        var novoOcupadaEm = destino.OcupadaEm.HasValue && destino.OcupadaEm < origem.OcupadaEm
+            ? destino.OcupadaEm
+            : origem.OcupadaEm;
+
+        // Se a mesa de destino estava livre, ela herda o garçom da mesa de origem.
+        var funcionarioId = destino.FuncionarioId ?? origem.FuncionarioId;
+
         var updateDestino = Builders<Mesa>.Update
             .PushEach(m => m.Comandas, origem.Comandas)
-            .Set(m => m.Ocupada, true);
+            .Set(m => m.Ocupada, true)
+            .Set(m => m.OcupadaEm, novoOcupadaEm)
+            .Set(m => m.FuncionarioId, funcionarioId);
 
-        // Limpa as comandas da mesa de origem e libera
+        // Na origem, além de limpar as comandas, garantimos que o FuncionarioId suma
         var updateOrigem = Builders<Mesa>.Update
             .Set(m => m.Comandas, new List<Comanda>())
             .Set(m => m.Ocupada, false)
             .Set(m => m.OcupadaEm, (DateTime?)null)
-            .Set(m => m.Desconto, 0m);
+            .Set(m => m.Desconto, 0m)
+            .Set(m => m.TipoDesconto, TipoDesconto.Valor)
+            .Set(m => m.FuncionarioId, (string?)null);
 
         await _collection.UpdateOneAsync(m => m.Id == mesaDestinoId, updateDestino);
         await _collection.UpdateOneAsync(m => m.Id == mesaOrigemId, updateOrigem);
@@ -137,14 +164,13 @@ public class MesaRepository : IMesaRepository
     /// <inheritdoc/>
     public async Task FecharMesaAsync(string mesaId)
     {
-        // Limpa o estado da mesa após pagamento
         var update = Builders<Mesa>.Update
             .Set(m => m.Ocupada, false)
             .Set(m => m.OcupadaEm, (DateTime?)null)
             .Set(m => m.Comandas, new List<Comanda>())
             .Set(m => m.Desconto, 0m)
             .Set(m => m.TipoDesconto, TipoDesconto.Valor)
-            .Set(m => m.FuncionarioId, (string?)null);
+            .Set(m => m.FuncionarioId, (string?)null); // Garantindo a liberação do garçom
 
         await _collection.UpdateOneAsync(m => m.Id == mesaId, update);
     }

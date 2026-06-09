@@ -82,6 +82,9 @@ public class MongoDbContext
     public IMongoCollection<RelatorioVendas> Relatorios =>
         _database.GetCollection<RelatorioVendas>("relatorios");
 
+    public IMongoCollection<HistoricoVenda> HistoricoVendas =>
+    _database.GetCollection<HistoricoVenda>("historico_vendas");
+
     // ── Índices ─────────────────────────────────────────────────────────
 
     /// <summary>
