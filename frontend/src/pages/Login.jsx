@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { loginSchema } from '../schemas/auth.schema';
 import { useAuthStore } from '../store/authStore';
+import { destinoPosLogin } from '../routes/destinosPorPerfil';
 
 // RF02 - Tela de login (ver frame "Login" do design, tema vinho/laranja)
 export default function Login() {
@@ -18,8 +19,10 @@ export default function Login() {
 
   const onSubmit = async ({ cpf, senha }) => {
     try {
-      await login(cpf, senha);
-      navigate('/');
+      const funcionario = await login(cpf, senha);
+      // RF01 - cada perfil cai direto na sua tela: administrador/caixa no
+      // desktop, cozinha/bar no KDS standalone, garçom no módulo mobile.
+      navigate(destinoPosLogin(funcionario.perfil));
     } catch {
       setError('root', { message: 'CPF ou senha inválidos.' });
     }

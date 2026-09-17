@@ -85,6 +85,97 @@ const atualizarStatusItem = asyncHandler(async (req, res) => {
   res.json(comanda);
 });
 
+// RF05 - Fluxo Operacional KDS: lista os pedidos pendentes/em preparo/prontos
+// de um setor (cozinha ou bar), agrupados por comanda — é o que alimenta os
+// cards "#1042 Mesa 08" do design, com todos os itens daquele lançamento.
+const listarKDS = asyncHandler(async (req, res) => {
+  const { setor = 'cozinha' } = req.query;
+
+  const comandas = await Comanda.find({
+    status: 'aberta',
+    itens: {
+      $elemMatch: { setorPreparo: setor, estornado: false, statusKDS: { $ne: 'entregue' } },
+    },
+  }).populate('mesa', 'numero');
+
+  const pedidos = comandas.map((comanda) => {
+    const itens = comanda.itens.filter(
+      (i) => i.setorPreparo === setor && !i.estornado && i.statusKDS !== 'entregue'
+    );
+
+    // RF06 - semáforo: o frontend usa `lancadoEm` (o item mais antigo do
+    // pedido) para calcular o tempo decorrido e decidir a cor do card.
+    const lancadoEm = itens.reduce(
+      (maisAntigo, i) => (i.lancadoEm < maisAntigo ? i.lancadoEm : maisAntigo),
+      itens[0].lancadoEm
+    );
+
+    const statusGeral = itens.some((i) => i.statusKDS === 'pendente')
+      ? 'pendente'
+      : itens.some((i) => i.statusKDS === 'em_preparo')
+        ? 'em_preparo'
+        : 'pronto';
+
+    return {
+      comandaId: comanda._id,
+      numeroComanda: comanda.numero,
+      mesa: comanda.mesa,
+      statusGeral,
+      lancadoEm,
+      itens: itens.map((i) => ({
+        itemId: i._id,
+        nomeProduto: i.nomeProduto,
+        quantidade: i.quantidade,
+        observacao: i.observacao,
+        statusKDS: i.statusKDS,
+      })),
+    };
+  });
+
+  res.json(pedidos);
+});
+
+const ORDEM_STATUS_KDS = ['pendente', 'em_preparo', 'pronto', 'entregue'];
+
+// RF05 - avança TODOS os itens do pedido (naquele setor) que estão no
+// estágio mais atrasado para o próximo estágio de uma vez — é o que o botão
+// único "Marcar como pronto" do card do design faz.
+const avancarStatusPedido = asyncHandler(async (req, res) => {
+  const { setor = 'cozinha' } = req.query;
+
+  const comanda = await Comanda.findById(req.params.comandaId);
+  if (!comanda) {
+    return res.status(404).json({ erro: 'Comanda não encontrada.' });
+  }
+
+  const itensDoSetor = comanda.itens.filter(
+    (i) => i.setorPreparo === setor && !i.estornado && i.statusKDS !== 'entregue'
+  );
+  if (!itensDoSetor.length) {
+    return res.status(409).json({ erro: 'Nenhum item pendente para este setor nesta comanda.' });
+  }
+
+  const estagioAtual = Math.min(
+    ...itensDoSetor.map((i) => ORDEM_STATUS_KDS.indexOf(i.statusKDS))
+  );
+  const proximoStatus = ORDEM_STATUS_KDS[estagioAtual + 1];
+  const agora = new Date();
+
+  itensDoSetor
+    .filter((i) => ORDEM_STATUS_KDS.indexOf(i.statusKDS) === estagioAtual)
+    .forEach((item) => {
+      item.statusKDS = proximoStatus;
+      if (proximoStatus === 'em_preparo') item.emPreparoEm = agora;
+      if (proximoStatus === 'pronto') item.prontoEm = agora;
+      if (proximoStatus === 'entregue') item.entregueEm = agora;
+    });
+
+  await comanda.save();
+
+  req.io?.emit('kds:status-atualizado', { comandaId: comanda._id, setor, status: proximoStatus });
+  res.json(comanda);
+});
+
 // RF07/RF08 - Estorno detalhado de item + justificativa obrigatória
 const estornarItem = asyncHandler(async (req, res) => {
   const { motivo } = req.body;
@@ -145,6 +236,8 @@ module.exports = {
   listarPorMesa,
   adicionarItem,
   sugerirObservacoes,
+  listarKDS,
+  avancarStatusPedido,
   atualizarStatusItem,
   estornarItem,
   aplicarDesconto,

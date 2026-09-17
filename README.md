@@ -1,23 +1,7 @@
-pra se enfiar como admin, cola isso aqui na pasta backend:
-node -e "require('argon2').hash('SUASENHA').then(console.log)"
-
-depois entra no mongo e roda isso aqui no shell:
-use pronta-comanda
-
-db.funcionarios.insertOne({
-  nome: "Admin",
-  cpf: "COLE_O_CPF_AQUI",
-  perfil: "administrador",
-  ativo: true,
-  senhaHash: "COLE_O_HASH_AQUI",
-  createdAt: new Date(),
-  updatedAt: new Date()
-})
-
 # Pronta Comanda
 
 Sistema de gestão de mesas para estabelecimentos, com cardápio digital e
-gestão financeira.
+gestão financeira. 
 
 ## Estrutura
 

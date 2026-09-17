@@ -10,6 +10,14 @@ router.use(autenticar);
 router.get('/mesa/:mesaId', ctrl.listarPorMesa);
 router.get('/produtos/:produtoId/sugestoes', ctrl.sugerirObservacoes); // RF21
 
+// RF05 - tela da Cozinha/Bar
+router.get('/kds', permitir('cozinha', 'bar', 'administrador'), ctrl.listarKDS);
+router.patch(
+  '/:comandaId/avancar-status',
+  permitir('cozinha', 'bar', 'administrador'),
+  ctrl.avancarStatusPedido
+);
+
 router.post(
   '/:comandaId/itens',
   permitir('garcom', 'caixa', 'administrador'),

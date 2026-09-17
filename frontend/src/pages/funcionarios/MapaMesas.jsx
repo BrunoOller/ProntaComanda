@@ -17,7 +17,7 @@ export default function MapaMesas() {
     if (mesa.status === 'livre') {
       await api.post(`/mesas/${mesa._id}/abrir`);
     }
-    navigate(`/mesa/${mesa._id}`);
+    navigate(`/funcionarios/mesa/${mesa._id}`);
   };
 
   return (
