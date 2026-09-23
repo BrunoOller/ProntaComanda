@@ -12,7 +12,17 @@ const logAuditoriaSchema = new Schema(
   {
     tipo: {
       type: String,
-      enum: ['erro_sistema', 'estorno_item', 'desconto_aplicado', 'reabertura_comanda', 'ajuste_estoque'],
+      enum: [
+        'erro_sistema',
+        'estorno_item',
+        'desconto_aplicado',
+        'reabertura_comanda',
+        'ajuste_estoque',
+        'funcionario_criado',
+        'funcionario_atualizado',
+        'funcionario_desligado',
+        'funcionario_reativado',
+      ],
       required: true,
     },
     funcionario: { type: Schema.Types.ObjectId, ref: 'Funcionario', default: null },

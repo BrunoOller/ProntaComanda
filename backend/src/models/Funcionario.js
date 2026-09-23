@@ -30,10 +30,27 @@ const funcionarioSchema = new Schema(
     ativo: { type: Boolean, default: true },
     desligadoEm: { type: Date, default: null },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: {
+      // Defesa em profundidade: mesmo que algum controller esqueça, o hash
+      // da senha e o __v nunca saem na resposta da API.
+      transform: (_doc, ret) => {
+        delete ret.senhaHash;
+        delete ret.__v;
+        return ret;
+      },
+    },
+  }
 );
 
 funcionarioSchema.index({ perfil: 1, ativo: 1 });
+
+// E-mail é opcional, mas quando informado não pode repetir entre funcionários.
+funcionarioSchema.index(
+  { email: 1 },
+  { unique: true, partialFilterExpression: { email: { $type: 'string' } } }
+);
 
 module.exports = {
   Funcionario: model('Funcionario', funcionarioSchema),

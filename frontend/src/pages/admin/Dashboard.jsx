@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../../components/layout/AdminLayout';
 import api from '../../api/axiosClient';
 
+const formatarMoeda = (valor) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+
 // RF17 - Dashboard de Gestão (BI)
 export default function Dashboard() {
   const [visaoGeral, setVisaoGeral] = useState(null);
@@ -18,7 +21,7 @@ export default function Dashboard() {
       <p className="text-sm text-neutral-500">Visão geral do seu negócio em tempo real</p>
 
       <div className="mt-6 grid grid-cols-4 gap-4">
-        <Cartao titulo="Ganho Total" valor={visaoGeral?.ganhoTotal} prefixo="R$ " />
+        <Cartao titulo="Ganho Total" valor={visaoGeral?.ganhoTotal} formato={formatarMoeda} />
         <Cartao titulo="Total de Pedidos" valor={visaoGeral?.totalPedidos} />
         <Cartao titulo="Pedidos Cancelados" valor={visaoGeral?.pedidosCancelados} />
         <Cartao titulo="Taxa de Conversão" valor={visaoGeral?.taxaConversao} sufixo="%" />
@@ -38,12 +41,12 @@ export default function Dashboard() {
   );
 }
 
-function Cartao({ titulo, valor, prefixo = '', sufixo = '' }) {
+function Cartao({ titulo, valor, formato, sufixo = '' }) {
   return (
     <div className="rounded-lg border p-4">
       <p className="text-xs text-neutral-500">{titulo}</p>
       <p className="text-xl font-semibold">
-        {valor != null ? `${prefixo}${valor}${sufixo}` : '—'}
+        {valor != null ? `${formato ? formato(valor) : valor}${sufixo}` : '—'}
       </p>
     </div>
   );

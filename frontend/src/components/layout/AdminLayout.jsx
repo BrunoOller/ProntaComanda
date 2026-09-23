@@ -21,11 +21,12 @@ const ITENS_MENU = [
 
 export default function AdminLayout({ children }) {
   const funcionario = useAuthStore((s) => s.funcionario);
+  const logout = useAuthStore((s) => s.logout);
   const itensVisiveis = ITENS_MENU.filter((item) => item.perfis.includes(funcionario?.perfil));
 
   return (
     <div className="flex min-h-screen bg-white dark:bg-neutral-900">
-      <aside className="w-56 border-r border-neutral-200 p-4 dark:border-neutral-800">
+      <aside className="sticky top-0 flex h-screen w-56 flex-col border-r border-neutral-200 p-4 dark:border-neutral-800">
         <nav className="mt-6 flex flex-col gap-1">
           {itensVisiveis.map((item) => (
             <NavLink
@@ -43,6 +44,19 @@ export default function AdminLayout({ children }) {
             </NavLink>
           ))}
         </nav>
+
+        {/* Rodapé da sidebar: quem está logado + botão de sair.
+            Ao limpar a sessão, a RotaProtegida redireciona para /login. */}
+        <div className="mt-auto border-t border-neutral-200 pt-4 dark:border-neutral-800">
+          <p className="truncate text-sm font-medium dark:text-neutral-100">{funcionario?.nome}</p>
+          <p className="mb-3 text-xs capitalize text-neutral-500">{funcionario?.perfil}</p>
+          <button
+            onClick={logout}
+            className="w-full rounded-md border border-red-200 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
+          >
+            Sair
+          </button>
+        </div>
       </aside>
 
       <main className="flex-1 p-8">{children}</main>

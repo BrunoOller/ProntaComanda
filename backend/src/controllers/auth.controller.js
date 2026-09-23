@@ -3,6 +3,12 @@ const jwt = require('jsonwebtoken');
 const asyncHandler = require('../utils/asyncHandler');
 const { Funcionario } = require('../models');
 
+// Hash "de mentira" verificado quando o CPF não existe, para que a resposta
+// demore o mesmo tempo nos dois casos e não dê para descobrir quais CPFs
+// estão cadastrados medindo a latência.
+let hashFalso;
+const obterHashFalso = () => (hashFalso ??= argon2.hash('pronta-comanda-hash-falso'));
+
 /**
  * RF01/RF02 - Autenticação de colaboradores.
  * RNF07 - Senha com hash (argon2), sessão via cookie httpOnly.
@@ -12,6 +18,7 @@ const login = asyncHandler(async (req, res) => {
 
   const funcionario = await Funcionario.findOne({ cpf, ativo: true }).select('+senhaHash');
   if (!funcionario) {
+    await argon2.verify(await obterHashFalso(), senha);
     return res.status(401).json({ erro: 'CPF ou senha inválidos.' });
   }
 

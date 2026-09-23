@@ -16,9 +16,15 @@ export const useAuthStore = create((set) => ({
     return data.funcionario;
   },
 
+  // Sai da tela mesmo que a chamada falhe (ex.: servidor fora do ar);
+  // o cookie httpOnly só é apagado pelo backend, então em caso de falha
+  // a sessão pode voltar ao recarregar a página.
   logout: async () => {
-    await api.post('/auth/logout');
-    set({ funcionario: null });
+    try {
+      await api.post('/auth/logout');
+    } finally {
+      set({ funcionario: null });
+    }
   },
 
   // Chamado uma vez ao carregar o app: tenta restaurar a sessão via cookie

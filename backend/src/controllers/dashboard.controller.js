@@ -2,6 +2,10 @@ const dayjs = require('dayjs');
 const asyncHandler = require('../utils/asyncHandler');
 const { Comanda, Pagamento } = require('../models');
 
+// Somar valores em ponto flutuante gera dízimas (ex.: 25.999999999999996).
+// Todo valor em reais que sai da API é arredondado para 2 casas decimais.
+const arredondar = (valor) => Math.round((valor + Number.EPSILON) * 100) / 100;
+
 /**
  * RF17 - Dashboard de Gestão (BI)
  * Indicadores vistos no design: Ganho Total, Total de Pedidos, Pedidos
@@ -25,7 +29,7 @@ const visaoGeral = asyncHandler(async (req, res) => {
   const taxaConversao = totalItens ? ((totalItens - totalItensEstornados) / totalItens) * 100 : 0;
 
   res.json({
-    ganhoTotal,
+    ganhoTotal: arredondar(ganhoTotal),
     totalPedidos,
     pedidosCancelados: totalItensEstornados,
     taxaConversao: Number(taxaConversao.toFixed(1)),
@@ -47,6 +51,7 @@ const topProdutos = asyncHandler(async (req, res) => {
         valorTotal: { $sum: { $multiply: ['$itens.precoUnitario', '$itens.quantidade'] } },
       },
     },
+    { $addFields: { valorTotal: { $round: ['$valorTotal', 2] } } },
     { $sort: { quantidade: -1 } },
     { $limit: 5 },
   ]);
