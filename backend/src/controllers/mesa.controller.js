@@ -9,7 +9,24 @@ const listar = asyncHandler(async (req, res) => {
 
 // Gestão do número de mesas do salão (botões "+ Adicionar Mesa" / "Remover")
 const criar = asyncHandler(async (req, res) => {
-  const mesa = await Mesa.create({ numero: req.body.numero });
+  const { numero } = req.body;
+
+  const existente = await Mesa.findOne({ numero });
+
+  if (existente) {
+    if (existente.ativo) {
+      return res.status(409).json({ erro: 'Já existe uma mesa com esse número.' });
+    }
+    // reaproveita a mesa que havia sido removida (soft delete)
+    existente.ativo = true;
+    existente.status = 'livre';
+    existente.abertaEm = null;
+    existente.abertaPor = null;
+    await existente.save();
+    return res.status(201).json(existente);
+  }
+
+  const mesa = await Mesa.create({ numero });
   res.status(201).json(mesa);
 });
 

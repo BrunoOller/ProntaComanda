@@ -1,5 +1,39 @@
 const asyncHandler = require('../utils/asyncHandler');
-const { Comanda, Produto, ObservacaoFrequente } = require('../models');
+const { Comanda, Produto, ObservacaoFrequente, Mesa } = require('../models'); // Mesa adicionado
+
+// NOVO - abre uma comanda numa mesa. Funciona tanto para a primeira comanda
+// (mesa livre -> vira ocupada) quanto para comandas adicionais (mesa já
+// ocupada, permite múltiplas comandas simultâneas na mesma mesa).
+const abrirComanda = asyncHandler(async (req, res) => {
+  const { mesaId } = req.body;
+
+  const mesa = await Mesa.findById(mesaId);
+  if (!mesa) {
+    return res.status(404).json({ erro: 'Mesa não encontrada.' });
+  }
+  if (mesa.status === 'aguardando_fechamento') {
+    return res
+      .status(409)
+      .json({ erro: 'Mesa aguardando fechamento. Não é possível abrir nova comanda.' });
+  }
+
+  const totalComandas = await Comanda.countDocuments({ mesa: mesa._id });
+  const comanda = await Comanda.create({
+    mesa: mesa._id,
+    numero: totalComandas + 1,
+    abertaPor: req.funcionario._id,
+  });
+
+  if (mesa.status === 'livre') {
+    mesa.status = 'ocupada';
+    mesa.abertaEm = new Date();
+    mesa.abertaPor = req.funcionario._id;
+    await mesa.save();
+    req.io?.to('mapa-mesas').emit('mesa:atualizada', mesa);
+  }
+
+  res.status(201).json({ mesa, comanda });
+});
 
 // RF23 - Espelho de Consumo & KDS (mobile) / painel "MESA 00" (admin)
 const listarPorMesa = asyncHandler(async (req, res) => {
@@ -234,6 +268,7 @@ const transferirItens = asyncHandler(async (req, res) => {
 
 module.exports = {
   listarPorMesa,
+  abrirComanda,
   adicionarItem,
   sugerirObservacoes,
   listarKDS,

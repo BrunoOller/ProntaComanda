@@ -13,4 +13,12 @@ router.post(
   ctrl.fecharMesa
 );
 
+// NOVO - RF11/RF24: fecha/paga uma comanda específica (divisão de conta)
+router.post(
+  '/comanda/:comandaId/fechar',
+  autenticar,
+  permitir('caixa', 'administrador'),
+  ctrl.fecharComanda
+);
+
 module.exports = router;

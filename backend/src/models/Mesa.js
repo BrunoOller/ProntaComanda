@@ -11,7 +11,7 @@ const STATUS_MESA = ['livre', 'ocupada', 'aguardando_fechamento'];
 
 const mesaSchema = new Schema(
   {
-    numero: { type: Number, required: true, unique: true },
+    numero: { type: Number, required: true }, // unicidade tratada pelo índice parcial abaixo
     status: { type: String, enum: STATUS_MESA, default: 'livre' },
 
     // preenchidos quando a mesa é aberta; usados para o timer "Desde 14:32 / 01h18m"
@@ -22,5 +22,9 @@ const mesaSchema = new Schema(
   },
   { timestamps: true }
 );
+
+// Único por número, mas só entre as mesas ativas — permite reaproveitar o
+// número de uma mesa removida (soft delete) sem colidir com o índice.
+mesaSchema.index({ numero: 1 }, { unique: true, partialFilterExpression: { ativo: true } });
 
 module.exports = { Mesa: model('Mesa', mesaSchema), STATUS_MESA };

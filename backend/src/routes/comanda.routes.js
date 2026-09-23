@@ -8,6 +8,7 @@ const router = Router();
 router.use(autenticar);
 
 router.get('/mesa/:mesaId', ctrl.listarPorMesa);
+router.post('/abrir', permitir('garcom', 'caixa', 'administrador'), ctrl.abrirComanda);
 router.get('/produtos/:produtoId/sugestoes', ctrl.sugerirObservacoes); // RF21
 
 // RF05 - tela da Cozinha/Bar
