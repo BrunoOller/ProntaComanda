@@ -46,7 +46,7 @@ const listarPorMesa = asyncHandler(async (req, res) => {
 
 // RF20 - Seleção e lançamento de item (Mobile, touch-friendly)
 const adicionarItem = asyncHandler(async (req, res) => {
-  const { produtoId, quantidade = 1, observacao, setorPreparo = 'cozinha' } = req.body;
+  const { produtoId, quantidade = 1, observacao } = req.body;
 
   const produto = await Produto.findById(produtoId);
   if (!produto || !produto.disponivel) {
@@ -57,6 +57,10 @@ const adicionarItem = asyncHandler(async (req, res) => {
   if (!comanda || comanda.status !== 'aberta') {
     return res.status(409).json({ erro: 'Comanda não está aberta.' });
   }
+
+  // RF05 - o setor (cozinha/bar) vem do CADASTRO do produto; o que o app
+  // enviar no body é ignorado, para uma bebida nunca cair na tela errada.
+  const setorPreparo = produto.setor ?? 'cozinha';
 
   comanda.itens.push({
     produto: produto._id,
@@ -189,9 +193,7 @@ const avancarStatusPedido = asyncHandler(async (req, res) => {
     return res.status(409).json({ erro: 'Nenhum item pendente para este setor nesta comanda.' });
   }
 
-  const estagioAtual = Math.min(
-    ...itensDoSetor.map((i) => ORDEM_STATUS_KDS.indexOf(i.statusKDS))
-  );
+  const estagioAtual = Math.min(...itensDoSetor.map((i) => ORDEM_STATUS_KDS.indexOf(i.statusKDS)));
   const proximoStatus = ORDEM_STATUS_KDS[estagioAtual + 1];
   const agora = new Date();
 

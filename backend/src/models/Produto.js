@@ -16,6 +16,13 @@ const produtoSchema = new Schema(
 
     categoria: { type: Schema.Types.ObjectId, ref: 'Categoria', required: true },
 
+    // RF05 - para qual tela o item vai ao ser lançado. É o cadastro do produto
+    // (e não o app do garçom) que decide isso. Produtos antigos, sem o campo, são "cozinha".
+    setor: { type: String, enum: ['cozinha', 'bar'], default: 'cozinha' },
+
+    // RF06 - tempo esperado de preparo, base do semáforo do KDS (opcional).
+    tempoPreparoMinutos: { type: Number, min: 1, max: 240 },
+
     // Tags exibidas no card (Pão, Carne, Queijo, Alface, Tomate, Maionese...)
     ingredientes: [{ type: String, trim: true }],
 

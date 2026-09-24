@@ -3,14 +3,14 @@ const dayjs = require('dayjs');
 const logger = require('../utils/logger');
 const { Comanda, Pagamento, ResumoMensal } = require('../models');
 
-/**
- * RF14 - Consolidação Mensal de Dados (Data Rollup)
- * RF15 - Expurgamento Automatizado
- * RF16 - Automação Oculta de Virada de Mês (sem botão na UI)
- *
- * Roda todo dia 1 às 00:05, processando o mês ANTERIOR (mês fechado).
- * Passo 1: agrega em ResumoMensal. Passo 2: só se o resumo foi salvo com
- * sucesso, apaga os registros individuais daquele período.
+/*
+Consolidação Mensal de Dados (Data Rollup)
+Expurgamento Automatizado
+Automação Oculta de Virada de Mês (sem botão na UI)
+
+Roda todo dia 1 às 00:05, processando o mês ANTERIOR (mês fechado).
+Passo 1: agrega em ResumoMensal. Passo 2: só se o resumo foi salvo com
+ sucesso, apaga os registros individuais daquele período.
  */
 async function executarRollup() {
   const mesReferencia = dayjs().subtract(1, 'month');
