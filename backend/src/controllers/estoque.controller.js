@@ -1,4 +1,5 @@
 const asyncHandler = require('../utils/asyncHandler');
+const AppError = require('../utils/AppError');
 const { Insumo, MovimentacaoEstoque, Produto } = require('../models');
 
 // RF10 - Gestão e Entrada de Estoque
@@ -16,7 +17,13 @@ const cadastrarInsumo = asyncHandler(async (req, res) => {
 const movimentar = asyncHandler(async (req, res) => {
   const { tipo, quantidade, motivo } = req.body;
 
+  if (tipo === 'ajuste' && !motivo?.trim()) {
+    throw new AppError('Informe o motivo do ajuste manual de estoque.', 400);
+  }
+
   const insumo = await Insumo.findById(req.params.insumoId);
+  if (!insumo) throw new AppError('Insumo não encontrado.', 404);
+
   const delta = tipo === 'saida' ? -Math.abs(quantidade) : Math.abs(quantidade);
 
   insumo.saldoAtual = Math.max(0, insumo.saldoAtual + delta);
@@ -38,7 +45,9 @@ const movimentar = asyncHandler(async (req, res) => {
       { 'insumosNecessarios.insumo': insumo._id },
       { disponivel: false }
     );
-    produtosAfetados.forEach((p) => req.io?.emit('produto:atualizado', { ...p.toObject(), disponivel: false }));
+    produtosAfetados.forEach((p) =>
+      req.io?.emit('produto:atualizado', { ...p.toObject(), disponivel: false })
+    );
   }
 
   res.json(insumo);

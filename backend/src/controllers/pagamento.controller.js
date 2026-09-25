@@ -1,4 +1,5 @@
 const asyncHandler = require('../utils/asyncHandler');
+const AppError = require('../utils/AppError');
 const { Mesa, Comanda, Pagamento } = require('../models');
 
 /**
@@ -10,8 +11,17 @@ const { Mesa, Comanda, Pagamento } = require('../models');
 const fecharMesa = asyncHandler(async (req, res) => {
   const { metodos } = req.body; // [{ tipo: 'pix', valor: 50 }, ...]
 
+  if (!Array.isArray(metodos) || !metodos.length) {
+    throw new AppError('Informe ao menos um método de pagamento.', 400);
+  }
+
   const mesa = await Mesa.findById(req.params.mesaId);
+  if (!mesa) throw new AppError('Mesa não encontrada.', 404);
+
   const comandas = await Comanda.find({ mesa: mesa._id, status: 'aberta' });
+  if (!comandas.length) {
+    throw new AppError('Esta mesa não tem comanda aberta para fechar.', 409);
+  }
 
   let valorTotal = 0;
 
@@ -65,6 +75,10 @@ const fecharMesa = asyncHandler(async (req, res) => {
  */
 const fecharComanda = asyncHandler(async (req, res) => {
   const { metodos } = req.body;
+
+  if (!Array.isArray(metodos) || !metodos.length) {
+    throw new AppError('Informe ao menos um método de pagamento.', 400);
+  }
 
   const comanda = await Comanda.findById(req.params.comandaId);
   if (!comanda || comanda.status !== 'aberta') {

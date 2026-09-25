@@ -16,6 +16,13 @@ import PainelKDS from '../pages/kds/PainelKDS';
 import MapaMesasFuncionarios from '../pages/funcionarios/MapaMesas';
 import MesaFuncionarios from '../pages/funcionarios/Mesa';
 
+// Constantes de módulo: mesma referência em todo render, evita re-executar
+// efeitos que dependem desse array só porque o componente pai re-renderizou.
+const PERFIS_FUNCIONARIOS = ['garcom', 'caixa', 'administrador'];
+const PERFIS_KDS = ['cozinha', 'bar', 'administrador'];
+const PERFIS_ADMIN_CAIXA = ['administrador', 'caixa'];
+const PERFIS_ADMIN = ['administrador'];
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -26,22 +33,22 @@ export default function AppRoutes() {
 
       {/* Módulo Mobile (Atendimento e Salão) - garçom, mas caixa/admin também
           podem abrir mesa por aqui se precisarem (RF19/RF20) */}
-      <Route element={<RotaProtegida perfisPermitidos={['garcom', 'caixa', 'administrador']} />}>
+      <Route element={<RotaProtegida perfisPermitidos={PERFIS_FUNCIONARIOS} />}>
         <Route path="/funcionarios" element={<MapaMesasFuncionarios />} />
         <Route path="/funcionarios/mesa/:mesaId" element={<MesaFuncionarios />} />
       </Route>
 
       {/* KDS standalone - RF01: cozinha e bar só veem isto, sem sidebar */}
-      <Route element={<RotaProtegida perfisPermitidos={['cozinha', 'bar', 'administrador']} />}>
+      <Route element={<RotaProtegida perfisPermitidos={PERFIS_KDS} />}>
         <Route path="/kds" element={<PainelKDS />} />
       </Route>
 
       {/* Módulo Desktop (Administração e Caixa) - RF01 por rota */}
-      <Route element={<RotaProtegida perfisPermitidos={['administrador', 'caixa']} />}>
+      <Route element={<RotaProtegida perfisPermitidos={PERFIS_ADMIN_CAIXA} />}>
         <Route path="/admin" element={<AdminIndex />} />
       </Route>
 
-      <Route element={<RotaProtegida perfisPermitidos={['administrador']} />}>
+      <Route element={<RotaProtegida perfisPermitidos={PERFIS_ADMIN} />}>
         <Route path="/admin/dashboard" element={<DashboardAdmin />} />
         <Route path="/admin/cardapio" element={<CardapioAdmin />} />
         <Route path="/admin/funcionarios" element={<FuncionariosAdmin />} />
@@ -49,7 +56,7 @@ export default function AppRoutes() {
         <Route path="/admin/cozinha" element={<CozinhaAdmin />} />
       </Route>
 
-      <Route element={<RotaProtegida perfisPermitidos={['administrador', 'caixa']} />}>
+      <Route element={<RotaProtegida perfisPermitidos={PERFIS_ADMIN_CAIXA} />}>
         <Route path="/admin/mesas" element={<MesasComandasAdmin />} />
       </Route>
     </Routes>

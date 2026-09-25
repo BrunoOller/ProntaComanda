@@ -1,11 +1,33 @@
 const asyncHandler = require('../utils/asyncHandler');
-const { Mesa, Comanda } = require('../models');
+const AppError = require('../utils/AppError');
+const logger = require('../utils/logger');
+const { Mesa, Comanda, LogAuditoria } = require('../models');
 
 // RF04 - Mapa de Mesas Geral
 const listar = asyncHandler(async (req, res) => {
   const mesas = await Mesa.find({ ativo: true }).sort({ numero: 1 });
   res.json(mesas);
 });
+
+async function buscarOu404(id) {
+  const mesa = await Mesa.findById(id);
+  if (!mesa) throw new AppError('Mesa não encontrada.', 404);
+  return mesa;
+}
+
+async function auditar(req, tipo, mesa, detalhes = {}) {
+  try {
+    await LogAuditoria.create({
+      tipo,
+      funcionario: req.funcionario._id,
+      entidade: 'Mesa',
+      entidadeId: mesa._id,
+      detalhes: { numero: mesa.numero, ...detalhes },
+    });
+  } catch (err) {
+    logger.error('Falha ao gravar auditoria de mesa', { error: err.message });
+  }
+}
 
 // Gestão do número de mesas do salão (botões "+ Adicionar Mesa" / "Remover")
 const criar = asyncHandler(async (req, res) => {
@@ -15,7 +37,7 @@ const criar = asyncHandler(async (req, res) => {
 
   if (existente) {
     if (existente.ativo) {
-      return res.status(409).json({ erro: 'Já existe uma mesa com esse número.' });
+      throw new AppError('Já existe uma mesa com esse número.', 409);
     }
     // reaproveita a mesa que havia sido removida (soft delete)
     existente.ativo = true;
@@ -31,15 +53,21 @@ const criar = asyncHandler(async (req, res) => {
 });
 
 const remover = asyncHandler(async (req, res) => {
-  await Mesa.findByIdAndUpdate(req.params.id, { ativo: false }); // RNF11
+  const mesa = await buscarOu404(req.params.id);
+
+  if (mesa.status !== 'livre') {
+    throw new AppError('Só é possível remover uma mesa livre (sem comanda aberta).', 409);
+  }
+
+  await Mesa.findByIdAndUpdate(mesa._id, { ativo: false }); // RNF11
   res.status(204).send();
 });
 
 // RF20 - Abertura de mesa (Mobile) - cria a mesa "Ocupada" + primeira comanda
 const abrir = asyncHandler(async (req, res) => {
-  const mesa = await Mesa.findById(req.params.id);
-  if (!mesa || mesa.status !== 'livre') {
-    return res.status(409).json({ erro: 'Mesa não está disponível para abertura.' });
+  const mesa = await buscarOu404(req.params.id);
+  if (mesa.status !== 'livre') {
+    throw new AppError('Mesa não está disponível para abertura.', 409);
   }
 
   mesa.status = 'ocupada';
@@ -60,11 +88,14 @@ const abrir = asyncHandler(async (req, res) => {
 
 // RF26 - Solicitação de Encerramento (botão de ação rápida no Mobile)
 const solicitarFechamento = asyncHandler(async (req, res) => {
-  const mesa = await Mesa.findByIdAndUpdate(
-    req.params.id,
-    { status: 'aguardando_fechamento' },
-    { new: true }
-  );
+  const mesa = await buscarOu404(req.params.id);
+
+  if (mesa.status !== 'ocupada') {
+    throw new AppError('Só é possível solicitar encerramento de uma mesa ocupada.', 409);
+  }
+
+  mesa.status = 'aguardando_fechamento';
+  await mesa.save();
 
   req.io?.to('mapa-mesas').emit('mesa:atualizada', mesa);
   req.io?.to('caixa').emit('mesa:aguardando-fechamento', mesa);
@@ -73,7 +104,20 @@ const solicitarFechamento = asyncHandler(async (req, res) => {
 
 // RF12 - Reabertura Operacional (restrita ao Administrador na rota)
 const reabrir = asyncHandler(async (req, res) => {
-  const mesa = await Mesa.findByIdAndUpdate(req.params.id, { status: 'ocupada' }, { new: true });
+  const mesa = await buscarOu404(req.params.id);
+
+  if (mesa.status === 'livre') {
+    throw new AppError('Esta mesa já está livre, não há o que reabrir.', 409);
+  }
+
+  const statusAnterior = mesa.status;
+  mesa.status = 'ocupada';
+  await mesa.save();
+
+  // RF12 é uma ação sensível (desfaz um fechamento por engano) — precisa
+  // ficar rastreada para auditoria, igual estorno e desconto (RF08/RF09).
+  await auditar(req, 'reabertura_mesa', mesa, { statusAnterior });
+
   req.io?.to('mapa-mesas').emit('mesa:atualizada', mesa);
   res.json(mesa);
 });

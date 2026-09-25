@@ -1,5 +1,21 @@
 const asyncHandler = require('../utils/asyncHandler');
-const { Comanda, Produto, ObservacaoFrequente, Mesa } = require('../models'); // Mesa adicionado
+const AppError = require('../utils/AppError');
+const logger = require('../utils/logger');
+const { Comanda, Produto, ObservacaoFrequente, Mesa, LogAuditoria } = require('../models'); // Mesa adicionado
+
+async function auditarComanda(req, tipo, comanda, detalhes = {}) {
+  try {
+    await LogAuditoria.create({
+      tipo,
+      funcionario: req.funcionario._id,
+      entidade: 'Comanda',
+      entidadeId: comanda._id,
+      detalhes: { numero: comanda.numero, mesa: comanda.mesa, ...detalhes },
+    });
+  } catch (err) {
+    logger.error('Falha ao gravar auditoria de comanda', { error: err.message });
+  }
+}
 
 // NOVO - abre uma comanda numa mesa. Funciona tanto para a primeira comanda
 // (mesa livre -> vira ocupada) quanto para comandas adicionais (mesa já
@@ -114,6 +130,7 @@ const atualizarStatusItem = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
+  if (!comanda) throw new AppError('Comanda ou item não encontrado.', 404);
 
   req.io?.emit('kds:status-atualizado', {
     comandaId: comanda._id,
@@ -217,7 +234,7 @@ const estornarItem = asyncHandler(async (req, res) => {
   const { motivo } = req.body;
 
   if (!motivo?.trim()) {
-    return res.status(400).json({ erro: 'O motivo do estorno é obrigatório.' });
+    throw new AppError('O motivo do estorno é obrigatório.', 400);
   }
 
   const comanda = await Comanda.findOneAndUpdate(
@@ -232,6 +249,16 @@ const estornarItem = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
+  if (!comanda) throw new AppError('Comanda ou item não encontrado.', 404);
+
+  // RF08 - "alimentar métricas de perdas" exige rastro, não só o motivo
+  // guardado no próprio item: aqui vira uma linha de auditoria consultável.
+  const item = comanda.itens.id(req.params.itemId);
+  await auditarComanda(req, 'estorno_item', comanda, {
+    item: item?.nomeProduto,
+    valor: item ? item.precoUnitario * item.quantidade : undefined,
+    motivo,
+  });
 
   res.json(comanda);
 });
@@ -247,6 +274,9 @@ const aplicarDesconto = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
+  if (!comanda) throw new AppError('Comanda não encontrada.', 404);
+
+  await auditarComanda(req, 'desconto_aplicado', comanda, { tipo, valor, observacao });
 
   res.json(comanda);
 });
@@ -255,10 +285,24 @@ const aplicarDesconto = asyncHandler(async (req, res) => {
 const transferirItens = asyncHandler(async (req, res) => {
   const { itemIds, comandaDestinoId } = req.body;
 
+  if (!Array.isArray(itemIds) || !itemIds.length) {
+    throw new AppError('Informe ao menos um item para transferir.', 400);
+  }
+
   const origem = await Comanda.findById(req.params.comandaId);
+  if (!origem) throw new AppError('Comanda de origem não encontrada.', 404);
+
   const destino = await Comanda.findById(comandaDestinoId);
+  if (!destino) throw new AppError('Comanda de destino não encontrada.', 404);
+
+  if (destino.status !== 'aberta') {
+    throw new AppError('A comanda de destino precisa estar aberta.', 409);
+  }
 
   const itensTransferidos = origem.itens.filter((i) => itemIds.includes(String(i._id)));
+  if (!itensTransferidos.length) {
+    throw new AppError('Nenhum dos itens informados pertence à comanda de origem.', 400);
+  }
   destino.itens.push(...itensTransferidos);
   origem.itens = origem.itens.filter((i) => !itemIds.includes(String(i._id)));
 
