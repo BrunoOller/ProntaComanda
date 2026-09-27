@@ -1,7 +1,7 @@
 const asyncHandler = require('../utils/asyncHandler');
 const AppError = require('../utils/AppError');
 const logger = require('../utils/logger');
-const { Mesa, Comanda, LogAuditoria } = require('../models');
+const { Mesa, Comanda, Pagamento, LogAuditoria } = require('../models');
 
 // RF04 - Mapa de Mesas Geral
 const listar = asyncHandler(async (req, res) => {
@@ -103,23 +103,56 @@ const solicitarFechamento = asyncHandler(async (req, res) => {
 });
 
 // RF12 - Reabertura Operacional (restrita ao Administrador na rota)
+//
+// Desfaz um fechamento indevido: a mesa só pode ser reaberta quando JÁ
+// ESTÁ LIVRE (ou seja, já foi fechada e paga por engano) — a versão
+// anterior deste código bloqueava exatamente esse caso (checava o
+// contrário) e por isso a reabertura nunca funcionava de verdade.
 const reabrir = asyncHandler(async (req, res) => {
   const mesa = await buscarOu404(req.params.id);
 
-  if (mesa.status === 'livre') {
-    throw new AppError('Esta mesa já está livre, não há o que reabrir.', 409);
+  if (mesa.status !== 'livre') {
+    throw new AppError('Esta mesa não está fechada; não há o que reabrir.', 409);
   }
 
-  const statusAnterior = mesa.status;
+  const pagamento = await Pagamento.findOne({ mesa: mesa._id, estornado: false }).sort({
+    createdAt: -1,
+  });
+  if (!pagamento) {
+    throw new AppError(
+      'Não foi encontrado nenhum pagamento recente para estornar nesta mesa.',
+      409
+    );
+  }
+
+  const comandas = await Comanda.find({ _id: { $in: pagamento.comandas }, status: 'fechada' });
+
+  await Comanda.updateMany(
+    { _id: { $in: comandas.map((c) => c._id) } },
+    { $set: { status: 'aberta', fechadaEm: null, fechadaPor: null } }
+  );
+
+  pagamento.estornado = true;
+  pagamento.estornadoEm = new Date();
+  pagamento.estornadoPor = req.funcionario._id;
+  await pagamento.save();
+
   mesa.status = 'ocupada';
+  mesa.abertaEm = new Date();
+  mesa.abertaPor = req.funcionario._id;
   await mesa.save();
 
-  // RF12 é uma ação sensível (desfaz um fechamento por engano) — precisa
-  // ficar rastreada para auditoria, igual estorno e desconto (RF08/RF09).
-  await auditar(req, 'reabertura_mesa', mesa, { statusAnterior });
+  // RF12 é uma ação sensível (desfaz um fechamento e estorna um pagamento
+  // já processado) — precisa ficar rastreada para auditoria, igual estorno
+  // e desconto (RF08/RF09).
+  await auditar(req, 'reabertura_mesa', mesa, {
+    pagamentoEstornado: pagamento._id,
+    valorEstornado: pagamento.valorTotal,
+    comandasReabertas: comandas.map((c) => c._id),
+  });
 
   req.io?.to('mapa-mesas').emit('mesa:atualizada', mesa);
-  res.json(mesa);
+  res.json({ mesa, pagamentoEstornado: pagamento._id, comandasReabertas: comandas.length });
 });
 
 module.exports = { listar, criar, remover, abrir, solicitarFechamento, reabrir };

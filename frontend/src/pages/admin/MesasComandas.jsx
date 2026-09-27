@@ -23,9 +23,7 @@ export default function MesasComandas() {
     if (!socket) return;
     socket.on('mesa:atualizada', (mesaAtualizada) => {
       setMesas((atual) => atual.map((m) => (m._id === mesaAtualizada._id ? mesaAtualizada : m)));
-      setMesaSelecionada((atual) =>
-        atual?._id === mesaAtualizada._id ? mesaAtualizada : atual
-      );
+      setMesaSelecionada((atual) => (atual?._id === mesaAtualizada._id ? mesaAtualizada : atual));
     });
     return () => {
       socket.off('mesa:atualizada');
@@ -142,6 +140,7 @@ function PainelMesa({ mesa, onMesaFechada, onMesaAtualizada }) {
   const [produtos, setProdutos] = useState([]);
   const funcionario = useAuthStore((s) => s.funcionario);
   const podeAplicarDesconto = funcionario?.perfil === 'administrador';
+  const podeReabrir = funcionario?.perfil === 'administrador'; // RF12
 
   const carregarComandas = useCallback(() => {
     api.get(`/comandas/mesa/${mesa._id}`).then((r) => setComandas(r.data));
@@ -226,13 +225,37 @@ function PainelMesa({ mesa, onMesaFechada, onMesaAtualizada }) {
     );
     if (valorStr == null) return;
 
+    const valor = Number(valorStr) || 0;
+    if (valor < total) {
+      window.alert(
+        `Valor insuficiente. Faltam R$ ${(total - valor).toFixed(2)} para completar o total.`
+      );
+      return;
+    }
+
     try {
       await api.post(`/pagamentos/comanda/${comanda._id}/fechar`, {
-        metodos: [{ tipo: 'dinheiro', valor: Number(valorStr) || 0 }],
+        metodos: [{ tipo: 'dinheiro', valor }],
       });
       carregarComandas();
     } catch (err) {
       window.alert(err.response?.data?.erro || 'Erro ao fechar comanda.');
+    }
+  };
+
+  // RF12 - desfaz um fechamento feito por engano: volta a mesa para
+  // "ocupada", reabre a(s) comanda(s) e estorna o pagamento já processado.
+  const reabrirMesa = async () => {
+    const confirmar = window.confirm(
+      'Reabrir esta mesa? O último pagamento será estornado e a comanda volta a ficar aberta.'
+    );
+    if (!confirmar) return;
+
+    try {
+      const { data } = await api.patch(`/mesas/${mesa._id}/reabrir`);
+      onMesaAtualizada(data.mesa);
+    } catch (err) {
+      window.alert(err.response?.data?.erro || 'Erro ao reabrir mesa.');
     }
   };
 
@@ -245,10 +268,23 @@ function PainelMesa({ mesa, onMesaFechada, onMesaAtualizada }) {
       totalMesa.toFixed(2)
     );
     if (valorStr == null) return;
-    await api.post(`/pagamentos/mesa/${mesa._id}/fechar`, {
-      metodos: [{ tipo: 'dinheiro', valor: Number(valorStr) || 0 }],
-    });
-    onMesaFechada();
+
+    const valor = Number(valorStr) || 0;
+    if (valor < totalMesa) {
+      window.alert(
+        `Valor insuficiente. Faltam R$ ${(totalMesa - valor).toFixed(2)} para completar o total.`
+      );
+      return;
+    }
+
+    try {
+      await api.post(`/pagamentos/mesa/${mesa._id}/fechar`, {
+        metodos: [{ tipo: 'dinheiro', valor }],
+      });
+      onMesaFechada();
+    } catch (err) {
+      window.alert(err.response?.data?.erro || 'Erro ao fechar mesa.');
+    }
   };
 
   return (
@@ -275,6 +311,16 @@ function PainelMesa({ mesa, onMesaFechada, onMesaAtualizada }) {
           className="mb-4 w-full rounded-md border border-primary py-2 text-sm font-medium text-primary"
         >
           + Nova Comanda
+        </button>
+      )}
+
+      {/* RF12 - só existe algo a desfazer quando a mesa já foi fechada */}
+      {mesa.status === 'livre' && podeReabrir && (
+        <button
+          onClick={reabrirMesa}
+          className="mb-4 w-full rounded-md border border-yellow-500 py-2 text-sm font-medium text-yellow-700"
+        >
+          ↺ Reabrir mesa (desfazer último fechamento)
         </button>
       )}
 
@@ -349,7 +395,9 @@ function PainelMesa({ mesa, onMesaFechada, onMesaAtualizada }) {
               onClick={() => aplicarDesconto(comanda._id, comanda.desconto?.valor)}
               className="mt-2 block text-xs text-primary underline"
             >
-              {comanda.desconto?.valor ? `Desconto: ${comanda.desconto.valor}%` : 'Aplicar desconto'}
+              {comanda.desconto?.valor
+                ? `Desconto: ${comanda.desconto.valor}%`
+                : 'Aplicar desconto'}
             </button>
           )}
 
