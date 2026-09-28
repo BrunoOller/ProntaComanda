@@ -10,6 +10,7 @@ const comandaRoutes = require('./comanda.routes');
 const pagamentoRoutes = require('./pagamento.routes');
 const estoqueRoutes = require('./estoque.routes');
 const dashboardRoutes = require('./dashboard.routes');
+const auditoriaRoutes = require('./auditoria.routes');
 
 const router = Router();
 
@@ -23,5 +24,6 @@ router.use('/comandas', comandaRoutes);
 router.use('/pagamentos', pagamentoRoutes);
 router.use('/estoque', estoqueRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/auditoria', auditoriaRoutes);
 
 module.exports = router;

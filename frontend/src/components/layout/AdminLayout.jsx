@@ -17,6 +17,7 @@ const ITENS_MENU = [
   { rota: '/admin/cozinha', label: 'Cozinha', perfis: ['administrador'] },
   { rota: '/admin/funcionarios', label: 'Funcionários', perfis: ['administrador'] },
   { rota: '/admin/estoque', label: 'Estoque', perfis: ['administrador'] },
+  { rota: '/admin/auditoria', label: 'Auditoria', perfis: ['administrador'] },
   { rota: '/admin/dashboard', label: 'Dashboard', perfis: ['administrador'] },
 ];
 

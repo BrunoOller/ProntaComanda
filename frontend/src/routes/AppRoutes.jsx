@@ -11,6 +11,7 @@ import MesasComandasAdmin from '../pages/admin/MesasComandas';
 import CozinhaAdmin from '../pages/admin/Cozinha';
 import FuncionariosAdmin from '../pages/admin/Funcionarios';
 import EstoqueAdmin from '../pages/admin/Estoque';
+import AuditoriaAdmin from '../pages/admin/Auditoria';
 
 import PainelKDS from '../pages/kds/PainelKDS';
 
@@ -54,6 +55,7 @@ export default function AppRoutes() {
         <Route path="/admin/cardapio" element={<CardapioAdmin />} />
         <Route path="/admin/funcionarios" element={<FuncionariosAdmin />} />
         <Route path="/admin/estoque" element={<EstoqueAdmin />} />
+        <Route path="/admin/auditoria" element={<AuditoriaAdmin />} />
         {/* visão de supervisão do admin sobre o KDS, com sidebar */}
         <Route path="/admin/cozinha" element={<CozinhaAdmin />} />
       </Route>
