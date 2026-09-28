@@ -1,64 +1,77 @@
 # Pronta Comanda
 
-Sistema de gestão de mesas para estabelecimentos, com cardápio digital e
-gestão financeira. Backend e frontend separados, conforme especificado.
+Sistema de gestão de mesas para estabelecimentos, com cardápio digital,
+KDS (cozinha/bar), estoque e gestão financeira. Backend e frontend são
+projetos separados.
+
+**Stack:** Node + Express + MongoDB (Mongoose) no backend; React + Vite +
+Tailwind no frontend; comunicação em tempo real com socket.io.
 
 ## Estrutura
 
 ```
 ProntaComanda/
-├── backend/                  # Node + Express + MongoDB (Mongoose)
+├── backend/
 │   ├── server.js              # ponto de entrada (conecta DB, sockets, cron, HTTP)
+│   ├── tests/                 # testes automatizados (node --test) + banco falso em tests/helpers
 │   └── src/
-│       ├── app.js             # monta o Express (middlewares globais + rotas)
+│       ├── app.js             # monta o Express (helmet, cors, rotas em /api)
 │       ├── config/            # conexão com o banco
-│       ├── models/            # schemas Mongoose (ver README próprio)
-│       ├── schemas/           # validação Zod de entrada (auth, funcionário)
-│       ├── routes/            # define os endpoints (fino, delega ao controller)
+│       ├── models/            # schemas Mongoose (ver models/README.md)
+│       ├── schemas/           # validação Zod de entrada, um arquivo por módulo
+│       ├── routes/            # endpoints + RBAC + validação (fino, delega ao controller)
 │       ├── controllers/       # regra de negócio de cada módulo
 │       ├── middlewares/       # auth (JWT), RBAC, validate (Zod), erro global
-│       ├── sockets/           # configuração do socket.io (KDS, mapa de mesas)
+│       ├── sockets/           # socket.io (KDS, mapa de mesas, ruptura de estoque)
 │       ├── jobs/              # rollup mensal agendado (node-cron)
-│       └── utils/             # logger (winston), asyncHandler, AppError, cpf
+│       └── utils/             # logger (winston), asyncHandler, AppError, cpf, escaparRegex
 │
-└── frontend/                 # React + Vite + Tailwind
+└── frontend/
     └── src/
-        ├── api/                # cliente axios
-        ├── store/              # zustand (sessão do funcionário)
-        ├── routes/             # react-router-dom + guarda de rota por perfil
-        │   └── destinosPorPerfil.js  # fonte única: pra onde cada perfil vai após logar
-        ├── schemas/            # validação de formulário (zod + react-hook-form)
-        ├── hooks/              # useSocket (tempo real)
+        ├── api/               # cliente axios
+        ├── store/             # zustand (sessão do funcionário)
+        ├── routes/            # react-router-dom + guarda de rota por perfil
+        │   └── destinosPorPerfil.js  # fonte única: para onde cada perfil vai após logar
+        ├── schemas/           # validação de formulário (zod + react-hook-form)
+        ├── hooks/             # useSocket (tempo real)
         ├── components/
-        │   ├── layout/         # sidebar do admin (filtrada por perfil)
-        │   └── kds/            # quadro do KDS, compartilhado entre 2 telas
+        │   ├── layout/        # sidebar do admin (filtrada por perfil, com botão Sair)
+        │   └── kds/           # quadro do KDS, compartilhado entre 2 telas
         └── pages/
-            ├── admin/          # Cardápio, Mesas/Comandas, Cozinha (supervisão), Funcionários, Dashboard
-            ├── funcionarios/   # Mapa de mesas + Mesa (cardápio digital + comanda) — garçom/caixa/admin
-            └── kds/            # tela standalone do KDS, sem sidebar — cozinha/bar
+            ├── admin/         # Dashboard, Cardápio, Mesas/Comandas, Cozinha, Estoque, Funcionários
+            ├── funcionarios/  # Mapa de mesas + Mesa (cardápio digital + comanda), mobile
+            └── kds/           # tela standalone do KDS, sem sidebar (cozinha/bar)
 ```
 
 ## Como cada perfil entra no sistema
 
-Login manda todo mundo pra `/`, que decide sozinho o destino (ver
-`routes/destinosPorPerfil.js`), e cada rota é protegida por perfil
-(`routes/RotaProtegida.jsx`, RF01 — restringe visualização, não só execução):
+O login manda todo mundo para `/`, que decide o destino
+(`routes/destinosPorPerfil.js`). Cada rota é protegida por perfil
+(`routes/RotaProtegida.jsx`, RF01) e o backend valida o perfil de novo em
+toda requisição.
 
 | Perfil | Cai em | Sidebar? |
 |---|---|---|
 | administrador | `/admin/dashboard` | Sim, todos os itens |
 | caixa | `/admin/mesas` | Sim, só "Mesas/Comandas" |
-| cozinha / bar | `/kds` | Não — tela standalone só com o KDS |
-| garçom | `/funcionarios` | Não — módulo mobile |
+| cozinha / bar | `/kds` | Não, tela standalone só com o KDS |
+| garçom | `/funcionarios` | Não, módulo mobile |
 
 ## Como rodar
+
+Requisitos: Node 22 e MongoDB rodando (local ou Atlas).
 
 **Backend**
 ```bash
 cd backend
-cp .env.example .env   # ajuste MONGO_URI, JWT_SECRET etc.
+cp .env.example .env    # no Windows: copy .env.example .env
 npm install
-npm run dev             # nodemon, porta 3333
+npm run dev              # nodemon, porta 3333
+```
+
+No `.env`, ajuste `MONGO_URI` e troque o `JWT_SECRET` por uma chave própria:
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
 **Frontend**
@@ -68,79 +81,193 @@ npm install
 npm run dev              # vite, porta 5173, com proxy de /api -> :3333
 ```
 
-## O que já está funcional (testado rodando, não só em build)
+### Primeiro administrador
 
-- Login completo: JWT + cookie httpOnly + argon2, validado com Zod
-  (`schemas/auth.schema.js`), com mitigação de timing attack (CPF
-  inexistente ainda roda um `argon2.verify` de mentira, pra não dar pra
-  descobrir CPF cadastrado pela latência da resposta)
-- RBAC (RF01) validado no backend em toda rota sensível, e espelhado no
-  frontend tanto na navegação (guarda de rota) quanto na sidebar (cada
-  perfil só vê os itens de menu que pode de fato abrir)
-- CRUD completo de Funcionários: criar/editar/desligar/reativar, com
-  validação de CPF por dígito verificador (`utils/cpf.js`), auditoria de
-  cada ação sensível, e a regra "não é possível desligar nem rebaixar o
-  único administrador ativo do sistema"
-- Erros do Mongo traduzidos em respostas amigáveis (CPF/e-mail duplicado
-  vira 409, validação de schema vira 400) em vez de "erro inesperado" genérico
-- CRUD completo de Categorias e Produtos: validação Zod rica (preço com no
-  máximo 2 casas decimais, nome único por categoria, imagem só aceita
-  URL http(s) válida), 404 tratado, nome de categoria/produto duplicado
-  bloqueado, categoria com produto ativo não pode ser inativada, e todo
-  o histórico de troca de preço/inativação/reativação vai para auditoria
-- `GET /cardapio` — categorias ativas já com seus produtos dentro, em uma
-  chamada só (alimenta a aba "Todos" do admin e a tela do garçom)
-- Produto agora carrega o próprio `setor` (cozinha/bar) e
-  `tempoPreparoMinutos`: o app do garçom não escolhe/inventa o setor no
-  lançamento, ele vem do cadastro (fecha uma brecha onde um cliente mal-
-  intencionado podia mandar uma bebida pra tela da cozinha)
-- Fluxo de mesa: abrir → lançar item → KDS muda status → estornar item →
-  aplicar desconto → fechar mesa com pagamento (RF04-RF12) — testado
-  manualmente ponta a ponta (admin cadastra mesa → aparece na hora certa
-  na tela do garçom)
-- Estorno de item (RF08) e desconto aplicado (RF09) agora gravam auditoria
-  (antes só validavam o motivo/valor, mas não deixavam rastro consultável)
-- Reabertura de mesa (RF12) também auditada, e só é permitida se a mesa não
-  estiver livre (evita reabrir o que não tem o que reabrir)
-- 404 tratado (em vez de 200 com corpo vazio, ou 500 cru) em: mesa, item de
-  comanda, transferência entre comandas, fechamento de pagamento e
-  movimentação de estoque
-- KDS com listagem por setor (`GET /comandas/kds?setor=cozinha|bar`),
-  semáforo de tempo (RF06) e avanço de status em lote por pedido
-- Estoque com alerta de ruptura em tempo real via socket.io (RF10/RF22),
-  exige motivo em ajuste manual
-- Dashboard com indicadores agregados via MongoDB aggregation (RF17)
-- Job de consolidação mensal + expurgo, agendado com node-cron (RF14-RF16)
+Todas as rotas de gestão exigem um administrador logado, então o primeiro
+precisa ser criado direto no banco. Gere o hash da senha:
 
-## O que ainda falta (próximos passos naturais)
+```bash
+cd backend
+node -e "require('argon2').hash('SUA_SENHA').then(console.log)"
+```
 
-- Refino visual das telas (o frontend aqui é funcional, não pixel-perfect
-  em relação ao Figma — cores, espaçamentos e tema escuro completo)
-- Testes automatizados (unitários nos controllers, e2e nas rotas)
-- Swagger/OpenAPI (pacote `swagger-ui-express` já está no `package.json`,
-  falta escrever as specs)
-- Emissão de vias impressas (RF13, opcional)
-- Botão "+ Adicionar Mesa" no admin ainda não tem `onClick` (mesa hoje só
-  entra no banco via mongosh/script)
-- Mesa, Comanda, Pagamento e Estoque ainda não têm validação Zod na entrada
-  (hoje só Auth, Funcionário, Categoria e Produto têm) — o Mongoose ainda
-  cobre o básico via `errorHandler`, mas as mensagens ficam menos amigáveis
+E insira no `mongosh` (ou no Compass), com o **CPF só com dígitos**:
+
+```js
+db.funcionarios.insertOne({
+  nome: 'Seu Nome',
+  cpf: '52998224725',          // precisa ser um CPF válido (dígitos verificadores)
+  senhaHash: '<hash gerado acima>',
+  perfil: 'administrador',
+  ativo: true                   // obrigatório ao inserir fora do Mongoose
+})
+```
+
+Depois é só logar e cadastrar o resto da equipe pela tela de Funcionários.
+
+### Testes
+
+```bash
+cd backend
+node --test tests/*.test.js    # ou: npm test, se houver o script "test" no package.json
+```
+
+Os testes sobem o app real com um banco **falso em memória**
+(`tests/helpers/fakeColecao.js`), então rodam sem MongoDB. Cobrem Mesa
+(incluindo reabertura), Pagamento e Comanda. Como o banco é simulado, eles
+não substituem um teste com o Mongo real: índices únicos, `$set`/`$unset` e
+comportamento de `populate` só se confirmam rodando o sistema.
+
+## API
+
+Todas as rotas ficam sob `/api` e (exceto o login) exigem o cookie de sessão.
+Erros seguem o formato `{ "erro": "mensagem" }`; validação de entrada devolve
+400 com `{ "erro": "Dados inválidos.", "detalhes": { campo: [mensagens] } }`.
+Duplicidade (CPF, e-mail, nome, número de mesa) devolve 409.
+
+| Módulo | Endpoints | Quem acessa |
+|---|---|---|
+| Auth | `POST /auth/login`, `POST /auth/logout`, `GET /auth/me` | qualquer (`me` exige login) |
+| Funcionários | `GET/POST /funcionarios`, `GET/PUT/DELETE /funcionarios/:id`, `PATCH /funcionarios/:id/reativar` | administrador |
+| Categorias | `GET /categorias`, `GET /categorias/:id` | qualquer perfil logado |
+| | `POST /categorias`, `PUT/DELETE /categorias/:id`, `PATCH /categorias/:id/reativar` | administrador |
+| Produtos | `GET /produtos`, `GET /produtos/:id`, `GET /cardapio` | qualquer perfil logado |
+| | `POST /produtos`, `PUT/DELETE /produtos/:id`, `PATCH /produtos/:id/disponibilidade`, `PATCH /produtos/:id/reativar` | administrador |
+| Estoque | `GET/POST /estoque`, `GET/PUT/DELETE /estoque/:id`, `PATCH /estoque/:id/reativar`, `POST /estoque/:id/movimentar`, `GET /estoque/:id/movimentacoes` | administrador |
+| Mesas | `GET /mesas` | qualquer perfil logado |
+| | `POST /mesas`, `DELETE /mesas/:id`, `PATCH /mesas/:id/reabrir` | administrador |
+| | `POST /mesas/:id/abrir`, `PATCH /mesas/:id/solicitar-fechamento` | garçom, caixa, administrador |
+| Comandas | `GET /comandas/mesa/:mesaId`, `GET /comandas/produtos/:produtoId/sugestoes` | qualquer perfil logado |
+| | `POST /comandas/abrir`, `POST /comandas/:id/itens`, `POST /comandas/:id/transferir` | garçom, caixa, administrador |
+| | `GET /comandas/kds?setor=`, `PATCH /comandas/:id/avancar-status?setor=`, `PATCH /comandas/:id/itens/:itemId/status` | cozinha, bar, administrador |
+| | `PATCH /comandas/:id/itens/:itemId/estornar` | caixa, administrador |
+| | `PATCH /comandas/:id/desconto` | administrador |
+| Pagamentos | `POST /pagamentos/mesa/:mesaId/fechar`, `POST /pagamentos/comanda/:comandaId/fechar` | caixa, administrador |
+| Dashboard | `GET /dashboard/visao-geral`, `GET /dashboard/top-produtos` | administrador |
+
+**Eventos socket.io:** `mesa:atualizada` (sala `mapa-mesas`),
+`kds:novo-item` (sala do setor: `cozinha` ou `bar`), `kds:status-atualizado`
+e `produto:atualizado` (disponibilidade/ruptura, para todos os dispositivos).
+
+## Regras de negócio que valem saber
+
+- **Soft delete (RNF11):** funcionário, categoria, produto, insumo e mesa são
+  inativados, nunca apagados, para preservar o histórico. Todos têm rota de
+  reativar (exceto mesa, que é recriada pelo mesmo número).
+- **Snapshot no item da comanda:** nome e preço do produto são copiados no
+  lançamento, então editar o cardápio depois não altera contas antigas.
+- **Setor vem do cadastro:** o item lançado usa o `setor` (cozinha/bar) do
+  produto; o que o app enviar é ignorado.
+- **Categoria com produto ativo não pode ser inativada** (409, com a contagem).
+- **Mesa:** livre → ocupada (abrir) → aguardando fechamento (solicitar) →
+  livre (pagamento). Uma mesa pode ter várias comandas abertas ao mesmo tempo.
+- **Pagamento (RF11):** o valor recebido tem que cobrir o total (com
+  tolerância de meio centavo); menos que isso é recusado com 409 dizendo
+  quanto falta. Descontos e itens estornados entram no cálculo.
+- **Estorno e transferência (RF07/RF08/RF25):** só em comanda aberta. Para
+  corrigir depois do fechamento, reabra a mesa primeiro. Estorno exige motivo
+  (mínimo 3 caracteres) e gera auditoria.
+- **Desconto (RF09):** só administrador, só em comanda aberta, percentual de
+  0 a 100.
+- **Reabertura (RF12):** só administrador, só numa mesa já livre. Volta a mesa
+  para ocupada, reabre a(s) comanda(s) e estorna o último pagamento
+  (`estornado: true`, que o dashboard ignora).
+- **KDS (RF05/RF06):** a esteira só avança (pendente → em preparo → pronto →
+  entregue); item estornado não muda de status.
+- **Estoque (RF10/RF22):** o saldo só muda por `/movimentar` (entrada, saída
+  ou ajuste), sempre com histórico, e nunca fica negativo. Ajuste exige
+  motivo e gera auditoria. Zerar um insumo torna indisponíveis os produtos
+  que dependem dele, e repor volta a liberá-los, em tempo real.
+- **Auditoria:** criação/edição/desligamento de funcionário, troca de preço e
+  inativação de produto, ajuste de estoque, estorno, desconto e reabertura de
+  mesa gravam em `LogAuditoria`.
+
+## O que já está funcional
+
+- Login com JWT em cookie httpOnly + argon2, validado com Zod, com mitigação
+  de timing attack (CPF inexistente ainda roda um `argon2.verify` falso).
+- RBAC (RF01) no backend em toda rota sensível e espelhado no frontend.
+- CRUD de Funcionários (com CPF validado por dígito verificador), Categorias,
+  Produtos (com setor e tempo de preparo), Estoque e Mesas, todos com
+  validação Zod e erros do Mongo traduzidos (duplicidade vira 409, dado
+  inválido vira 400).
+- Cardápio agrupado por categoria em uma chamada (`GET /cardapio`), usado na
+  aba "Todos" do admin.
+- Fluxo de mesa completo: abrir → lançar item → KDS → estornar → desconto →
+  fechar com pagamento → reabrir se foi engano (RF04 a RF12).
+- KDS por setor com semáforo de tempo (RF06) e avanço de status em lote.
+- Dashboard com indicadores via aggregation (RF17), valores em reais
+  arredondados para 2 casas e exibidos como moeda.
+- Telas admin de Funcionários, Cardápio, Estoque e Mesas/Comandas com botões de
+  criar, editar, remover/reativar e o botão Sair na sidebar.
+- Job de consolidação mensal + expurgo (RF14 a RF16), veja a pendência abaixo.
+
+## O que ainda falta
+
+**Backend**
+- **Rollup mensal (RF14 a RF16):** o job atual apaga também comandas ainda
+  abertas na virada do mês, não recupera meses perdidos se o servidor estava
+  desligado no dia 1º e usa o fuso do servidor em vez do do estabelecimento.
+- **Tela/endpoint de log de auditoria:** os registros já são gravados, mas
+  não há como consultá-los pela aplicação.
+- **Dashboard completo do design:** filtro de período (hoje/semana/mês),
+  variação vs. período anterior, faturamento por mês (lendo do
+  `ResumoMensal`, já que o expurgo apaga os pedidos antigos), status dos
+  pedidos e ticket médio.
+- **Ficha técnica:** `insumosNecessarios` existe no produto, mas o lançamento
+  de item ainda não dá baixa no estoque (hoje só o ajuste manual mexe no saldo).
+- **Reabertura por comanda:** a reabertura (RF12) é por mesa; fechar por
+  engano uma comanda avulsa enquanto a mesa continua ocupada ainda não tem
+  como ser desfeito.
+- Swagger/OpenAPI (o `swagger-ui-express` já está no `package.json`, faltam as specs).
+- Backup segmentado (RNF05) e revisão de índices para o limite de 1s (RNF09).
+- Limite de tentativas no login e atualização do `multer` para a 2.x.
+- Upload de foto de produto (hoje só aceita link em `imagemUrl`).
+- Emissão de vias impressas (RF13, opcional).
+- Testes para Auth, Funcionário, Categoria/Produto, Estoque e rollup.
+
+**Frontend**
+- Refino visual das telas para bater com o Figma (cores, espaçamento, tema
+  escuro completo).
+- Trocar os `prompt`/`confirm`/`alert` do navegador por modal, bottom sheet e
+  toast, deixando para depois que o backend fechar.
+- Telas mobile e KDS mais completas.
+
+## Convenções
+
+- **Commits** no padrão Conventional Commits: `tipo(escopo): descrição`
+  (`feat`, `fix`, `chore`, `test`), por exemplo
+  `fix(pagamento): bloqueia fechamento com valor insuficiente`.
+- Antes de commitar: `npm run lint` e `npm run format` no backend, e conferir
+  o `git status` para não subir `.env`, `logs/`, `node_modules/` nem pastas de
+  build de IDE.
 
 ## Histórico de bugs corrigidos
 
-- **Loop de navegação na raiz (`/`)**: `RotaProtegida`, `RaizRedirect` e
+- **Loop de navegação na raiz (`/`):** `RotaProtegida`, `RaizRedirect` e
   `AdminIndex` usavam `<Navigate>` declarativo, que redispara a navegação a
-  cada re-render. Como esses componentes assinavam a store inteira,
-  qualquer mudança nela recriava o `<Navigate>` e travava o app com
-  "Maximum update depth exceeded". Corrigido trocando por
-  `useNavigate()` + `useEffect` com dependências explícitas.
-  ⚠️ **Esse bug já voltou uma vez** porque alguém subiu uma cópia local
-  desatualizada por cima (obrigado surita). Se for mexer em
-  `RotaProtegida.jsx` / `RaizRedirect.jsx` / `AdminIndex.jsx`, mantenha o
-  padrão `useEffect`+`useNavigate` — nunca `<Navigate>` direto. 
-- **Auditoria de produto quebrada silenciosamente**: `produto.controller.js`
-  gravava tipos (`produto_preco_alterado`, `produto_inativado`,
-  `produto_reativado`) que não existiam no enum do model `LogAuditoria`.
-  O `try/catch` da função `auditar()` engolia o erro, então nada quebrava
-  na tela, mas a auditoria simplesmente não era salva. Corrigido
-  adicionando os tipos faltantes ao enum.
+  cada re-render. Como esses componentes assinavam a store inteira, qualquer
+  mudança nela recriava o `<Navigate>` e travava o app com "Maximum update
+  depth exceeded". Corrigido com `useNavigate()` + `useEffect` com
+  dependências explícitas.
+  ⚠️ **O bug já voltou uma vez** porque uma cópia local desatualizada foi
+  enviada por cima da correção. Ao mexer nesses três arquivos, mantenha o
+  padrão `useEffect` + `useNavigate`, nunca `<Navigate>` direto, e confira o
+  `git diff` antes de commitar.
+- **Auditoria de produto perdida em silêncio:** o controller gravava tipos
+  (`produto_preco_alterado`, `produto_inativado`, `produto_reativado`) que não
+  existiam no enum de `LogAuditoria`; o `try/catch` engolia o erro e nada era
+  salvo. Corrigido adicionando os tipos ao enum.
+- **Reabertura de mesa (RF12) nunca funcionava:** a condição estava invertida
+  e bloqueava justamente o caso de uso (mesa já fechada). Agora reabre a
+  comanda e estorna o pagamento.
+- **Pagamento menor que o total era aceito:** só zerava o troco e liberava a
+  mesa. Agora é recusado (409).
+- **Status do KDS sem validação:** qualquer texto era gravado, e o item nunca
+  mais saía da tela. Agora só aceita os 4 status, e só para frente.
+- **Estorno, transferência e desconto em comanda já fechada** alteravam contas
+  já cobradas. Agora exigem comanda aberta.
+- **Criar mesa sem número** podia reativar a primeira mesa do banco por engano
+  (o Mongo ignora chaves `undefined` no filtro). Agora dá 400.
+- **Telas sem `try/catch`:** fechar mesa, estornar item e aplicar desconto
+  quebravam em silêncio quando o backend recusava. Agora mostram o motivo.
