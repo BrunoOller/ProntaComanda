@@ -4,6 +4,7 @@ const permitir = require('../middlewares/rbac.middleware');
 const validate = require('../middlewares/validate.middleware');
 const { validarId } = require('../middlewares/validate.middleware');
 const ctrl = require('../controllers/produto.controller');
+const { uploadImagemProduto } = require('../middlewares/uploadImagem.middleware');
 const {
   criarProdutoSchema,
   atualizarProdutoSchema,
@@ -28,6 +29,7 @@ router.patch(
   ctrl.alterarDisponibilidade
 );
 router.patch('/:id/reativar', ...admin, validarId(), ctrl.reativar);
+router.post('/:id/imagem', ...admin, validarId(), uploadImagemProduto, ctrl.uploadImagem);
 router.delete('/:id', ...admin, validarId(), ctrl.inativar);
 
 module.exports = router;

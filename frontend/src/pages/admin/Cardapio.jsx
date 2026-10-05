@@ -230,10 +230,32 @@ export default function Cardapio() {
     }
   };
 
+  // Upload direto de arquivo: a foto aparece no cardápio público da home.
+  const trocarFoto = async (p, arquivo) => {
+    if (!arquivo) return;
+    if (arquivo.size > 5 * 1024 * 1024) {
+      window.alert('Imagem muito grande. O limite é 5 MB.');
+      return;
+    }
+
+    const form = new FormData();
+    form.append('imagem', arquivo);
+
+    try {
+      await api.post(`/produtos/${p._id}/imagem`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      carregarProdutos();
+    } catch (err) {
+      window.alert(err.response?.data?.erro || 'Erro ao enviar a imagem.');
+    }
+  };
+
   const acoes = {
     onEditar: editarProduto,
     onRemover: removerProduto,
     onDisponibilidade: alternarDisponibilidade,
+    onFoto: trocarFoto,
   };
 
   return (
@@ -338,12 +360,36 @@ export default function Cardapio() {
 
 // RF22 - produto esgotado aparece esmaecido, com selo, em vez de sumir.
 // Só o texto é esmaecido; os botões continuam com aparência normal.
-function CartaoProduto({ produto: p, onEditar, onRemover, onDisponibilidade }) {
+function CartaoProduto({ produto: p, onEditar, onRemover, onDisponibilidade, onFoto }) {
   const indisponivel = p.disponivel === false;
+  const inputFotoId = `foto-produto-${p._id}`;
 
   return (
-    <div className="rounded-lg border p-3">
-      <div className={indisponivel ? 'opacity-50' : ''}>
+    <div className="overflow-hidden rounded-lg border">
+      <div className="relative aspect-[4/3] w-full bg-neutral-100">
+        {p.imagemUrl ? (
+          <img src={p.imagemUrl} alt={p.nome} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full items-center justify-center text-xs text-neutral-400">
+            Sem foto
+          </div>
+        )}
+        <label
+          htmlFor={inputFotoId}
+          className="absolute bottom-2 right-2 cursor-pointer rounded border bg-white px-2 py-1 text-xs shadow-sm hover:bg-neutral-50"
+        >
+          {p.imagemUrl ? 'Trocar foto' : '+ Foto'}
+        </label>
+        <input
+          id={inputFotoId}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={(e) => onFoto(p, e.target.files[0])}
+          className="hidden"
+        />
+      </div>
+
+      <div className={`p-3 ${indisponivel ? 'opacity-50' : ''}`}>
         <p className="font-medium">
           {p.nome}
           {indisponivel && (
@@ -360,7 +406,7 @@ function CartaoProduto({ produto: p, onEditar, onRemover, onDisponibilidade }) {
         </p>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2 text-xs">
+      <div className="flex flex-wrap gap-2 px-3 pb-3 text-xs">
         <button onClick={() => onEditar(p)} className="rounded border px-2 py-1">
           Editar
         </button>

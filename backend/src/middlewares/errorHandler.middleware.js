@@ -36,6 +36,14 @@ function traduzirErro(err) {
     return { status: 413, mensagem: 'Requisição grande demais.' };
   }
 
+  // Upload de foto de produto (multer)
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return { status: 413, mensagem: 'Imagem muito grande. O limite é 5 MB.' };
+  }
+  if (err.name === 'MulterError') {
+    return { status: 400, mensagem: 'Falha no envio da imagem.' };
+  }
+
   return null;
 }
 

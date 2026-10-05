@@ -5,6 +5,18 @@ import { loginSchema } from '../schemas/auth.schema';
 import { useAuthStore } from '../store/authStore';
 import { destinoPosLogin } from '../routes/destinosPorPerfil';
 
+// Aplica a máscara 000.000.000-00 enquanto digita. O schema de validação
+// continua recebendo o texto como o usuário vê (com máscara); quem tira a
+// pontuação antes de mandar pra API é o schema, não esta função.
+function formatarCpf(valor) {
+  return valor
+    .replace(/\D/g, '')
+    .slice(0, 11)
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+}
+
 // RF02 - Tela de login (ver frame "Login" do design, tema vinho/laranja)
 export default function Login() {
   const login = useAuthStore((s) => s.login);
@@ -16,6 +28,8 @@ export default function Login() {
     formState: { errors, isSubmitting },
     setError,
   } = useForm({ resolver: zodResolver(loginSchema) });
+
+  const { onChange: onChangeCpf, ...registroCpf } = register('cpf');
 
   const onSubmit = async ({ cpf, senha }) => {
     try {
@@ -38,8 +52,14 @@ export default function Login() {
 
           <div>
             <input
-              {...register('cpf')}
-              placeholder="CPF"
+              {...registroCpf}
+              onChange={(e) => {
+                e.target.value = formatarCpf(e.target.value);
+                onChangeCpf(e);
+              }}
+              inputMode="numeric"
+              maxLength={14}
+              placeholder="000.000.000-00"
               className="w-full rounded-md border px-3 py-2"
             />
             {errors.cpf && <p className="text-sm text-red-600">{errors.cpf.message}</p>}

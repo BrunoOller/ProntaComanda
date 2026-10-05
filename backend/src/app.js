@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -9,8 +10,13 @@ const errorHandler = require('./middlewares/errorHandler.middleware');
 function criarApp() {
   const app = express();
 
-  // RNF07 - segurança básica de headers
-  app.use(helmet());
+  // RNF07 - segurança básica de headers. crossOriginResourcePolicy liberado
+  // porque as fotos de produto (/uploads) precisam carregar no frontend,
+  // que roda em outra origem (porta do Vite).
+  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+
+  // Fotos de produto: pasta pública, servida como arquivo estático.
+  app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
   app.use(
     cors({
       origin: process.env.FRONTEND_URL,

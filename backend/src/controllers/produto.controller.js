@@ -3,6 +3,7 @@ const AppError = require('../utils/AppError');
 const escaparRegex = require('../utils/escaparRegex');
 const logger = require('../utils/logger');
 const { Produto, Categoria, LogAuditoria } = require('../models');
+const { PASTA_PUBLICA } = require('../middlewares/uploadImagem.middleware');
 
 /**
  * RF03 - Gestão de Cardápio (CRUD) - produtos
@@ -86,6 +87,8 @@ const criar = asyncHandler(async (req, res) => {
   await garantirNomeLivre(req.body.nome, req.body.categoria);
 
   const produto = await Produto.create(req.body);
+  await auditar(req, 'produto_criado', produto, { preco: produto.preco, setor: produto.setor });
+
   avisar(req, produto);
   res.status(201).json(produto);
 });
@@ -125,6 +128,18 @@ const atualizar = asyncHandler(async (req, res) => {
     await auditar(req, 'produto_preco_alterado', alvo, { de: alvo.preco, para: dados.preco });
   }
 
+  // A tela manda todos os campos a cada edição, então só entra na auditoria o
+  // que de fato mudou (o preço tem registro próprio, com valor antes/depois).
+  const alterados = Object.keys(dados).filter((campo) => {
+    if (campo === 'preco') return false;
+    const novo = dados[campo];
+    const antigo = alvo[campo];
+    if (campo === 'ingredientes') return JSON.stringify(novo) !== JSON.stringify(antigo ?? []);
+    if (novo === null) return antigo !== undefined && antigo !== null;
+    return String(novo) !== String(antigo);
+  });
+  if (alterados.length) await auditar(req, 'produto_atualizado', alvo, { campos: alterados });
+
   avisar(req, atualizado);
   res.json(atualizado);
 });
@@ -142,6 +157,10 @@ const alterarDisponibilidade = asyncHandler(async (req, res) => {
   }
 
   const atualizado = await Produto.findByIdAndUpdate(alvo._id, { disponivel }, { new: true });
+  if (alvo.disponivel !== disponivel) {
+    await auditar(req, 'produto_disponibilidade_alterada', alvo, { disponivel });
+  }
+
   avisar(req, atualizado);
   res.json(atualizado);
 });
@@ -184,4 +203,27 @@ const reativar = asyncHandler(async (req, res) => {
   res.json(atualizado);
 });
 
-module.exports = { listar, obter, criar, atualizar, alterarDisponibilidade, inativar, reativar };
+// POST /produtos/:id/imagem  (multipart/form-data, campo "imagem")
+const uploadImagem = asyncHandler(async (req, res) => {
+  if (!req.file) throw new AppError('Envie um arquivo de imagem.', 400);
+
+  await buscarOu404(req.params.id); // 404 antes de gravar qualquer coisa
+
+  const imagemUrl = `${PASTA_PUBLICA}/${req.file.filename}`;
+
+  const atualizado = await Produto.findByIdAndUpdate(req.params.id, { imagemUrl }, { new: true });
+
+  avisar(req, atualizado);
+  res.json(atualizado);
+});
+
+module.exports = {
+  listar,
+  obter,
+  criar,
+  atualizar,
+  alterarDisponibilidade,
+  inativar,
+  reativar,
+  uploadImagem,
+};

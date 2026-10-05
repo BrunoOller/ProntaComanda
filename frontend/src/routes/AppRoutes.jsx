@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
 import RotaProtegida from './RotaProtegida';
 import AdminIndex from './AdminIndex';
-import RaizRedirect from './RaizRedirect';
 
 import Login from '../pages/Login';
+import CardapioPublico from '../pages/publico/CardapioPublico';
 
 import DashboardAdmin from '../pages/admin/Dashboard';
 import CardapioAdmin from '../pages/admin/Cardapio';
@@ -30,8 +30,12 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/login" element={<Login />} />
 
-      {/* "/" não é mais tela de ninguém - só decide pra onde mandar */}
-      <Route path="/" element={<RaizRedirect />} />
+      {/* "/" é o cardápio público (cliente não loga pra ver o cardápio).
+          O acesso de funcionário/admin fica no botão "Entrar", que leva
+          pra /login; de lá, destinoPosLogin() manda pro painel de cada
+          perfil. Quem já está logado pode navegar pra / à vontade (por
+          exemplo pra conferir o cardápio como o cliente vê). */}
+      <Route path="/" element={<CardapioPublico />} />
 
       {/* Módulo Mobile (Atendimento e Salão) - garçom, mas caixa/admin também
           podem abrir mesa por aqui se precisarem (RF19/RF20) */}
