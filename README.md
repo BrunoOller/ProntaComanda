@@ -143,7 +143,7 @@ Duplicidade (CPF, e-mail, nome, número de mesa) devolve 409.
 | | `PATCH /comandas/:id/itens/:itemId/estornar` | caixa, administrador |
 | | `PATCH /comandas/:id/desconto` | administrador |
 | Pagamentos | `POST /pagamentos/mesa/:mesaId/fechar`, `POST /pagamentos/comanda/:comandaId/fechar` | caixa, administrador |
-| Dashboard | `GET /dashboard/visao-geral`, `GET /dashboard/top-produtos` | administrador |
+| Dashboard | `GET /dashboard/visao-geral?periodo=`, `GET /dashboard/faturamento-mensal`, `GET /dashboard/status-pedidos?periodo=`, `GET /dashboard/top-produtos?periodo=` | administrador |
 
 **Eventos socket.io:** `mesa:atualizada` (sala `mapa-mesas`),
 `kds:novo-item` (sala do setor: `cozinha` ou `bar`), `kds:status-atualizado`
@@ -196,24 +196,24 @@ e `produto:atualizado` (disponibilidade/ruptura, para todos os dispositivos).
 - Fluxo de mesa completo: abrir → lançar item → KDS → estornar → desconto →
   fechar com pagamento → reabrir se foi engano (RF04 a RF12).
 - KDS por setor com semáforo de tempo (RF06) e avanço de status em lote.
-- Dashboard com indicadores via aggregation (RF17), valores em reais
-  arredondados para 2 casas e exibidos como moeda.
+- Dashboard completo do design (RF17): filtro Hoje/Esta semana/Este mês,
+  variação vs. período anterior (volta `null` quando o dado já foi expurgado
+  e não dá pra comparar), faturamento dos últimos 12 meses (gráfico
+  ApexCharts), taxa de conversão (rosca ApexCharts), status dos pedidos e
+  Top 5 produtos por faturamento. "Pedido" é cada item lançado (RF05), não a
+  comanda inteira.
 - Telas admin de Funcionários, Cardápio, Estoque e Mesas/Comandas com botões de
   criar, editar, remover/reativar e o botão Sair na sidebar.
-- Job de consolidação mensal + expurgo (RF14 a RF16), veja a pendência abaixo.
+- Job de consolidação mensal + expurgo (RF14 a RF16): só processa comandas
+  fechadas, recupera meses perdidos se o servidor ficou desligado na virada
+  (catch-up na inicialização) e usa o fuso do estabelecimento
+  (`TZ_ESTABELECIMENTO`, padrão `America/Sao_Paulo`).
 
 ## O que ainda falta
 
 **Backend**
-- **Rollup mensal (RF14 a RF16):** o job atual apaga também comandas ainda
-  abertas na virada do mês, não recupera meses perdidos se o servidor estava
-  desligado no dia 1º e usa o fuso do servidor em vez do do estabelecimento.
 - **Tela/endpoint de log de auditoria:** os registros já são gravados, mas
   não há como consultá-los pela aplicação.
-- **Dashboard completo do design:** filtro de período (hoje/semana/mês),
-  variação vs. período anterior, faturamento por mês (lendo do
-  `ResumoMensal`, já que o expurgo apaga os pedidos antigos), status dos
-  pedidos e ticket médio.
 - **Ficha técnica:** `insumosNecessarios` existe no produto, mas o lançamento
   de item ainda não dá baixa no estoque (hoje só o ajuste manual mexe no saldo).
 - **Reabertura por comanda:** a reabertura (RF12) é por mesa; fechar por

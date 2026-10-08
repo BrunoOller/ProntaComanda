@@ -38,8 +38,13 @@ const resumoMensalSchema = new Schema(
     mes: { type: Number, required: true, min: 1, max: 12 },
 
     faturamentoTotal: { type: Number, default: 0 },
-    totalPedidos: { type: Number, default: 0 },
-    totalCancelamentos: { type: Number, default: 0 },
+    totalPedidos: { type: Number, default: 0 }, // nº de comandas do mês (histórico)
+    // nº de ITENS lançados no mês (inclui os depois estornados) — RF17, é a
+    // unidade que o Dashboard usa como "pedido". Resumos gerados antes deste
+    // campo existir ficam sem ele (undefined), então a comparação de mês a
+    // mês some com dados muito antigos; não é retroativo.
+    totalItens: { type: Number, default: 0 },
+    totalCancelamentos: { type: Number, default: 0 }, // subconjunto de totalItens com estornado:true
 
     totalPorProduto: [totalPorProdutoSchema],
     motivosEstorno: [motivoEstornoResumoSchema],

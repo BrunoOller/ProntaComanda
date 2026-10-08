@@ -82,6 +82,7 @@ async function consolidarMes(ano, mes) {
         mes,
         faturamentoTotal: arredondar(pagamentos.reduce((soma, p) => soma + p.valorTotal, 0)),
         totalPedidos: comandas.length,
+        totalItens: comandas.reduce((soma, c) => soma + c.itens.length, 0),
         totalCancelamentos: [...motivosEstorno.values()].reduce((s, m) => s + m.ocorrencias, 0),
         totalPorProduto: [...porProduto.entries()].map(([nomeProduto, v]) => ({
           nomeProduto,
