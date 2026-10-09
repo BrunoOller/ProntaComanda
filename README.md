@@ -185,7 +185,9 @@ e `produto:atualizado` (disponibilidade/ruptura, para todos os dispositivos).
 ## O que já está funcional
 
 - Login com JWT em cookie httpOnly + argon2, validado com Zod, com mitigação
-  de timing attack (CPF inexistente ainda roda um `argon2.verify` falso).
+  de timing attack (CPF inexistente ainda roda um `argon2.verify` falso) e
+  limite de 10 tentativas por 15 minutos (`express-rate-limit`); login
+  correto nunca conta pro limite.
 - RBAC (RF01) no backend em toda rota sensível e espelhado no frontend.
 - CRUD de Funcionários (com CPF validado por dígito verificador), Categorias,
   Produtos (com setor e tempo de preparo), Estoque e Mesas, todos com
@@ -221,7 +223,6 @@ e `produto:atualizado` (disponibilidade/ruptura, para todos os dispositivos).
   como ser desfeito.
 - Swagger/OpenAPI (o `swagger-ui-express` já está no `package.json`, faltam as specs).
 - Backup segmentado (RNF05) e revisão de índices para o limite de 1s (RNF09).
-- Limite de tentativas no login e atualização do `multer` para a 2.x.
 - Upload de foto de produto (hoje só aceita link em `imagemUrl`).
 - Emissão de vias impressas (RF13, opcional).
 - Testes para Auth, Funcionário, Categoria/Produto, Estoque e rollup.
