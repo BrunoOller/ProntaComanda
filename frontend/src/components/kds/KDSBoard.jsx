@@ -103,11 +103,16 @@ function CardPedido({ pedido, onAvancar }) {
   }, [pedido.lancadoEm]);
 
   const minutosDecorridos = (Date.now() - new Date(pedido.lancadoEm)) / 60000;
-  // Semáforo simples: verde até 10min, amarelo até 20min, vermelho depois (RF06)
+  // RF06 - o limite vem do tempo de preparo cadastrado no produto (o maior
+  // entre os itens do pedido); sem isso configurado, cai no padrão fixo de
+  // antes (10/20min). Amarelo a partir de 70% do tempo esperado, vermelho
+  // ao estourar o tempo cheio.
+  const limiteVermelho = pedido.tempoPreparoMinutos ?? 20;
+  const limiteAmarelo = pedido.tempoPreparoMinutos ? pedido.tempoPreparoMinutos * 0.7 : 10;
   const corBadge =
-    minutosDecorridos > 20
+    minutosDecorridos > limiteVermelho
       ? 'text-red-600'
-      : minutosDecorridos > 10
+      : minutosDecorridos > limiteAmarelo
         ? 'text-yellow-600'
         : 'text-orange-600';
 

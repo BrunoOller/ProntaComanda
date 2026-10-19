@@ -51,7 +51,7 @@ const abrirComanda = asyncHandler(async (req, res) => {
   res.status(201).json({ mesa, comanda });
 });
 
-// RF23 - Espelho de Consumo & KDS (mobile) / painel "MESA 00" (admin)
+// Espelho de Consumo & KDS (mobile) / painel "MESA 00" (admin)
 const listarPorMesa = asyncHandler(async (req, res) => {
   const comandas = await Comanda.find({ mesa: req.params.mesaId }).populate(
     'itens.produto',
@@ -60,7 +60,7 @@ const listarPorMesa = asyncHandler(async (req, res) => {
   res.json(comandas);
 });
 
-// RF20 - Seleção e lançamento de item (Mobile, touch-friendly)
+// Seleção e lançamento de item (Mobile, touch-friendly)
 const adicionarItem = asyncHandler(async (req, res) => {
   const { produtoId, quantidade = 1, observacao } = req.body;
 
@@ -74,7 +74,7 @@ const adicionarItem = asyncHandler(async (req, res) => {
     return res.status(409).json({ erro: 'Comanda não está aberta.' });
   }
 
-  // RF05 - o setor (cozinha/bar) vem do CADASTRO do produto; o que o app
+  // o setor (cozinha/bar) vem do CADASTRO do produto; o que o app
   // enviar no body é ignorado, para uma bebida nunca cair na tela errada.
   const setorPreparo = produto.setor ?? 'cozinha';
 
@@ -82,6 +82,7 @@ const adicionarItem = asyncHandler(async (req, res) => {
     produto: produto._id,
     nomeProduto: produto.nome, // snapshot
     precoUnitario: produto.preco, // snapshot
+    tempoPreparoMinutos: produto.tempoPreparoMinutos ?? null, // snapshot (RF06)
     quantidade,
     observacao,
     setorPreparo,
@@ -89,7 +90,7 @@ const adicionarItem = asyncHandler(async (req, res) => {
   });
   await comanda.save();
 
-  // RF21 - alimenta as observações frequentes para sugestão futura
+  // alimenta as observações frequentes para sugestão futura
   if (observacao?.trim()) {
     await ObservacaoFrequente.findOneAndUpdate(
       { produto: produto._id, texto: observacao.trim() },
@@ -98,7 +99,7 @@ const adicionarItem = asyncHandler(async (req, res) => {
     );
   }
 
-  // RF05 - notifica a tela da cozinha/bar em tempo real
+  // notifica a tela da cozinha/bar em tempo real
   req.io?.to(setorPreparo).emit('kds:novo-item', {
     comandaId: comanda._id,
     item: comanda.itens[comanda.itens.length - 1],
@@ -107,7 +108,7 @@ const adicionarItem = asyncHandler(async (req, res) => {
   res.status(201).json(comanda);
 });
 
-// RF21 - sugestões de observação mais frequentes para um produto
+// sugestões de observação mais frequentes para um produto
 const sugerirObservacoes = asyncHandler(async (req, res) => {
   const sugestoes = await ObservacaoFrequente.find({ produto: req.params.produtoId })
     .sort({ contagem: -1 })
@@ -115,7 +116,7 @@ const sugerirObservacoes = asyncHandler(async (req, res) => {
   res.json(sugestoes.map((s) => s.texto));
 });
 
-// RF05/RF06 - Fluxo Operacional KDS (pendente -> em_preparo -> pronto -> entregue)
+// Fluxo Operacional KDS (pendente -> em_preparo -> pronto -> entregue)
 const atualizarStatusItem = asyncHandler(async (req, res) => {
   const { status } = req.body; // 'em_preparo' | 'pronto' | 'entregue'
   const comanda = await Comanda.findOneAndUpdate(
@@ -140,7 +141,7 @@ const atualizarStatusItem = asyncHandler(async (req, res) => {
   res.json(comanda);
 });
 
-// RF05 - Fluxo Operacional KDS: lista os pedidos pendentes/em preparo/prontos
+// Fluxo Operacional KDS: lista os pedidos pendentes/em preparo/prontos
 // de um setor (cozinha ou bar), agrupados por comanda — é o que alimenta os
 // cards "#1042 Mesa 08" do design, com todos os itens daquele lançamento.
 const listarKDS = asyncHandler(async (req, res) => {
@@ -158,7 +159,7 @@ const listarKDS = asyncHandler(async (req, res) => {
       (i) => i.setorPreparo === setor && !i.estornado && i.statusKDS !== 'entregue'
     );
 
-    // RF06 - semáforo: o frontend usa `lancadoEm` (o item mais antigo do
+    // semáforo: o frontend usa `lancadoEm` (o item mais antigo do
     // pedido) para calcular o tempo decorrido e decidir a cor do card.
     const lancadoEm = itens.reduce(
       (maisAntigo, i) => (i.lancadoEm < maisAntigo ? i.lancadoEm : maisAntigo),
@@ -171,12 +172,20 @@ const listarKDS = asyncHandler(async (req, res) => {
         ? 'em_preparo'
         : 'pronto';
 
+    // o semáforo usa o maior tempo de preparo entre os itens do
+    // pedido (o card só fica "no prazo" até o item mais demorado vencer);
+    // null quando nenhum item do pedido tem tempo configurado — o frontend
+    // cai no limite padrão nesse caso.
+    const temposConfigurados = itens.map((i) => i.tempoPreparoMinutos).filter((t) => t != null);
+    const tempoPreparoMinutos = temposConfigurados.length ? Math.max(...temposConfigurados) : null;
+
     return {
       comandaId: comanda._id,
       numeroComanda: comanda.numero,
       mesa: comanda.mesa,
       statusGeral,
       lancadoEm,
+      tempoPreparoMinutos,
       itens: itens.map((i) => ({
         itemId: i._id,
         nomeProduto: i.nomeProduto,
@@ -192,7 +201,7 @@ const listarKDS = asyncHandler(async (req, res) => {
 
 const ORDEM_STATUS_KDS = ['pendente', 'em_preparo', 'pronto', 'entregue'];
 
-// RF05 - avança TODOS os itens do pedido (naquele setor) que estão no
+// avança TODOS os itens do pedido (naquele setor) que estão no
 // estágio mais atrasado para o próximo estágio de uma vez — é o que o botão
 // único "Marcar como pronto" do card do design faz.
 const avancarStatusPedido = asyncHandler(async (req, res) => {
@@ -229,7 +238,7 @@ const avancarStatusPedido = asyncHandler(async (req, res) => {
   res.json(comanda);
 });
 
-// RF07/RF08 - Estorno detalhado de item + justificativa obrigatória
+// Estorno detalhado de item + justificativa obrigatória
 const estornarItem = asyncHandler(async (req, res) => {
   const { motivo } = req.body;
 
@@ -251,7 +260,7 @@ const estornarItem = asyncHandler(async (req, res) => {
   );
   if (!comanda) throw new AppError('Comanda ou item não encontrado.', 404);
 
-  // RF08 - "alimentar métricas de perdas" exige rastro, não só o motivo
+  // "alimentar métricas de perdas" exige rastro, não só o motivo
   // guardado no próprio item: aqui vira uma linha de auditoria consultável.
   const item = comanda.itens.id(req.params.itemId);
   await auditarComanda(req, 'estorno_item', comanda, {
@@ -263,7 +272,7 @@ const estornarItem = asyncHandler(async (req, res) => {
   res.json(comanda);
 });
 
-// RF09 - Concessões Financeiras (restrito ao Administrador na rota)
+// Concessões Financeiras (restrito ao Administrador na rota)
 const aplicarDesconto = asyncHandler(async (req, res) => {
   const { tipo, valor, observacao } = req.body;
 
@@ -281,7 +290,7 @@ const aplicarDesconto = asyncHandler(async (req, res) => {
   res.json(comanda);
 });
 
-// RF25 - Transferência/Junção de itens entre mesas ou comandas
+// Transferência/Junção de itens entre mesas ou comandas
 const transferirItens = asyncHandler(async (req, res) => {
   const { itemIds, comandaDestinoId } = req.body;
 

@@ -197,7 +197,15 @@ e `produto:atualizado` (disponibilidade/ruptura, para todos os dispositivos).
   aba "Todos" do admin.
 - Fluxo de mesa completo: abrir → lançar item → KDS → estornar → desconto →
   fechar com pagamento → reabrir se foi engano (RF04 a RF12).
-- KDS por setor com semáforo de tempo (RF06) e avanço de status em lote.
+- KDS por setor com semáforo de tempo (RF06, por produto — usa o tempo de
+  preparo cadastrado no Cardápio, com um limite padrão quando não há tempo
+  configurado) e avanço de status em lote.
+- Módulo mobile do garçom (RF19 a RF26): carrinho com quantidade e remoção
+  por item, seleção explícita de qual comanda recebe o pedido, "+ Nova
+  comanda" sempre disponível (nunca fica sem destino pro pedido), sugestão
+  de observações com um toque (RF21), espelho de consumo com status
+  colorido e subtotal (RF23), mapa de mesas com os 3 status e indicador de
+  conexão (RF04/RF19), tudo atualizado em tempo real por socket.
 - Dashboard completo do design (RF17): filtro Hoje/Esta semana/Este mês,
   variação vs. período anterior (volta `null` quando o dado já foi expurgado
   e não dá pra comparar), faturamento dos últimos 12 meses (gráfico
@@ -232,7 +240,6 @@ e `produto:atualizado` (disponibilidade/ruptura, para todos os dispositivos).
   escuro completo).
 - Trocar os `prompt`/`confirm`/`alert` do navegador por modal, bottom sheet e
   toast, deixando para depois que o backend fechar.
-- Telas mobile e KDS mais completas.
 
 ## Convenções
 
