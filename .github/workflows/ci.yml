@@ -1,0 +1,15 @@
+name: Pipeline de CI do PI
+
+on:
+  push:
+   branches: [ main, master ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Baixar codigo fonte
+      uses: actions/checkout@v3
+    - name: Testar Build da Imagem Docker
+      run: docker build -t imagem-teste-pi .
