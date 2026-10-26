@@ -14,7 +14,7 @@ services:
       # Só a própria máquina enxerga (dá pra conectar o Compass em
       # localhost:27017). O banco está SEM senha, então nunca troque por
       # "27017:27017" em rede compartilhada (laboratório, Wi-Fi da faculdade).
-      - "127.0.0.1:27017:27017"
+      - "127.0.0.1:27018:27017"
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
       interval: 10s
