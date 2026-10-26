@@ -14,7 +14,10 @@ services:
       # Só a própria máquina enxerga (dá pra conectar o Compass em
       # localhost:27017). O banco está SEM senha, então nunca troque por
       # "27017:27017" em rede compartilhada (laboratório, Wi-Fi da faculdade).
-      - "127.0.0.1:27018:27017"
+      # Se a 27017 já estiver ocupada (ex.: MongoDB instalado no Windows),
+      # defina MONGO_PORT=27018 no .env. O backend não é afetado: ele fala
+      # com o Mongo pela rede interna do Docker.
+      - "127.0.0.1:${MONGO_PORT:-27017}:27017"
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
       interval: 10s

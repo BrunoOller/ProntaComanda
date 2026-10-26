@@ -11,7 +11,11 @@ Tailwind no frontend; comunicação em tempo real com socket.io.
 
 ```
 ProntaComanda/
+├── docker-compose.yml         # sobe mongo + backend + frontend (ver "Como rodar > Com Docker")
+├── .env.example               # modelo do .env do compose (JWT_SECRET etc.)
+├── .github/workflows/ci.yml   # CI: docker compose build a cada push na main
 ├── backend/
+│   ├── Dockerfile             # imagem do backend (Node 22)
 │   ├── server.js              # ponto de entrada (conecta DB, sockets, cron, HTTP)
 │   ├── tests/                 # testes automatizados (node --test) + banco falso em tests/helpers
 │   └── src/
@@ -27,6 +31,8 @@ ProntaComanda/
 │       └── utils/             # logger (winston), asyncHandler, AppError, cpf, escaparRegex
 │
 └── frontend/
+    ├── Dockerfile             # build do Vite + nginx
+    ├── nginx.conf             # serve o front e repassa /api, /uploads e /socket.io
     └── src/
         ├── api/               # cliente axios
         ├── store/             # zustand (sessão do funcionário)
@@ -59,12 +65,189 @@ toda requisição.
 
 ## Como rodar
 
+Há dois jeitos. **O recomendado é com Docker**: um comando sobe tudo (banco,
+backend e frontend) sem instalar Node nem MongoDB na máquina. O segundo jeito
+(sem Docker) serve para quem prefere desenvolver direto no computador.
+
+### Com Docker (recomendado)
+
+**Você precisa de:**
+- **Git**.
+- **Docker Desktop** (Windows ou macOS) ou Docker Engine com o plugin Compose
+  (Linux). No Windows, instale, **abra o Docker Desktop** e espere ele indicar
+  que está rodando (ícone da baleia) antes de usar os comandos. Se o instalador
+  pedir para ativar o WSL 2, aceite.
+
+Os comandos abaixo funcionam no **Git Bash** (Windows) e no terminal do
+macOS/Linux. Rode todos **na pasta raiz do projeto**, a que tem o
+`docker-compose.yml`.
+
+**O que sobe:**
+
+| Serviço | O que é | Como acessar |
+|---|---|---|
+| `frontend` | nginx servindo o build do React; repassa `/api`, `/uploads` e `/socket.io` para o backend | **http://localhost:8080** (é a única porta que você usa) |
+| `backend` | API Node 22 | só por dentro da rede do Docker (porta 3333) |
+| `mongo` | MongoDB 7, sem senha | `localhost:27017`, só a própria máquina enxerga (dá para usar o Compass) |
+
+Os dados ficam em *volumes* do Docker (`mongo-data` para o banco e `uploads`
+para as fotos de produto), então **sobrevivem** quando você para ou recria os
+containers.
+
+#### Passo a passo (primeira vez)
+
+**1. Baixe o projeto**
+```bash
+git clone https://github.com/BrunoOller/ProntaComanda.git
+cd ProntaComanda
+```
+
+**2. Crie o seu arquivo `.env`**
+```bash
+cp .env.example .env
+```
+O `.env` guarda as configurações da sua máquina e **nunca vai para o Git**.
+
+**3. Gere o `JWT_SECRET`** (a chave que assina os logins; o sistema não sobe
+sem ela). Este comando já grava uma chave aleatória no seu `.env`:
+```bash
+sed -i "s/^JWT_SECRET=.*/JWT_SECRET=$(openssl rand -hex 64)/" .env
+```
+Para conferir, abra o `.env`: a linha `JWT_SECRET=` deve ter um texto longo.
+Cada pessoa gera a sua; não compartilhe nem commite essa chave.
+
+**4. Suba o sistema**
+```bash
+docker compose up --build
+```
+Na **primeira vez demora alguns minutos** (baixa as imagens e instala as
+dependências). O terminal fica "preso" mostrando os logs, e isso é normal. Está
+pronto quando aparecer `Pronta Comanda API rodando na porta 3333`. Se preferir
+ter o terminal de volta, use `docker compose up --build -d` (o `-d` roda em
+segundo plano).
+
+**5. Confira se está tudo certo** (em outro terminal, na mesma pasta, se você
+não usou o `-d`)
+```bash
+docker compose ps
+```
+`mongo` e `backend` devem aparecer como `(healthy)`. Teste também a API:
+```bash
+curl -i http://localhost:8080/api/auth/me
+```
+Deve responder `401` com `{"erro":"Não autenticado."}`. Isso é o esperado:
+você ainda não fez login, e a resposta prova que o nginx está falando com o
+backend.
+
+**6. Crie o primeiro administrador.** O banco começa vazio e todas as rotas de
+gestão exigem um administrador logado, então o primeiro é criado por este
+comando. Ele roda **dentro do container do backend**, grava a senha com hash
+argon2 (nunca em texto puro) e cria o usuário. Troque `NOME`, `CPF` e `SENHA`
+pelos seus (a senha precisa de pelo menos 6 caracteres e não pode ter aspas
+simples; o CPF precisa ser **válido**, com dígitos verificadores corretos, e
+pode ter ou não pontos e traço):
+```bash
+docker compose exec -T \
+  -e NOME='Seu Nome' -e CPF='529.982.247-25' -e SENHA='SuaSenhaAqui' \
+  backend node - <<'EOF'
+const mongoose = require('mongoose');
+const argon2 = require('argon2');
+const { Funcionario } = require('./src/models');
+const { normalizarCpf, validarCpf } = require('./src/utils/cpf');
+
+(async () => {
+  const cpf = normalizarCpf(process.env.CPF || '');
+  if (!validarCpf(cpf)) throw new Error('CPF inválido (precisa ter os dígitos verificadores corretos).');
+  if (!process.env.SENHA || process.env.SENHA.length < 6) throw new Error('Senha muito curta (mínimo 6 caracteres).');
+  await mongoose.connect(process.env.MONGO_URI);
+  const senhaHash = await argon2.hash(process.env.SENHA);
+  const adm = await Funcionario.create({
+    nome: process.env.NOME,
+    cpf,
+    senhaHash,
+    perfil: 'administrador',
+  });
+  console.log('Administrador criado:', adm.nome, '| CPF:', adm.cpf);
+  await mongoose.disconnect();
+})().catch((e) => { console.error('Erro:', e.message); process.exit(1); });
+EOF
+```
+Cole o bloco inteiro, do `docker compose exec` até a linha `EOF`. Deve
+aparecer `Administrador criado: ...`. Se o CPF já existir, o comando avisa
+(`Erro: ... duplicate key`), e aí é só entrar com ele.
+
+**7. Entre no sistema:** abra **http://localhost:8080** e faça login com o CPF
+e a senha do passo 6. O resto da equipe (caixa, garçom, cozinha, bar) é
+cadastrado depois, pela tela de Funcionários.
+
+#### Comandos do dia a dia
+
+Sempre na pasta raiz do projeto:
+
+| O que você quer | Comando |
+|---|---|
+| Subir (já construído antes) | `docker compose up -d` |
+| Ver o estado dos serviços | `docker compose ps` |
+| Ver os logs ao vivo (Ctrl+C sai, sem derrubar nada) | `docker compose logs -f backend` |
+| Parar mantendo tudo (rápido para voltar) | `docker compose stop` |
+| Desligar e remover os containers (**os dados continuam salvos**) | `docker compose down` |
+| Atualizar depois de um `git pull` ou de mudar código | `docker compose up --build -d` |
+| ⚠️ **Apagar tudo, inclusive o banco e as fotos** (volta ao zero) | `docker compose down -v` |
+
+> **Mudou o código e nada mudou na tela?** Neste modo o código vai
+> *empacotado* dentro da imagem: sem o `--build`, o Docker reutiliza a versão
+> antiga. Sempre use `docker compose up --build -d` depois de editar ou de um
+> `git pull`.
+
+#### Configurações opcionais (`.env`)
+
+| Variável | Padrão | Para que serve |
+|---|---|---|
+| `JWT_SECRET` | *(obrigatória)* | Chave que assina o login. O compose recusa subir sem ela |
+| `WEB_PORT` | `8080` | Porta do sistema no navegador |
+| `MONGO_PORT` | `27017` | Porta do Mongo na sua máquina (mude se der conflito) |
+| `JWT_EXPIRES_IN` | `8h` | Duração do login |
+| `TZ_ESTABELECIMENTO` | `America/Sao_Paulo` | Fuso do rollup mensal e do dashboard |
+
+Depois de mudar o `.env`, rode `docker compose up -d` para aplicar.
+
+#### Problemas comuns
+
+| O que aparece | O que fazer |
+|---|---|
+| `ports are not available ... 127.0.0.1:27017` (ou "só é permitida uma utilização de cada endereço") | A porta 27017 já está em uso, geralmente por um **MongoDB instalado no Windows**. Coloque `MONGO_PORT=27018` no `.env` e rode `docker compose up -d` de novo. Para ver quem usa a porta: `netstat -ano \| grep 27017`, depois `tasklist \| grep NUMERO_DO_PID` |
+| Mesmo erro, mas com a porta **8080** | Coloque `WEB_PORT=8081` no `.env` e abra `http://localhost:8081` |
+| `Defina o JWT_SECRET ...` | O `.env` não existe ou está com `JWT_SECRET=` vazio. Refaça os passos 2 e 3 |
+| `failed to connect to the docker API` / `Cannot connect to the Docker daemon` | O Docker não está rodando. Abra o Docker Desktop e espere iniciar |
+| A tela abre, mas o login diz que o CPF ou a senha estão inválidos | O administrador ainda não foi criado (passo 6), ou o CPF/senha estão diferentes |
+| O banco voltou vazio | Alguém rodou `docker compose down -v` (apaga os volumes). Recrie o administrador (passo 6) |
+| `backend` fica `unhealthy` ou reiniciando | Veja o motivo com `docker compose logs backend`. Geralmente é `JWT_SECRET` ou o Mongo ainda iniciando |
+| Quer começar do zero | `docker compose down -v` e depois repita a partir do passo 4 |
+
+#### Bom saber
+
+- **Conectar no Compass:** `mongodb://localhost:27017` (ou a porta do
+  `MONGO_PORT`), banco `pronta-comanda`.
+- **Atrás do nginx:** o compose liga o `TRUST_PROXY=1` para o limite de
+  tentativas de login funcionar por IP real, e as conexões de tempo real
+  (socket.io, com WebSocket) passam pelo mesmo endereço do site.
+- **Não é uma configuração de produção.** O Mongo está **sem senha** (por isso
+  só aceita conexões da própria máquina), o site roda em HTTP e o backend
+  usa `NODE_ENV=development` de propósito. Não exponha essas portas na internet
+  nem em rede compartilhada. Uma versão de produção (HTTPS, senha no banco,
+  backup) ainda está nos planos.
+- **Integração contínua:** a cada push na `main`, o GitHub Actions
+  (`.github/workflows/ci.yml`) roda `docker compose build` para garantir que as
+  imagens continuam compilando.
+
+### Sem Docker (desenvolvimento local)
+
 Requisitos: Node 22 e MongoDB rodando (local ou Atlas).
 
 **Backend**
 ```bash
 cd backend
-cp .env.example .env    # no Windows: copy .env.example .env
+cp .env.example .env
 npm install
 npm run dev              # nodemon, porta 3333
 ```
@@ -81,7 +264,7 @@ npm install
 npm run dev              # vite, porta 5173, com proxy de /api -> :3333
 ```
 
-### Primeiro administrador
+#### Primeiro administrador (sem Docker)
 
 Todas as rotas de gestão exigem um administrador logado, então o primeiro
 precisa ser criado direto no banco. Gere o hash da senha:
@@ -231,7 +414,6 @@ e `produto:atualizado` (disponibilidade/ruptura, para todos os dispositivos).
   como ser desfeito.
 - Swagger/OpenAPI (o `swagger-ui-express` já está no `package.json`, faltam as specs).
 - Backup segmentado (RNF05) e revisão de índices para o limite de 1s (RNF09).
-- Upload de foto de produto (hoje só aceita link em `imagemUrl`).
 - Emissão de vias impressas (RF13, opcional).
 - Testes para Auth, Funcionário, Categoria/Produto, Estoque e rollup.
 
