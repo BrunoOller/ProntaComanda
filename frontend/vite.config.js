@@ -11,6 +11,9 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:3333',
       '/uploads': 'http://localhost:3333', // fotos de produto (upload direto no backend)
+      // tempo real (KDS, mapa de mesas, ruptura de estoque): sem isto o
+      // socket.io tenta conectar na porta do Vite e fica "Reconectando..."
+      '/socket.io': { target: 'http://localhost:3333', ws: true },
     },
   },
 });

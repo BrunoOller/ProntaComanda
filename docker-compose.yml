@@ -1,0 +1,67 @@
+# Base para rodar o sistema inteiro (MongoDB + backend + frontend) com um comando:
+#
+#   cp .env.example .env        (e preencha o JWT_SECRET)
+#   docker compose up --build
+#
+# Depois é só abrir http://localhost:8080
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      # Só a própria máquina enxerga (dá pra conectar o Compass em
+      # localhost:27017). O banco está SEM senha, então nunca troque por
+      # "27017:27017" em rede compartilhada (laboratório, Wi-Fi da faculdade).
+      - "127.0.0.1:27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      # "development" por enquanto, de propósito: em "production" o cookie de
+      # login só funciona em HTTPS e os logs vão só pra arquivo (o "docker
+      # compose logs" ficaria vazio). Veja "Docker" no README antes de usar
+      # em produção de verdade.
+      NODE_ENV: development
+      PORT: 3333
+      MONGO_URI: mongodb://mongo:27017/pronta-comanda
+      JWT_SECRET: ${JWT_SECRET:?Defina o JWT_SECRET no arquivo .env (copie o .env.example)}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+      FRONTEND_URL: http://localhost:${WEB_PORT:-8080}
+      TZ_ESTABELECIMENTO: ${TZ_ESTABELECIMENTO:-America/Sao_Paulo}
+      # o nginx está na frente: usa o IP real do cliente (limite de login)
+      TRUST_PROXY: "1"
+    volumes:
+      - uploads:/app/uploads # fotos de produto
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:3333/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${WEB_PORT:-8080}:80"
+
+volumes:
+  mongo-data:
+  uploads:

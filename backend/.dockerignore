@@ -1,0 +1,19 @@
+# Nada disto entra na imagem
+node_modules
+npm-debug.log*
+
+# Segredos e dados locais: o .env NUNCA pode ir pra dentro da imagem
+.env
+.env.*
+!.env.example
+
+# Dados gerados em tempo de execução (ficam em volume, não na imagem)
+logs
+uploads
+
+# Não servem pra rodar o servidor
+tests
+.eslintrc.json
+.prettierrc
+Dockerfile
+.dockerignore
