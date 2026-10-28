@@ -168,8 +168,9 @@ export default function Mesa() {
       ? grupos.flatMap((g) => g.produtos)
       : (grupos.find((g) => g._id === categoriaAtiva)?.produtos ?? []);
 
+  // celular: tela cheia. No computador: coluna centralizada (largura máxima).
   return (
-    <div className="min-h-screen pb-32">
+    <div className="mx-auto min-h-screen w-full max-w-3xl pb-32 md:border-x">
       <header className="sticky top-0 z-10 border-b bg-white p-3">
         <div className="flex items-center justify-between">
           <button onClick={() => navigate('/funcionarios')} className="text-sm text-neutral-500">
@@ -278,7 +279,7 @@ export default function Mesa() {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 p-3">
+      <div className="grid grid-cols-2 gap-3 p-3 md:grid-cols-3">
         {produtosExibidos.map((produto) => (
           <CartaoProdutoGarcom
             key={produto._id}
@@ -296,7 +297,7 @@ export default function Mesa() {
 
       {/* RF20 - carrinho fixo embaixo, sempre à mão no celular */}
       {carrinho.length > 0 && (
-        <div className="fixed inset-x-0 bottom-0 max-h-[55vh] overflow-y-auto border-t bg-white p-3 shadow-lg">
+        <div className="fixed bottom-0 left-1/2 max-h-[55vh] w-full max-w-3xl -translate-x-1/2 overflow-y-auto border-t bg-white p-3 shadow-lg md:border-x">
           <p className="mb-2 text-sm font-semibold">
             Pedido para a comanda #{comandaSelecionada?.numero} ({totalCarrinho}{' '}
             {totalCarrinho === 1 ? 'item' : 'itens'})
@@ -344,7 +345,7 @@ export default function Mesa() {
       )}
 
       {!carrinho.length && comandaSelecionada && !mesaAguardandoFechamento && (
-        <div className="fixed inset-x-0 bottom-0 border-t bg-white p-3">
+        <div className="fixed bottom-0 left-1/2 w-full max-w-3xl -translate-x-1/2 border-t bg-white p-3 md:border-x">
           <button
             onClick={solicitarFechamento}
             className="w-full rounded-md border border-red-200 py-2.5 text-center text-sm font-medium text-red-600"

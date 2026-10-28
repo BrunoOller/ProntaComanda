@@ -18,6 +18,9 @@ const itemComandaSchema = new Schema(
 
     lancadoEm: { type: Date, default: Date.now }, // horário exato do lançamento (RF07)
     lancadoPor: { type: Schema.Types.ObjectId, ref: 'Funcionario' },
+    // 'cliente' = pedido feito pelo QR code (autoatendimento) e aceito por
+    // um funcionário, que consta em lancadoPor. Itens antigos valem 'funcionario'.
+    origem: { type: String, enum: ['funcionario', 'cliente'], default: 'funcionario' },
 
     // ciclo de vida no KDS, usado pelo semáforo no frontend
     emPreparoEm: { type: Date, default: null },

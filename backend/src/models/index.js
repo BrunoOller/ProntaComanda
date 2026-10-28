@@ -8,6 +8,7 @@ const { Pagamento } = require('./Pagamento');
 const { Insumo, MovimentacaoEstoque } = require('./Insumo');
 const { ResumoMensal } = require('./ResumoMensal');
 const { LogAuditoria } = require('./LogAuditoria');
+const { PedidoCliente, STATUS_PEDIDO_CLIENTE } = require('./PedidoCliente');
 
 module.exports = {
   Funcionario,
@@ -24,4 +25,6 @@ module.exports = {
   MovimentacaoEstoque,
   ResumoMensal,
   LogAuditoria,
+  PedidoCliente,
+  STATUS_PEDIDO_CLIENTE,
 };

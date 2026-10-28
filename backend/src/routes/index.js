@@ -11,6 +11,8 @@ const pagamentoRoutes = require('./pagamento.routes');
 const estoqueRoutes = require('./estoque.routes');
 const dashboardRoutes = require('./dashboard.routes');
 const auditoriaRoutes = require('./auditoria.routes');
+const publicoRoutes = require('./publico.routes');
+const pedidoClienteRoutes = require('./pedidoCliente.routes');
 
 const router = Router();
 
@@ -25,5 +27,7 @@ router.use('/pagamentos', pagamentoRoutes);
 router.use('/estoque', estoqueRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/auditoria', auditoriaRoutes);
+router.use('/publico', publicoRoutes); // autoatendimento: SEM login (ver publico.routes.js)
+router.use('/pedidos-cliente', pedidoClienteRoutes); // garçom confere/aceita/recusa
 
 module.exports = router;

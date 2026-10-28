@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axiosClient';
+import PainelPedido from '../../components/publico/PainelPedido';
 
 const TODOS = 'todos';
+const MAX_POR_ITEM = 20; // mesmo limite validado no servidor
 
 // RF03 - Home pública: o cardápio é a primeira coisa que qualquer visitante
 // vê, sem precisar logar (o acesso de funcionário fica no botão discreto
@@ -14,6 +16,32 @@ export default function CardapioPublico() {
   const [busca, setBusca] = useState('');
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(true);
+
+  // Autoatendimento: carrinho do cliente, { [produtoId]: { produto, quantidade, observacao } }.
+  // O envio e o acompanhamento do pedido ficam no <PainelPedido />.
+  const [carrinho, setCarrinho] = useState({});
+
+  const alterarQuantidade = (produto, delta) => {
+    setCarrinho((atual) => {
+      const existente = atual[produto._id];
+      const quantidade = Math.min(MAX_POR_ITEM, (existente?.quantidade ?? 0) + delta);
+      if (quantidade <= 0) {
+        const resto = { ...atual };
+        delete resto[produto._id];
+        return resto;
+      }
+      return {
+        ...atual,
+        [produto._id]: { produto, quantidade, observacao: existente?.observacao ?? '' },
+      };
+    });
+  };
+
+  const definirObservacao = (produtoId, observacao) => {
+    setCarrinho((atual) =>
+      atual[produtoId] ? { ...atual, [produtoId]: { ...atual[produtoId], observacao } } : atual
+    );
+  };
 
   useEffect(() => {
     api
@@ -91,7 +119,7 @@ export default function CardapioPublico() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main className="mx-auto max-w-5xl px-4 py-6 pb-28">
         {carregando && <p className="text-sm text-neutral-500">Carregando cardápio...</p>}
         {erro && <p className="text-sm text-red-600">{erro}</p>}
 
@@ -104,18 +132,31 @@ export default function CardapioPublico() {
             <h2 className="mb-3 text-lg font-semibold">{g.nome}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {g.produtos.map((p) => (
-                <CartaoProdutoPublico key={p._id} produto={p} />
+                <CartaoProdutoPublico
+                  key={p._id}
+                  produto={p}
+                  quantidade={carrinho[p._id]?.quantidade ?? 0}
+                  onAdicionar={() => alterarQuantidade(p, 1)}
+                  onRemover={() => alterarQuantidade(p, -1)}
+                />
               ))}
             </div>
           </section>
         ))}
       </main>
+
+      <PainelPedido
+        itens={Object.values(carrinho)}
+        onAlterarQuantidade={alterarQuantidade}
+        onObservacao={definirObservacao}
+        onPedidoEnviado={() => setCarrinho({})}
+      />
     </div>
   );
 }
 
 // RF22 - produto esgotado aparece esmaecido, com selo, em vez de sumir.
-function CartaoProdutoPublico({ produto: p }) {
+function CartaoProdutoPublico({ produto: p, quantidade, onAdicionar, onRemover }) {
   const indisponivel = p.disponivel === false;
 
   return (
@@ -142,6 +183,34 @@ function CartaoProdutoPublico({ produto: p }) {
         </p>
         {p.descricao && <p className="mt-1 text-sm text-neutral-500">{p.descricao}</p>}
         <p className="mt-2 font-semibold">R$ {p.preco?.toFixed(2)}</p>
+
+        {!indisponivel &&
+          (quantidade > 0 ? (
+            <div className="mt-3 flex items-center gap-3">
+              <button
+                onClick={onRemover}
+                aria-label={`Diminuir ${p.nome}`}
+                className="h-9 w-9 rounded-full border text-lg leading-none"
+              >
+                −
+              </button>
+              <span className="w-6 text-center font-medium">{quantidade}</span>
+              <button
+                onClick={onAdicionar}
+                aria-label={`Aumentar ${p.nome}`}
+                className="h-9 w-9 rounded-full bg-primary text-lg leading-none text-white"
+              >
+                +
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onAdicionar}
+              className="mt-3 w-full rounded-md bg-primary py-2 text-sm font-medium text-white"
+            >
+              Adicionar ao pedido
+            </button>
+          ))}
       </div>
     </div>
   );

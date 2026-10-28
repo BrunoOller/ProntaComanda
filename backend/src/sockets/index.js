@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
  * RF22  - Alerta de ruptura em tempo real (broadcast geral)
  * RF04  - Mapa de mesas atualizado ao vivo (sala 'mapa-mesas')
  * RF26  - Sinalização ao caixa quando mesa pede fechamento (sala 'caixa')
+ * Autoatendimento - pedidos de cliente chegando/resolvidos (sala 'pedidos-cliente')
  */
 function configurarSockets(httpServer) {
   const io = new Server(httpServer, {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api/axiosClient';
 import { useAuthStore } from '../../store/authStore';
 import { useSocket } from '../../hooks/useSocket';
+import PedidosClientePendentes from '../../components/funcionarios/PedidosClientePendentes';
 
 const ESTILO_STATUS = {
   livre: { borda: 'border-green-500', rotulo: 'Livre', badge: 'bg-green-100 text-green-700' },
@@ -62,8 +63,9 @@ export default function MapaMesas() {
     navigate(`/funcionarios/mesa/${mesa._id}`);
   };
 
+  // celular: tela cheia. No computador: coluna centralizada, em vez de esticar tudo.
   return (
-    <div className="min-h-screen p-4">
+    <div className="mx-auto min-h-screen max-w-5xl p-4">
       {/* RF19 - nome do funcionário, status da conexão e logout */}
       <header className="mb-4 flex items-center justify-between border-b pb-2">
         <span className="text-sm font-medium">{funcionario?.nome}</span>
@@ -80,7 +82,10 @@ export default function MapaMesas() {
         </div>
       </header>
 
-      <div className="grid grid-cols-2 gap-3">
+      {/* Autoatendimento: pedidos que clientes fizeram pelo QR code, aguardando confirmação */}
+      <PedidosClientePendentes />
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {mesas.map((mesa) => {
           const estilo = ESTILO_STATUS[mesa.status] ?? ESTILO_STATUS.ocupada;
           return (
@@ -100,7 +105,7 @@ export default function MapaMesas() {
           );
         })}
         {!mesas.length && (
-          <p className="col-span-2 py-8 text-center text-sm text-neutral-400">
+          <p className="col-span-full py-8 text-center text-sm text-neutral-400">
             Nenhuma mesa cadastrada ainda.
           </p>
         )}
