@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import api from '../../api/axiosClient';
 import { useSocket } from '../../hooks/useSocket';
+import { agruparItens } from '../../utils/agruparItens';
 
 const FILTROS = [
   { chave: 'todos', label: 'Todos' },
@@ -127,8 +128,9 @@ function CardPedido({ pedido, onAvancar }) {
       </p>
 
       <ul className="my-2 space-y-1 text-sm">
-        {pedido.itens.map((item) => (
-          <li key={item.itemId}>
+        {/* a cozinha vê "2x Hamburguer" em vez de duas linhas iguais */}
+        {agruparItens(pedido.itens, (i) => i.statusKDS).map((item) => (
+          <li key={item.chave}>
             {item.quantidade}x {item.nomeProduto}
             {item.observacao && (
               <span className="block text-xs text-neutral-500">• {item.observacao}</span>

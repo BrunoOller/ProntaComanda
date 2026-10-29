@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 import AdminLayout from '../../components/layout/AdminLayout';
 import api from '../../api/axiosClient';
 import { useAuthStore } from '../../store/authStore';
 import { useSocket } from '../../hooks/useSocket';
+import { agruparItens } from '../../utils/agruparItens';
 
 // RF04 - Mapa de Mesas Geral
 export default function MesasComandas() {
@@ -138,6 +139,7 @@ export default function MesasComandas() {
 function PainelMesa({ mesa, onMesaFechada, onMesaAtualizada }) {
   const [comandas, setComandas] = useState([]);
   const [produtos, setProdutos] = useState([]);
+  const [expandidos, setExpandidos] = useState({}); // grupos de itens abertos para estornar uma unidade/lançamento
   const funcionario = useAuthStore((s) => s.funcionario);
   const podeAplicarDesconto = funcionario?.perfil === 'administrador';
   const podeReabrir = funcionario?.perfil === 'administrador'; // RF12
@@ -345,31 +347,84 @@ function PainelMesa({ mesa, onMesaFechada, onMesaAtualizada }) {
               </tr>
             </thead>
             <tbody>
-              {comanda.itens
-                .filter((i) => !i.estornado)
-                .map((item) => (
-                  <tr key={item._id} className="border-t">
-                    <td className="py-1">
-                      {item.nomeProduto}
-                      {item.observacao && (
-                        <span className="block text-xs text-neutral-500">{item.observacao}</span>
-                      )}
-                    </td>
-                    <td>{item.quantidade}</td>
-                    <td className="text-right">
-                      R$ {(item.precoUnitario * item.quantidade).toFixed(2)}
-                    </td>
-                    <td className="pl-2 text-right">
-                      <button
-                        onClick={() => estornarItem(comanda._id, item._id)}
-                        className="text-xs text-red-600"
-                        title="Estornar item (RF07/RF08)"
-                      >
-                        ✕
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+              {/* itens iguais empilhados (2x Hamburguer). Para estornar, abra o grupo (▸):
+                  cada lançamento original continua com o seu próprio ✕. */}
+              {agruparItens(
+                comanda.itens.filter((i) => !i.estornado),
+                (i) => i.statusKDS
+              ).map((grupo) => {
+                const varios = grupo.itens.length > 1;
+                const chaveGrupo = `${comanda._id}|${grupo.chave}`;
+                const aberto = !!expandidos[chaveGrupo];
+                return (
+                  <Fragment key={grupo.chave}>
+                    <tr className="border-t">
+                      <td className="py-1">
+                        {varios && (
+                          <button
+                            onClick={() =>
+                              setExpandidos((atual) => ({ ...atual, [chaveGrupo]: !aberto }))
+                            }
+                            className="mr-1 text-xs text-neutral-500"
+                            title="Ver os lançamentos deste item"
+                          >
+                            {aberto ? '▾' : '▸'}
+                          </button>
+                        )}
+                        {grupo.nomeProduto}
+                        {grupo.observacao && (
+                          <span className="block text-xs text-neutral-500">{grupo.observacao}</span>
+                        )}
+                        {varios && (
+                          <span className="block text-xs text-neutral-400">
+                            {grupo.itens.length} lançamentos
+                          </span>
+                        )}
+                      </td>
+                      <td>{grupo.quantidade}</td>
+                      <td className="text-right">
+                        R$ {(grupo.precoUnitario * grupo.quantidade).toFixed(2)}
+                      </td>
+                      <td className="pl-2 text-right">
+                        {!varios && (
+                          <button
+                            onClick={() => estornarItem(comanda._id, grupo.itens[0]._id)}
+                            className="text-xs text-red-600"
+                            title="Estornar item (RF07/RF08)"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                    {varios &&
+                      aberto &&
+                      grupo.itens.map((item) => (
+                        <tr key={item._id} className="bg-neutral-50 text-xs text-neutral-600">
+                          <td className="py-1 pl-5">
+                            {item.quantidade}x
+                            {item.origem === 'cliente' && (
+                              <span className="ml-1 text-neutral-400">(pedido do cliente)</span>
+                            )}
+                          </td>
+                          <td />
+                          <td className="text-right">
+                            R$ {(item.precoUnitario * item.quantidade).toFixed(2)}
+                          </td>
+                          <td className="pl-2 text-right">
+                            <button
+                              onClick={() => estornarItem(comanda._id, item._id)}
+                              className="text-xs text-red-600"
+                              title="Estornar este lançamento (RF07/RF08)"
+                            >
+                              ✕
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                  </Fragment>
+                );
+              })}
             </tbody>
           </table>
 

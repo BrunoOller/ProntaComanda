@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import api from '../../api/axiosClient';
+import { agruparItens } from '../../utils/agruparItens';
 
 const CHAVE_PEDIDOS = 'pc_pedidos'; // ids dos pedidos deste celular (localStorage)
 const CHAVE_MESA = 'pc_mesa'; // última mesa escolhida (sessionStorage)
 const CHAVE_NOME = 'pc_nome'; // último nome digitado (sessionStorage)
-const INTERVALO_MS = 5000;
+const INTERVALO_ATIVO_MS = 5000; // enquanto algo está mudando (pedido novo, cozinha preparando)
+const INTERVALO_CALMO_MS = 15000; // tudo entregue: só espera o pagamento para limpar a tela
 const VALIDADE_MS = 12 * 60 * 60 * 1000; // pedidos antigos saem da lista depois de 12 h
 const MAX_ACOMPANHADOS = 10; // o servidor aceita até 10 ids por consulta
 
@@ -50,12 +52,13 @@ const ROTULO_SITUACAO = {
 };
 
 /**
- * Autoatendimento (cliente): carrinho + escolha da mesa + envio + "Meus pedidos".
+ * Autoatendimento (cliente): carrinho + escolha da mesa + envio + acompanhamento.
  *
  * O pedido NÃO vai direto para a cozinha: fica "aguardando garçom" até ele
  * conferir no salão e aceitar (ou recusar, com motivo). Depois de aceito, o
- * cliente acompanha cada item (na fila, preparando, pronto, entregue) e vê o
- * total do que pediu. Os pedidos ficam guardados neste celular (só os ids).
+ * cliente passa a ver a COMANDA DA MESA (a mesma para todos que dividem a mesa),
+ * com o andamento de cada item, o total da mesa e o que ele próprio pediu.
+ * Quando o caixa recebe o pagamento, a comanda some da tela dele sozinha.
  *
  * `itens` é a lista do carrinho ([{ produto, quantidade, observacao }]);
  * quem guarda o carrinho é a página do cardápio.
@@ -69,6 +72,8 @@ export default function PainelPedido({
   const [aberto, setAberto] = useState(false);
   const [acompanhados, setAcompanhados] = useState(carregarAcompanhados); // [{ id, criadoEm }]
   const [dados, setDados] = useState({}); // id do pedido -> visão devolvida pelo servidor
+  const [contas, setContas] = useState([]); // comandas das mesas em que o cliente tem pedido aceito
+  const [contaEncerrada, setContaEncerrada] = useState(false);
   const [mesas, setMesas] = useState([]);
   const [mesaId, setMesaId] = useState(() => ler('sessionStorage', CHAVE_MESA));
   const [nomeCliente, setNomeCliente] = useState(() => ler('sessionStorage', CHAVE_NOME));
@@ -91,18 +96,23 @@ export default function PainelPedido({
   const atualizar = useCallback(async () => {
     if (!idsConsulta) return;
     try {
-      const { data } = await api.get('/publico/pedidos', { params: { ids: idsConsulta } });
-      setDados((atual) => ({ ...atual, ...Object.fromEntries(data.map((p) => [p._id, p])) }));
+      const { data } = await api.get('/publico/acompanhamento', { params: { ids: idsConsulta } });
+      setDados((atual) => ({ ...atual, ...Object.fromEntries(data.pedidos.map((p) => [p._id, p])) }));
+      setContas(data.mesas);
 
-      // pedido que o servidor não conhece mais (ex.: banco recriado) sai da lista.
-      // Só considera os ids que FORAM consultados, para não apagar um pedido
-      // enviado enquanto esta resposta ainda estava a caminho.
+      // Sai da lista: pedido que o servidor não conhece mais (ex.: banco recriado) e
+      // pedido ENCERRADO (a conta foi paga no caixa). Só considera os ids que foram
+      // consultados, para não apagar um pedido enviado enquanto esta resposta vinha.
       const consultados = new Set(idsConsulta.split(','));
-      const devolvidos = new Set(data.map((p) => p._id));
+      const devolvidos = new Set(data.pedidos.map((p) => p._id));
+      const encerrados = new Set(data.pedidos.filter((p) => p.encerrado).map((p) => p._id));
       setAcompanhados((atual) => {
-        const filtrada = atual.filter((p) => !consultados.has(p.id) || devolvidos.has(p.id));
+        const filtrada = atual.filter(
+          (p) => !consultados.has(p.id) || (devolvidos.has(p.id) && !encerrados.has(p.id))
+        );
         return filtrada.length === atual.length ? atual : filtrada;
       });
+      if (encerrados.size) setContaEncerrada(true);
     } catch {
       /* sem rede agora: mantém o que já está na tela e tenta de novo depois */
     }
@@ -113,22 +123,25 @@ export default function PainelPedido({
     atualizar();
   }, [atualizar]);
 
-  // enquanto algum pedido ainda está em andamento, consulta de tempos em tempos
-  const algumEmAndamento = useMemo(
-    () =>
-      acompanhados.some((p) => {
-        const d = dados[p.id];
-        if (!d) return true;
-        if (d.status === 'pendente') return true;
-        return d.status === 'aceito' && d.itens.some((i) => SITUACOES_EM_ANDAMENTO.includes(i.situacao));
-      }),
-    [acompanhados, dados]
-  );
+  const haAlgoAtivo = acompanhados.some((p) => dados[p.id]?.status !== 'recusado');
+  const algoMudando = useMemo(() => {
+    const aguardando = acompanhados.some((p) => {
+      const d = dados[p.id];
+      return !d || d.status === 'pendente';
+    });
+    const naCozinha = contas.some((c) =>
+      c.comandas.some((cm) => cm.itens.some((i) => SITUACOES_EM_ANDAMENTO.includes(i.situacao)))
+    );
+    return aguardando || naCozinha;
+  }, [acompanhados, dados, contas]);
+
+  // consulta de tempos em tempos: rápido enquanto algo muda; mais devagar depois (só
+  // para perceber o pagamento e limpar a tela)
   useEffect(() => {
-    if (!algumEmAndamento) return;
-    const id = setInterval(atualizar, INTERVALO_MS);
+    if (!haAlgoAtivo) return;
+    const id = setInterval(atualizar, algoMudando ? INTERVALO_ATIVO_MS : INTERVALO_CALMO_MS);
     return () => clearInterval(id);
-  }, [algumEmAndamento, atualizar]);
+  }, [haAlgoAtivo, algoMudando, atualizar]);
 
   // lista de mesas: carrega quando o painel abre com itens no carrinho
   useEffect(() => {
@@ -139,18 +152,18 @@ export default function PainelPedido({
       .catch(() => setErro('Não foi possível carregar as mesas. Tente novamente.'));
   }, [aberto, itens.length]);
 
-  const pedidos = useMemo(
+  // pedidos que ainda precisam de atenção: aguardando o garçom ou recusados
+  // (os aceitos viram a comanda da mesa, mais abaixo)
+  const pedidosEmAberto = useMemo(
     () =>
       acompanhados
         .map((p) => dados[p.id])
-        .filter(Boolean)
-        .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm)), // mais recente primeiro
+        .filter((d) => d && d.status !== 'aceito')
+        .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm)),
     [acompanhados, dados]
   );
-  const totalConsumido = pedidos
-    .filter((p) => p.status === 'aceito')
-    .reduce((s, p) => s + p.total, 0);
-  const haPendente = pedidos.some((p) => p.status === 'pendente');
+  const haPendente = pedidosEmAberto.some((p) => p.status === 'pendente');
+  const conta = contas[0] ?? null; // normalmente o cliente está em uma mesa só
 
   const escolherMesa = (id) => {
     setMesaId(id);
@@ -175,6 +188,7 @@ export default function PainelPedido({
         })),
       });
       gravar('sessionStorage', CHAVE_NOME, nomeCliente.trim());
+      setContaEncerrada(false);
       setAcompanhados((atual) =>
         [...atual, { id: data._id, criadoEm: Date.now() }].slice(-MAX_ACOMPANHADOS)
       );
@@ -197,30 +211,43 @@ export default function PainelPedido({
   const removerDaLista = (id) => setAcompanhados((atual) => atual.filter((p) => p.id !== id));
 
   const temBarra = qtdTotal > 0 || acompanhados.length > 0;
+  const mostrarAvisoConta = contaEncerrada && qtdTotal === 0 && !aberto; // aberto: o aviso aparece dentro do painel
 
   return (
     <>
-      {temBarra && (
+      {(temBarra || mostrarAvisoConta) && (
         <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-white p-3 shadow-[0_-2px_8px_rgba(0,0,0,0.08)]">
-          <button
-            onClick={abrirPainel}
-            className="mx-auto flex w-full max-w-5xl items-center justify-between rounded-md bg-primary px-4 py-3 text-left text-white"
-          >
-            <span className="font-medium">
-              {qtdTotal > 0
-                ? `Ver pedido (${qtdTotal} ${qtdTotal === 1 ? 'item' : 'itens'})`
-                : 'Meus pedidos'}
-            </span>
-            <span className="text-sm">
-              {qtdTotal > 0
-                ? dinheiro(valorCarrinho)
-                : haPendente
-                  ? 'Aguardando confirmação'
-                  : totalConsumido > 0
-                    ? `Total ${dinheiro(totalConsumido)}`
-                    : 'Ver detalhes'}
-            </span>
-          </button>
+          {mostrarAvisoConta && (
+            <div className="mx-auto mb-2 flex w-full max-w-5xl items-center justify-between gap-3 rounded-md bg-green-50 px-4 py-2 text-sm text-green-800">
+              <span>Conta encerrada. Obrigado pela visita!</span>
+              <button onClick={() => setContaEncerrada(false)} className="font-medium underline">
+                Ok
+              </button>
+            </div>
+          )}
+          {temBarra && (
+            <button
+              onClick={abrirPainel}
+              className="mx-auto flex w-full max-w-5xl items-center justify-between rounded-md bg-primary px-4 py-3 text-left text-white"
+            >
+              <span className="font-medium">
+                {qtdTotal > 0
+                  ? `Ver pedido (${qtdTotal} ${qtdTotal === 1 ? 'item' : 'itens'})`
+                  : conta
+                    ? `Comanda da mesa ${String(conta.mesaNumero).padStart(2, '0')}`
+                    : 'Meus pedidos'}
+              </span>
+              <span className="text-sm">
+                {qtdTotal > 0
+                  ? dinheiro(valorCarrinho)
+                  : haPendente
+                    ? 'Aguardando confirmação'
+                    : conta
+                      ? `Total ${dinheiro(conta.total)}`
+                      : 'Ver detalhes'}
+              </span>
+            </button>
+          )}
         </div>
       )}
 
@@ -235,7 +262,7 @@ export default function PainelPedido({
           >
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-lg font-semibold">
-                {itens.length > 0 ? 'Seu pedido' : 'Meus pedidos'}
+                {itens.length > 0 ? 'Seu pedido' : 'Acompanhar pedido'}
               </h2>
               <button onClick={() => setAberto(false)} className="text-sm text-neutral-500">
                 Fechar
@@ -326,35 +353,42 @@ export default function PainelPedido({
               </>
             )}
 
-            {pedidos.length > 0 && (
-              <section className={itens.length > 0 ? 'mt-6 border-t pt-4' : ''}>
-                {itens.length > 0 && <h3 className="mb-3 font-semibold">Meus pedidos</h3>}
-
+            {pedidosEmAberto.length > 0 && (
+              <section className={itens.length > 0 ? 'mt-6 border-t pt-4' : 'mb-4'}>
+                {itens.length > 0 && <h3 className="mb-3 font-semibold">Pedidos enviados</h3>}
                 <div className="space-y-3">
-                  {pedidos.map((p) => (
+                  {pedidosEmAberto.map((p) => (
                     <CartaoPedido key={p._id} pedido={p} onRemover={() => removerDaLista(p._id)} />
                   ))}
-                </div>
-
-                <div className="mt-4 rounded-lg bg-neutral-50 p-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">Total do que você pediu</span>
-                    <span className="text-lg font-semibold">{dinheiro(totalConsumido)}</span>
-                  </div>
-                  <p className="mt-1 text-xs text-neutral-500">
-                    Soma dos pedidos já confirmados pelo garçom. Não inclui taxa de serviço nem o
-                    que outras pessoas da mesa pediram. A conta final é fechada no caixa.
-                  </p>
                 </div>
               </section>
             )}
 
-            {!itens.length && !pedidos.length && (
-              <p className="py-6 text-center text-sm text-neutral-500">
-                {acompanhados.length
-                  ? 'Carregando seus pedidos...'
-                  : 'Seu pedido está vazio. Toque em “Adicionar ao pedido” nos itens do cardápio.'}
-              </p>
+            {contas.map((c) => (
+              <ComandaDaMesa key={c.mesaId} conta={c} separar={itens.length > 0 || pedidosEmAberto.length > 0} />
+            ))}
+
+            {!itens.length && !pedidosEmAberto.length && !contas.length && (
+              contaEncerrada ? (
+                <div className="my-4 rounded-lg bg-green-50 p-4 text-center text-green-800">
+                  <p className="font-medium">Conta encerrada. Obrigado pela visita!</p>
+                  <button
+                    onClick={() => {
+                      setContaEncerrada(false);
+                      setAberto(false);
+                    }}
+                    className="mt-2 text-sm underline"
+                  >
+                    Ok
+                  </button>
+                </div>
+              ) : (
+                <p className="py-6 text-center text-sm text-neutral-500">
+                  {acompanhados.length
+                    ? 'Carregando seus pedidos...'
+                    : 'Seu pedido está vazio. Toque em “Adicionar ao pedido” nos itens do cardápio.'}
+                </p>
+              )
             )}
           </div>
         </div>
@@ -363,19 +397,89 @@ export default function PainelPedido({
   );
 }
 
+// Comanda COMPARTILHADA da mesa: todos que dividem a mesa veem a mesma conta.
+// Itens iguais aparecem empilhados (2× Hamburguer), mesmo que tenham sido pedidos
+// por pessoas diferentes.
+function ComandaDaMesa({ conta, separar }) {
+  const varias = conta.comandas.length > 1;
+
+  return (
+    <section className={separar ? 'mt-6 border-t pt-4' : ''}>
+      <h3 className="mb-3 font-semibold">
+        Comanda da mesa {String(conta.mesaNumero).padStart(2, '0')}
+      </h3>
+
+      <div className="space-y-4">
+        {conta.comandas.map((comanda) => (
+          <div key={comanda.numero}>
+            {varias && (
+              <p className="mb-1 text-xs font-medium text-neutral-500">Comanda #{comanda.numero}</p>
+            )}
+            <ul className="space-y-2 text-sm">
+              {agruparItens(comanda.itens, (i) => i.situacao).map((grupo) => {
+                const cancelado = grupo.situacao === 'cancelado';
+                const rotulo = ROTULO_SITUACAO[grupo.situacao] ?? ROTULO_SITUACAO.na_fila;
+                const meus = grupo.itens.filter((i) => i.meu).reduce((s, i) => s + i.quantidade, 0);
+                const origem =
+                  meus === 0
+                    ? 'Pedido de outra pessoa da mesa'
+                    : meus < grupo.quantidade
+                      ? `Você pediu ${meus}`
+                      : null;
+
+                return (
+                  <li key={grupo.chave} className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className={cancelado ? 'text-neutral-400 line-through' : ''}>
+                        {grupo.quantidade}× {grupo.nomeProduto}
+                      </p>
+                      {grupo.observacao && (
+                        <p className="text-xs text-neutral-500">{grupo.observacao}</p>
+                      )}
+                      <span
+                        className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs ${rotulo.classe}`}
+                      >
+                        {rotulo.texto}
+                      </span>
+                      {origem && <span className="ml-2 text-xs text-neutral-400">{origem}</span>}
+                    </div>
+                    <span className={`shrink-0 ${cancelado ? 'text-neutral-400 line-through' : ''}`}>
+                      {dinheiro(grupo.quantidade * grupo.precoUnitario)}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 rounded-lg bg-neutral-50 p-3">
+        <div className="flex items-center justify-between">
+          <span className="font-medium">Total da comanda</span>
+          <span className="text-lg font-semibold">{dinheiro(conta.total)}</span>
+        </div>
+        <div className="mt-1 flex items-center justify-between text-sm text-neutral-600">
+          <span>O que você pediu</span>
+          <span>{dinheiro(conta.meuTotal)}</span>
+        </div>
+        <p className="mt-2 text-xs text-neutral-500">
+          É a mesma comanda para todos da mesa. Os valores não incluem taxa de serviço; a conta
+          final é fechada no caixa.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+// Pedido que ainda não virou comanda: aguardando o garçom ou recusado.
 function CartaoPedido({ pedido, onRemover }) {
   const hora = new Date(pedido.criadoEm).toLocaleTimeString('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
   });
   const mesa = pedido.mesaNumero ? `Mesa ${String(pedido.mesaNumero).padStart(2, '0')}` : 'Mesa';
-
-  const cabecalho =
-    pedido.status === 'pendente'
-      ? { texto: 'Aguardando garçom', classe: 'bg-orange-100 text-orange-700' }
-      : pedido.status === 'aceito'
-        ? { texto: 'Confirmado', classe: 'bg-green-100 text-green-700' }
-        : { texto: 'Não confirmado', classe: 'bg-red-100 text-red-700' };
+  const pendente = pedido.status === 'pendente';
 
   return (
     <div className="rounded-lg border p-3">
@@ -383,58 +487,50 @@ function CartaoPedido({ pedido, onRemover }) {
         <p className="text-sm font-medium">
           {mesa} <span className="font-normal text-neutral-400">· {hora}</span>
         </p>
-        <span className={`rounded-full px-2 py-0.5 text-xs ${cabecalho.classe}`}>
-          {cabecalho.texto}
+        <span
+          className={`rounded-full px-2 py-0.5 text-xs ${
+            pendente ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'
+          }`}
+        >
+          {pendente ? 'Aguardando garçom' : 'Não confirmado'}
         </span>
       </div>
 
-      {pedido.status === 'pendente' && (
+      {pendente ? (
         <p className="mb-2 text-xs text-neutral-500">
           O garçom vai conferir o pedido. Esta tela atualiza sozinha.
         </p>
-      )}
-      {pedido.status === 'recusado' && (
+      ) : (
         <p className="mb-2 text-sm text-red-700">
           {pedido.motivoRecusa ? `Motivo: ${pedido.motivoRecusa}. ` : ''}
           Fale com um garçom para ajustar o pedido.
         </p>
       )}
 
-      <ul className="space-y-2 text-sm">
-        {pedido.itens.map((i, idx) => {
-          const rotulo = ROTULO_SITUACAO[i.situacao] ?? ROTULO_SITUACAO.na_fila;
-          const cancelado = i.situacao === 'cancelado' || i.situacao === 'recusado';
-          return (
-            <li key={idx} className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className={cancelado ? 'text-neutral-400 line-through' : ''}>
-                  {i.quantidade}× {i.nomeProduto}
-                </p>
-                {i.observacao && <p className="text-xs text-neutral-500">{i.observacao}</p>}
-                <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs ${rotulo.classe}`}>
-                  {rotulo.texto}
-                </span>
-              </div>
-              <span className={`shrink-0 ${cancelado ? 'text-neutral-400 line-through' : ''}`}>
-                {dinheiro(i.quantidade * i.precoUnitario)}
-              </span>
-            </li>
-          );
-        })}
+      <ul className="space-y-1 text-sm">
+        {pedido.itens.map((i, idx) => (
+          <li key={idx} className="flex items-start justify-between gap-2">
+            <span className={pendente ? '' : 'text-neutral-400 line-through'}>
+              {i.quantidade}× {i.nomeProduto}
+              {i.observacao && <span className="block text-xs text-neutral-500">{i.observacao}</span>}
+            </span>
+            <span className={`shrink-0 ${pendente ? '' : 'text-neutral-400 line-through'}`}>
+              {dinheiro(i.quantidade * i.precoUnitario)}
+            </span>
+          </li>
+        ))}
       </ul>
 
       <div className="mt-3 flex items-center justify-between border-t pt-2">
-        {pedido.status === 'recusado' ? (
+        {pendente ? (
+          <>
+            <span className="text-xs text-neutral-500">Valor previsto</span>
+            <span className="font-medium">{dinheiro(pedido.total)}</span>
+          </>
+        ) : (
           <button onClick={onRemover} className="text-xs text-neutral-500 underline">
             Remover da lista
           </button>
-        ) : (
-          <span className="text-xs text-neutral-500">
-            {pedido.status === 'pendente' ? 'Valor previsto' : 'Subtotal do pedido'}
-          </span>
-        )}
-        {pedido.status !== 'recusado' && (
-          <span className="font-medium">{dinheiro(pedido.total)}</span>
         )}
       </div>
     </div>

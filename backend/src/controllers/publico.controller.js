@@ -90,6 +90,14 @@ const SITUACAO_POR_STATUS_KDS = {
 
 const arredondar = (v) => Math.round(v * 100) / 100;
 
+const situacaoDoItem = (i) =>
+  i.estornado ? 'cancelado' : (SITUACAO_POR_STATUS_KDS[i.statusKDS] ?? 'na_fila');
+
+const somarItens = (itens) =>
+  arredondar(
+    itens.filter((i) => i.situacao !== 'cancelado').reduce((s, i) => s + i.quantidade * i.precoUnitario, 0)
+  );
+
 /**
  * "Visão do cliente" dos pedidos: o que ele pediu, quanto custa e em que pé
  * está cada item. Mostra SÓ os itens do pedido dele (identificados pelo id do
@@ -106,10 +114,10 @@ async function montarVisaoCliente(pedidos) {
   if (idsItens.length) {
     // procura em qualquer comanda: itens podem ter sido transferidos (RF25)
     const comandas = await Comanda.find({ 'itens._id': { $in: idsItens } })
-      .select('itens')
+      .select('itens status')
       .lean();
     for (const c of comandas) {
-      for (const i of c.itens) itensDaComanda.set(String(i._id), i);
+      for (const i of c.itens) itensDaComanda.set(String(i._id), { ...i, comandaStatus: c.status });
     }
   }
 
@@ -125,7 +133,7 @@ async function montarVisaoCliente(pedidos) {
             quantidade: i.quantidade,
             precoUnitario: i.precoUnitario,
             observacao: i.observacao ?? null,
-            situacao: i.estornado ? 'cancelado' : (SITUACAO_POR_STATUS_KDS[i.statusKDS] ?? 'na_fila'),
+            situacao: situacaoDoItem(i),
           }))
         : p.itens.map((i) => ({
             nomeProduto: i.nomeProduto,
@@ -134,6 +142,11 @@ async function montarVisaoCliente(pedidos) {
             observacao: i.observacao ?? null,
             situacao: p.status === 'recusado' ? 'recusado' : p.status === 'aceito' ? 'na_fila' : 'aguardando',
           }));
+
+    // Conta paga: quando o caixa fecha a comanda (e libera a mesa), o pedido deixa
+    // de existir para o cliente; a tela dele se limpa sozinha.
+    const encerrado =
+      p.status === 'aceito' && lancados.length > 0 && lancados.every((i) => i.comandaStatus === 'fechada');
 
     const total =
       p.status === 'recusado'
@@ -151,6 +164,7 @@ async function montarVisaoCliente(pedidos) {
       mesaNumero: p.mesa?.numero ?? null,
       nomeCliente: p.nomeCliente ?? null,
       criadoEm: p.createdAt,
+      encerrado,
       itens,
       total,
     };
@@ -183,4 +197,79 @@ const consultarPedidos = asyncHandler(async (req, res) => {
   res.json(await montarVisaoCliente(pedidos));
 });
 
-module.exports = { listarMesas, criarPedido, consultarPedido, consultarPedidos };
+
+/**
+ * Acompanhamento completo do cliente (uma chamada só, a cada poucos segundos):
+ *  - `pedidos`: a visão de cada pedido que ele fez (pendente, recusado...).
+ *  - `mesas`: a COMANDA ABERTA da mesa dele, com TODOS os itens (os dele, os de
+ *    outras pessoas da mesa e os lançados pelo garçom), para quem divide a mesa
+ *    ver a mesma conta.
+ *
+ * Quem pode ver a comanda de uma mesa? Só quem tem pelo menos um pedido ACEITO
+ * naquela mesa (e ainda não encerrado): o garçom já conferiu no salão que essa
+ * pessoa está ali. Escolher uma mesa na lista, sozinho, não dá acesso a nada.
+ */
+const consultarAcompanhamento = asyncHandler(async (req, res) => {
+  const pedidos = await PedidoCliente.find({ _id: { $in: req.query.ids } })
+    .select(CAMPOS_VISAO)
+    .populate('mesa', 'numero')
+    .sort({ createdAt: 1 })
+    .lean();
+
+  const visoes = await montarVisaoCliente(pedidos);
+
+  const mesasComAcesso = new Map(); // id da mesa -> número
+  pedidos.forEach((p, idx) => {
+    if (p.status === 'aceito' && !visoes[idx].encerrado && p.mesa) {
+      mesasComAcesso.set(String(p.mesa._id), p.mesa.numero);
+    }
+  });
+
+  let mesas = [];
+  if (mesasComAcesso.size) {
+    const meus = new Set(pedidos.flatMap((p) => (p.itensLancados ?? []).map(String)));
+    const comandas = await Comanda.find({
+      mesa: { $in: [...mesasComAcesso.keys()] },
+      status: 'aberta',
+    })
+      .sort({ numero: 1 })
+      .lean();
+
+    mesas = [...mesasComAcesso]
+      .map(([mesaId, mesaNumero]) => {
+        const dasMesa = comandas
+          .filter((c) => String(c.mesa) === mesaId)
+          .map((c) => {
+            const itens = c.itens.map((i) => ({
+              nomeProduto: i.nomeProduto,
+              quantidade: i.quantidade,
+              precoUnitario: i.precoUnitario,
+              observacao: i.observacao ?? null,
+              situacao: situacaoDoItem(i),
+              meu: meus.has(String(i._id)),
+            }));
+            return { numero: c.numero, itens, total: somarItens(itens) };
+          });
+
+        const todos = dasMesa.flatMap((c) => c.itens);
+        return {
+          mesaId,
+          mesaNumero,
+          comandas: dasMesa,
+          total: somarItens(todos),
+          meuTotal: somarItens(todos.filter((i) => i.meu)),
+        };
+      })
+      .filter((m) => m.comandas.length);
+  }
+
+  res.json({ pedidos: visoes, mesas });
+});
+
+module.exports = {
+  listarMesas,
+  criarPedido,
+  consultarPedido,
+  consultarPedidos,
+  consultarAcompanhamento,
+};

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api/axiosClient';
 import { useSocket } from '../../hooks/useSocket';
+import { agruparItens } from '../../utils/agruparItens';
 
 const ROTULO_STATUS_ITEM = {
   pendente: { texto: 'Pendente', cor: 'bg-neutral-300' },
@@ -220,8 +221,11 @@ export default function Mesa() {
             Comanda #{comandaSelecionada.numero}
           </p>
           <ul className="space-y-1.5 text-sm">
-            {comandaSelecionada.itens.map((item) => (
-              <li key={item._id} className="flex items-center justify-between">
+            {/* itens iguais (mesmo produto/observação/status) aparecem empilhados: 2x Hamburguer */}
+            {agruparItens(comandaSelecionada.itens, (i) =>
+              i.estornado ? 'estornado' : i.statusKDS
+            ).map((item) => (
+              <li key={item.chave} className="flex items-center justify-between">
                 <span className={item.estornado ? 'text-neutral-400 line-through' : ''}>
                   {item.quantidade}x {item.nomeProduto}
                   {item.observacao && (

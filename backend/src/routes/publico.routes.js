@@ -23,6 +23,12 @@ router.get(
   validate(consultarPedidosSchema, 'query'),
   ctrl.consultarPedidos
 );
+router.get(
+  '/acompanhamento',
+  limitarLeituraPublica,
+  validate(consultarPedidosSchema, 'query'),
+  ctrl.consultarAcompanhamento
+);
 router.get('/pedidos/:id', limitarLeituraPublica, validarId(), ctrl.consultarPedido);
 
 module.exports = router;
