@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^3.6.0",
     "apexcharts": "^7.8.0",
     "axios": "^1.7.2",
+    "jspdf": "^4.2.1",
     "react": "^18.3.1",
     "react-apexcharts": "^2.1.1",
     "react-dom": "^18.3.1",

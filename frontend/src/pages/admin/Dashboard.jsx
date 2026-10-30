@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 import AdminLayout from '../../components/layout/AdminLayout';
 import api from '../../api/axiosClient';
+import { useAuthStore } from '../../store/authStore';
 
 const formatarMoeda = (valor) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor ?? 0);
@@ -34,6 +35,11 @@ export default function Dashboard() {
   const [statusPedidos, setStatusPedidos] = useState([]);
   const [topProdutos, setTopProdutos] = useState([]);
   const [erro, setErro] = useState('');
+  // período a que os dados na tela se referem (ao trocar o filtro, os números
+  // antigos ficam até a resposta chegar; o PDF só libera quando já bateram)
+  const [periodoCarregado, setPeriodoCarregado] = useState(null);
+  const [gerandoPdf, setGerandoPdf] = useState(false);
+  const funcionario = useAuthStore((s) => s.funcionario);
 
   // O gráfico "Faturamento por Mês" é sempre os últimos 12 meses — não muda
   // com o filtro de período, então carrega uma vez só.
@@ -55,9 +61,36 @@ export default function Dashboard() {
         setVisaoGeral(geral.data);
         setStatusPedidos(status.data);
         setTopProdutos(produtos.data);
+        setPeriodoCarregado(periodo);
       })
       .catch(() => setErro('Não foi possível carregar o dashboard agora.'));
   }, [periodo]);
+
+  // Exporta em PDF exatamente o que está na tela (mesmo período e mesmos números).
+  const exportarPdf = async () => {
+    setGerandoPdf(true);
+    setErro('');
+    try {
+      // o gerador (e o jsPDF) só são baixados agora, no primeiro clique
+      const { gerarRelatorioPdf } = await import('../../utils/gerarRelatorioPdf');
+      await gerarRelatorioPdf({
+        periodo,
+        periodoRotulo: PERIODOS.find((p) => p.valor === periodo)?.rotulo ?? periodo,
+        geradoPor: funcionario?.nome,
+        visaoGeral,
+        faturamentoMensal,
+        // igual à tela: só os status que têm pedidos no período
+        statusPedidos: statusPedidos
+          .filter((s) => s.quantidade > 0)
+          .map((s) => ({ ...s, rotulo: ROTULO_STATUS[s.status] ?? s.status })),
+        topProdutos,
+      });
+    } catch {
+      setErro('Não foi possível gerar o PDF agora. Tente novamente.');
+    } finally {
+      setGerandoPdf(false);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -66,18 +99,28 @@ export default function Dashboard() {
           <h1 className="text-lg font-semibold">Dashboard</h1>
           <p className="text-sm text-neutral-500">Visão geral do seu negócio em tempo real</p>
         </div>
-        <div className="flex rounded-md border p-1 text-sm">
-          {PERIODOS.map((p) => (
-            <button
-              key={p.valor}
-              onClick={() => setPeriodo(p.valor)}
-              className={`rounded px-3 py-1 ${
-                periodo === p.valor ? 'bg-primary text-white' : 'text-neutral-600'
-              }`}
-            >
-              {p.rotulo}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={exportarPdf}
+            disabled={gerandoPdf || periodoCarregado !== periodo}
+            className="rounded-md border px-3 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 disabled:opacity-50"
+            title="Baixa um relatório em PDF com os números do período selecionado"
+          >
+            {gerandoPdf ? 'Gerando PDF...' : 'Exportar PDF'}
+          </button>
+          <div className="flex rounded-md border p-1 text-sm">
+            {PERIODOS.map((p) => (
+              <button
+                key={p.valor}
+                onClick={() => setPeriodo(p.valor)}
+                className={`rounded px-3 py-1 ${
+                  periodo === p.valor ? 'bg-primary text-white' : 'text-neutral-600'
+                }`}
+              >
+                {p.rotulo}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
